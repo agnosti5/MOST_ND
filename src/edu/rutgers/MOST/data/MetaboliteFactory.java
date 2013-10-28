@@ -36,6 +36,17 @@ public class MetaboliteFactory {
 		}
 		return new SBMLMetabolite(); //Default behavior.
 	}
+	
+	public ModelMetabolite getMetaboliteByRow(Integer row){
+
+
+		if("SBML".equals(sourceType)){
+			SBMLMetabolite metabolite = new SBMLMetabolite();
+			metabolite.loadByRow(row);
+			return metabolite;
+		}
+		return new SBMLMetabolite(); //Default behavior.
+	}
 
 	public ArrayList<Integer> participatingReactions(String metaboliteAbbreviation) {
 		ArrayList<Integer> participatingReactions = new ArrayList<Integer>();

@@ -981,9 +981,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 				LocalConfig.getInstance().setFluxValueColumnIndex(getColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
 				usedIndices.add(getColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
 			}	
-			if (cbReactionName.getSelectedIndex() == -1) {
-				LocalConfig.getInstance().getHiddenReactionsColumns().add(GraphicalInterfaceConstants.REACTION_NAME_COLUMN);
-			} else if (getColumnNamesFromFile().contains(cbReactionName.getSelectedItem())) {
+			if (getColumnNamesFromFile().contains(cbReactionName.getSelectedItem())) {
 				LocalConfig.getInstance().setReactionNameColumnIndex(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
 				usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
 			}
@@ -991,9 +989,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 				LocalConfig.getInstance().setReactionEquationColumnIndex(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
 				usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
 			}
-			if (cbReversible.getSelectedIndex() == -1) {
-				LocalConfig.getInstance().getHiddenReactionsColumns().add(GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-			} else if (getColumnNamesFromFile().contains(cbReversible.getSelectedItem())) {
+			if (getColumnNamesFromFile().contains(cbReversible.getSelectedItem())) {
 				LocalConfig.getInstance().setReversibleColumnIndex(getColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
 				usedIndices.add(getColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
 			}

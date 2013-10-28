@@ -79,6 +79,9 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 						reacNamesBfr.append(metabAbbrev);
 					}									
 				} else {
+					if (stoicStr.endsWith(".0")) {
+						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+					}
 					reacBfr.append(stoicStr + " " + metabAbbrev);
 					if (metabName != null && metabName.trim().length() > 0) {
 						reacNamesBfr.append(stoicStr + " " + metabName);
@@ -94,9 +97,11 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 						reacNamesBfr.append(" + " + metabName);
 					} else {
 						reacNamesBfr.append(" + " + metabAbbrev);
-					}
-					
+					}					
 				} else {
+					if (stoicStr.endsWith(".0")) {
+						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+					}
 					reacBfr.append(" + " + stoicStr + " " + metabAbbrev);
 					if (metabName != null && metabName.trim().length() > 0) {
 						reacNamesBfr.append(" + " + stoicStr + " " + metabName);
@@ -121,6 +126,9 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 						prodNamesBfr.append(metabAbbrev);
 					}									
 				} else {
+					if (stoicStr.endsWith(".0")) {
+						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+					}
 					prodBfr.append(stoicStr + " " + metabAbbrev);
 					if (metabName != null && metabName.trim().length() > 0) {
 						prodNamesBfr.append(stoicStr + " " + metabName);
@@ -139,6 +147,9 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 					}
 					
 				} else {
+					if (stoicStr.endsWith(".0")) {
+						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+					}
 					prodBfr.append(" + " + stoicStr + " " + metabAbbrev);
 					if (metabName != null && metabName.trim().length() > 0) {
 						prodNamesBfr.append(" + " + stoicStr + " " + metabName);
@@ -169,9 +180,20 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 	
 	@Override
 	public String toString() {
+		String reactantsString = "";
+		for (int i = 0; i < reactants.size(); i++) {
+			reactantsString += reactants.get(i).toString() + " ";
+		}
+		String productsString = "";
+		for (int j = 0; j < products.size(); j++) {
+			productsString += products.get(j).toString() + " ";
+		}
+		
 		return "SBMLReactionEquation [reversible=" + reversible
 		+ ", reversibleArrow=" + reversibleArrow
 		+ ", irreversibleArrow=" + irreversibleArrow
+		+ ", reactants=" + reactantsString
+		+ ", products=" + productsString
 		+ ", equationAbbreviations=" + equationAbbreviations
 		+ ", equationNames=" + equationNames + "]";
 	}

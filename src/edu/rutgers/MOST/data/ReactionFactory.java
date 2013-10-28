@@ -36,6 +36,15 @@ public class ReactionFactory {
 		return new SBMLReaction(); //Default behavior.
 	}
 
+	public ModelReaction getReactionByRow(Integer row){
+		if("SBML".equals(sourceType)){
+			SBMLReaction reaction = new SBMLReaction();
+			reaction.loadByRow(row);
+			return reaction;
+		}
+		return new SBMLReaction(); //Default behavior.
+	}
+	
 	public Vector<ModelReaction> getAllReactions() {
 		Vector<ModelReaction> reactions = new Vector<ModelReaction>();
 		Map<Object, Object> reactionsIdPositionMap = new HashMap<Object, Object>();
@@ -90,7 +99,7 @@ public class ReactionFactory {
 		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
 		for (int i = 0; i < fluxes.size(); i++) {
 			//System.out.println(fluxes.get(i));
-			reactionsOptModel.setValueAt(fluxes.get(i), i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
+			reactionsOptModel.setValueAt(fluxes.get(i).toString(), i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 		}
 	}
 

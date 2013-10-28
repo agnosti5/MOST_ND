@@ -153,7 +153,6 @@ public class TextReactionsModelReader {
 		//if first row of file in not column names, starts reading after row that contains names
 		int correction = LocalConfig.getInstance().getReactionsNextRowCorrection();
 		int row = 1;
-		//int maxMetabId = LocalConfig.getInstance().getMaxMetabolite();
 		
 		//LocalConfig.getInstance().getMetaboliteUsedMap().clear();
 		
@@ -316,6 +315,7 @@ public class TextReactionsModelReader {
 		LocalConfig.getInstance().hasMetabolitesFile = false;
 		setReactionsTableModel(reacTableModel);
 		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+		System.out.println("name id" + LocalConfig.getInstance().getMetaboliteNameIdMap());
 	}
 	
 	public void updateReactionEquation(String reactionEqun, int id, SBMLReactionEquation equation, Vector<String> reacRow) {
@@ -426,14 +426,14 @@ public class TextReactionsModelReader {
 					} 					
 				}	
 			} else {
-				LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+				//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
 				//LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
 				addNewMetabolite(maxMetabId, species);
 				maxMetabId += 1;
 			}
-			if (LocalConfig.getInstance().getMaxMetabolite() == LocalConfig.getInstance().getMaxMetaboliteId()) {
+			//if (LocalConfig.getInstance().getMaxMetabolite() == LocalConfig.getInstance().getMaxMetaboliteId()) {
 				LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-			}
+			//}
 			LocalConfig.getInstance().setMaxMetabolite(maxMetabId);
 		}
 		if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
@@ -451,6 +451,8 @@ public class TextReactionsModelReader {
 		model.addRow(createMetabolitesRow(maxMetabId));
 		//System.out.println(maxMetabId);
 		model.setValueAt(species, maxMetabId, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+		LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+		//LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
 		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
 			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
 			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));

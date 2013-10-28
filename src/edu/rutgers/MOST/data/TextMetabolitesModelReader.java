@@ -175,7 +175,7 @@ public class TextMetabolitesModelReader {
 	                String metaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()];
 	                metabRow.add(metaboliteAbbreviation);
 					if (metaboliteAbbreviation == null || metaboliteAbbreviation.trim().length() == 0) {
-						blankMetabIds.add(i - correction);		
+						blankMetabIds.add(id);		
 					} else {
 						if (metaboliteNameIdMap.containsKey(metaboliteAbbreviation)) {
 							duplicateIds.add(i - correction - 1);
