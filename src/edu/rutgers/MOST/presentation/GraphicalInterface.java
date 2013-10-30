@@ -3392,14 +3392,6 @@ public class GraphicalInterface extends JFrame {
 				}
 			// entry is duplicate
 			} else if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(newValue)) {
-				String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
-				if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(newValue + duplicateSuffix)) {
-					int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
-					while (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(newValue + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
-						duplicateCount += 1;
-					}
-					duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
-				}
 				setFindReplaceAlwaysOnTop(false);
 //				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue)) {
 //					JOptionPane.showMessageDialog(null,                
@@ -3411,13 +3403,13 @@ public class GraphicalInterface extends JFrame {
 //				} else {
 					Object[] options = {"    Yes    ", "    No    ",};
 					int choice = JOptionPane.showOptionDialog(null, 
-							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE + newValue + duplicateSuffix + " ?", 
+							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE + newValue + duplicateSuffix(newValue) + " ?", 
 							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
 							JOptionPane.YES_NO_OPTION, 
 							JOptionPane.QUESTION_MESSAGE, 
 							null, options, options[0]);
 					if (choice == JOptionPane.YES_OPTION) {
-						newValue = newValue + duplicateSuffix;
+						newValue = newValue + duplicateSuffix(newValue);
 						metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 						LocalConfig.getInstance().getMetaboliteNameIdMap().put(newValue, id);
 						LocalConfig.getInstance().getMetaboliteNameIdMap().remove(oldValue);

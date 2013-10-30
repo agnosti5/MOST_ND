@@ -136,7 +136,6 @@ public class TextMetabolitesModelReader {
 		
 		CSVReader reader;
 		
-		Map<String, Object> metaboliteNameIdMap = new HashMap<String, Object>();
 		ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
 		
 		try {
@@ -175,20 +174,15 @@ public class TextMetabolitesModelReader {
 					if (metaboliteAbbreviation == null || metaboliteAbbreviation.trim().length() == 0) {
 						blankMetabIds.add(id);		
 					} else {
-						if (metaboliteNameIdMap.containsKey(metaboliteAbbreviation)) {
-							// show prompt here?
-							String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
-							if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metaboliteAbbreviation + duplicateSuffix)) {
-								int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
-								while (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metaboliteAbbreviation + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
-									duplicateCount += 1;
-								}
-								duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
-							}
-							metaboliteAbbreviation = metaboliteAbbreviation + duplicateSuffix;
-						}							
+						if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metaboliteAbbreviation)) {
+							metaboliteAbbreviation = metaboliteAbbreviation + duplicateSuffix(metaboliteAbbreviation);
+							//metaboliteAbbreviation = metaboliteAbbreviation + GraphicalInterfaceConstants.DUPLICATE_SUFFIX;	
+							System.out.println("if " + metaboliteAbbreviation);
+						}
+						LocalConfig.getInstance().getMetaboliteNameIdMap().put(metaboliteAbbreviation, id);
 					}
-					metaboliteNameIdMap.put(metaboliteAbbreviation, id);
+					System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
+					System.out.println("aft " + metaboliteAbbreviation);
 					metabRow.add(metaboliteAbbreviation);
 					
 					metabRow.add(dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()]);
@@ -228,14 +222,24 @@ public class TextMetabolitesModelReader {
 			e.printStackTrace();
 		}
 		
-		LocalConfig.getInstance().setMetaboliteNameIdMap(metaboliteNameIdMap);
-		System.out.println(metaboliteNameIdMap);
 		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
-		System.out.println("idn" + metaboliteIdNameMap);
+		//System.out.println("idn" + metaboliteIdNameMap);
 		LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);					
 		LocalConfig.getInstance().hasMetabolitesFile = true;
 		setMetabolitesTableModel(metabTableModel);
 		//System.out.println("Done");		
+	}
+	
+	public String duplicateSuffix(String value) {
+		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
+		if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value + duplicateSuffix)) {
+			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
+			while (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
+				duplicateCount += 1;
+			}
+			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
+		}
+		return duplicateSuffix;
 	}
 }
 
