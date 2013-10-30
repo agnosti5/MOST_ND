@@ -848,8 +848,6 @@ public class GraphicalInterface extends JFrame {
 		// lists populated in file load
 		ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
 		LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);	
-		ArrayList<Integer> duplicateIds = new ArrayList<Integer>();
-		LocalConfig.getInstance().setDuplicateIds(duplicateIds);
 
 		Map<String, Object> metaboliteNameIdMap = new HashMap<String, Object>();
 		LocalConfig.getInstance().setMetaboliteNameIdMap(metaboliteNameIdMap);
@@ -3367,7 +3365,7 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().setMaxMetabolite(max);
 				}				
 			}
-			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue) && !LocalConfig.getInstance().getDuplicateIds().contains(id) 
+			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue) 
 					&& !LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(newValue)) {
 				if (newValue != null && newValue.toString().trim().length() > 0) {					
 					if (!newValue.equals(oldValue)) {
@@ -3393,44 +3391,44 @@ public class GraphicalInterface extends JFrame {
 					metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 				}
 			// entry is duplicate
-			} else if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(newValue)) {			
+			} else if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(newValue)) {
+				String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
+				if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(newValue + duplicateSuffix)) {
+					int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
+					while (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(newValue + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
+						duplicateCount += 1;
+					}
+					duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
+				}
 				setFindReplaceAlwaysOnTop(false);
-				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue)) {
-					JOptionPane.showMessageDialog(null,                
-							"Duplicate Metabolite.",                
-							"Duplicate Metabolite",                                
-							JOptionPane.ERROR_MESSAGE);
-					metaboliteUpdateValid = false;
-					metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-				} else {
+//				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue)) {
+//					JOptionPane.showMessageDialog(null,                
+//							"Duplicate Metabolite.",                
+//							"Duplicate Metabolite",                                
+//							JOptionPane.ERROR_MESSAGE);
+//					metaboliteUpdateValid = false;
+//					metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+//				} else {
 					Object[] options = {"    Yes    ", "    No    ",};
 					int choice = JOptionPane.showOptionDialog(null, 
-							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE, 
+							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE + newValue + duplicateSuffix + " ?", 
 							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
 							JOptionPane.YES_NO_OPTION, 
 							JOptionPane.QUESTION_MESSAGE, 
 							null, options, options[0]);
-					if (choice == JOptionPane.YES_OPTION) {	
+					if (choice == JOptionPane.YES_OPTION) {
+						newValue = newValue + duplicateSuffix;
 						metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-						if (!LocalConfig.getInstance().getDuplicateIds().contains(id)) {
-							LocalConfig.getInstance().getDuplicateIds().add(id);
-						}
+						LocalConfig.getInstance().getMetaboliteNameIdMap().put(newValue, id);
 						LocalConfig.getInstance().getMetaboliteNameIdMap().remove(oldValue);
+						System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 					}
 					if (choice == JOptionPane.NO_OPTION) {
 						metaboliteUpdateValid = false;
 						metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 					}
-				}				
+				//}				
 				setFindReplaceAlwaysOnTop(true);
-				// duplicate entry changed
-			} else if (LocalConfig.getInstance().getDuplicateIds().contains(id)) {
-				if (oldValue != newValue) {
-					metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-					int index = LocalConfig.getInstance().getDuplicateIds().indexOf(id);
-					LocalConfig.getInstance().getDuplicateIds().remove(index);
-				}
-				metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 			} else {
 				//if a blank is entered remove key/value of old value
 				if (newValue == null || newValue.length() == 0 || newValue.trim().equals("")) {
@@ -3454,7 +3452,7 @@ public class GraphicalInterface extends JFrame {
 			}	
 			//System.out.println("upd" + LocalConfig.getInstance().getMetaboliteNameIdMap());
 		} else if (colIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) && !LocalConfig.getInstance().getDuplicateIds().contains(id)) {
+			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
 				if (newValue != null && newValue.toString().trim().length() > 0) {
 					if (!newValue.equals(oldValue)) {
 						showMetaboliteRenameInterface = false;
@@ -3733,7 +3731,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getReactionsTableModelMap().clear();
 		LocalConfig.getInstance().getInvalidReactions().clear();
 		LocalConfig.getInstance().getBlankMetabIds().clear();
-		LocalConfig.getInstance().getDuplicateIds().clear();
 		LocalConfig.getInstance().getMetaboliteNameIdMap().clear();
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
@@ -4441,19 +4438,6 @@ public class GraphicalInterface extends JFrame {
 
 	ColorHighlighter unused = new ColorHighlighter(unusedPredicate, Color.YELLOW, null);
 
-	HighlightPredicate duplicateMetabPredicate = new HighlightPredicate() {
-		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
-			int viewRow = metabolitesTable.convertRowIndexToModel(adapter.row);
-			int id = Integer.valueOf(metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString());					
-			if (LocalConfig.getInstance().getDuplicateIds().contains(id)) {									
-				return true;
-			}						
-			return false;
-		}
-	};
-
-	ColorHighlighter duplicateMetab = new ColorHighlighter(duplicateMetabPredicate, Color.ORANGE, null);
-
 	HighlightPredicate metabolitesSelectedAreaPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
 			if (findMode) {
@@ -4506,7 +4490,6 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.getColumnExt(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.METABOLITE_ID_COLUMN]).setComparator(numberComparator);
 
 		metabolitesTable.addHighlighter(unused);
-		metabolitesTable.addHighlighter(duplicateMetab);
 		metabolitesTable.addHighlighter(suspicious);
 		metabolitesTable.addHighlighter(metabolitesSelectedArea);
 		metabolitesTable.addHighlighter(metaboliteFindAll);
@@ -5760,7 +5743,7 @@ public class GraphicalInterface extends JFrame {
 		renameMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				duplicatePromptShown = false;
-				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) && !LocalConfig.getInstance().getDuplicateIds().contains(id)) {
+				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
 					String toBeRenamed = "";
 					if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
 						toBeRenamed = metabAbbrev;
@@ -5991,7 +5974,7 @@ public class GraphicalInterface extends JFrame {
 			int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 			int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));			
 			String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(viewRow, 1);
-			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) && !LocalConfig.getInstance().getDuplicateIds().contains(id)) {
+			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
 				deleteMetaboliteRowMenuItem.setEnabled(false);
 			} else {
 				if (isRoot) {
@@ -6017,22 +6000,17 @@ public class GraphicalInterface extends JFrame {
 									int id = (Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
 									String key = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 									// TODO: need to check if id is used	
-									if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(key) && !(LocalConfig.getInstance().getDuplicateIds().contains(id))) {
+									if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(key)) {
 										participant = true;
 									} else {
 										model.removeRow(viewRow);
-										if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(key) &&
-												!LocalConfig.getInstance().getDuplicateIds().contains(id)) {
+										if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(key)) {
 											LocalConfig.getInstance().getMetaboliteNameIdMap().remove(key);
 										}
 										if (LocalConfig.getInstance().getBlankMetabIds().contains(id)) {
 											LocalConfig.getInstance().getBlankMetabIds().remove(LocalConfig.getInstance().getBlankMetabIds().indexOf(id));
 										}
-										if (LocalConfig.getInstance().getDuplicateIds().contains(id)) {
-											LocalConfig.getInstance().getDuplicateIds().remove(LocalConfig.getInstance().getDuplicateIds().indexOf(id));
-										}
 										//System.out.println("blk" + LocalConfig.getInstance().getBlankMetabIds());
-										//System.out.println("dup" + LocalConfig.getInstance().getDuplicateIds());
 										//System.out.println("del" + LocalConfig.getInstance().getMetaboliteNameIdMap());
 									}									
 								}
@@ -6297,9 +6275,7 @@ public class GraphicalInterface extends JFrame {
 							null, options, options[0]);
 					if (choice == JOptionPane.YES_OPTION) {	//find here
 						metabolitesTable.setValueAt(value, row, col);
-						if (!LocalConfig.getInstance().getDuplicateIds().contains(id)) {
-							LocalConfig.getInstance().getDuplicateIds().add(id);
-						}
+						// duplicate code
 						LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
 						showDuplicatePrompt = false;
 					}
@@ -6310,9 +6286,7 @@ public class GraphicalInterface extends JFrame {
 					}
 				} else {
 					metabolitesTable.setValueAt(value, row, col);
-					if (!LocalConfig.getInstance().getDuplicateIds().contains(id)) {
-						LocalConfig.getInstance().getDuplicateIds().add(id);
-					}
+					// duplicate
 					LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
 				}
 			} else {
@@ -6635,13 +6609,11 @@ public class GraphicalInterface extends JFrame {
 		
 		try {
 			oldBlankMetabIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getBlankMetabIds()));
-			oldDuplicateIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getDuplicateIds()));
 			oldMetaboliteNameIdMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteNameIdMap()));
 			oldMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
 			oldSuspiciousMetabolites = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getSuspiciousMetabolites()));
 			oldUnusedList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getUnusedList()));
 			undoItem.setOldBlankMetabIds(oldBlankMetabIds);
-			undoItem.setOldDuplicateIds(oldDuplicateIds);
 			undoItem.setOldMetaboliteNameIdMap(oldMetaboliteNameIdMap);
 			undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
 			undoItem.setOldSuspiciousMetabolites(oldSuspiciousMetabolites);
@@ -6667,9 +6639,6 @@ public class GraphicalInterface extends JFrame {
 			if (LocalConfig.getInstance().getBlankMetabIds() != null) {
 				oldBlankMetabIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getBlankMetabIds()));
 			}
-			if (LocalConfig.getInstance().getDuplicateIds() != null) {
-				oldDuplicateIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getDuplicateIds()));
-			}
 			if (LocalConfig.getInstance().getMetaboliteNameIdMap() != null) {
 				oldMetaboliteNameIdMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteNameIdMap()));
 			}
@@ -6683,7 +6652,6 @@ public class GraphicalInterface extends JFrame {
 				oldUnusedList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getUnusedList()));
 			}
 			undoItem.setOldBlankMetabIds(oldBlankMetabIds);
-			undoItem.setOldDuplicateIds(oldDuplicateIds);
 			undoItem.setOldMetaboliteNameIdMap(oldMetaboliteNameIdMap);
 			undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
 			undoItem.setOldSuspiciousMetabolites(oldSuspiciousMetabolites);
@@ -6707,9 +6675,6 @@ public class GraphicalInterface extends JFrame {
 			if (LocalConfig.getInstance().getBlankMetabIds() != null) {
 				newBlankMetabIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getBlankMetabIds()));
 			}
-			if (LocalConfig.getInstance().getDuplicateIds() != null) {
-				newDuplicateIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getDuplicateIds()));
-			}
 			if (LocalConfig.getInstance().getMetaboliteNameIdMap() != null) {
 				newMetaboliteNameIdMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteNameIdMap()));
 			}
@@ -6724,7 +6689,6 @@ public class GraphicalInterface extends JFrame {
 			}
 			
 			undoItem.setNewBlankMetabIds(newBlankMetabIds);
-			undoItem.setNewDuplicateIds(newDuplicateIds);
 			undoItem.setNewMetaboliteNameIdMap(newMetaboliteNameIdMap);
 			undoItem.setNewMetaboliteUsedMap(newMetaboliteUsedMap);
 			undoItem.setNewSuspiciousMetabolites(newSuspiciousMetabolites);
@@ -8204,7 +8168,7 @@ public class GraphicalInterface extends JFrame {
 						}						
 					}
 					if (getMetabolitesFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-						if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue) && !LocalConfig.getInstance().getDuplicateIds().contains(oldValue)) {
+						if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue)) {
 							setReplaceAllError(GraphicalInterfaceConstants.REPLACE_ALL_PARTICIPATING_ERROR_MESSAGE);
 							//updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
 							metabolitesTable.getModel().setValueAt(oldValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));

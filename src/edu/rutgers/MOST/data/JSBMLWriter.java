@@ -572,6 +572,9 @@ public class JSBMLWriter implements TreeModelListener{
 				String gAssoc = "GENE_ASSOCIATION:" + " " + cur.getGeneAssociation();
 				curReact.setNotes(gAssoc);
 				
+				String pAssoc = "PROTEIN_ASSOCIATION:" + " " + cur.getProteinAssociation();
+				curReact.setNotes(pAssoc);
+				
 				/*
 				String geneAssoc = cur.getGeneAssociation();
 				String proteinAssoc = cur.getProteinAssociation();

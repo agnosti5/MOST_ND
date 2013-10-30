@@ -187,16 +187,6 @@ public class LocalConfig {
 		LocalConfig.blankMetabIds = blankMetabIds;
 	}
 	
-	private static ArrayList<Integer> duplicateIds = new ArrayList<Integer>();
-	
-	public ArrayList<Integer> getDuplicateIds() {
-		return duplicateIds;
-	}
-	
-	public void setDuplicateIds(ArrayList<Integer> duplicateIds) {
-		LocalConfig.duplicateIds = duplicateIds;
-	}
-	
 	//used for determining id when adding a metabolite when a reaction is
 	//read and metabolite is not present
 	private static Integer maxMetabolite;

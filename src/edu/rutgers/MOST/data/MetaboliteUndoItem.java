@@ -29,8 +29,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	private int deletedColumnIndex;
 	private ArrayList<Integer> oldBlankMetabIds;
 	private ArrayList<Integer> newBlankMetabIds;
-	private ArrayList<Integer> oldDuplicateIds;
-	private ArrayList<Integer> newDuplicateIds;
 	private Map<String, Object> oldMetaboliteNameIdMap;
 	private Map<String, Object> newMetaboliteNameIdMap;
 	private Map<String, Object> oldMetaboliteUsedMap;
@@ -135,18 +133,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	public void setNewBlankMetabIds(ArrayList<Integer> newBlankMetabIds) {
 		this.newBlankMetabIds = newBlankMetabIds;
-	}
-	public ArrayList<Integer> getOldDuplicateIds() {
-		return oldDuplicateIds;
-	}
-	public void setOldDuplicateIds(ArrayList<Integer> oldDuplicateIds) {
-		this.oldDuplicateIds = oldDuplicateIds;
-	}
-	public ArrayList<Integer> getNewDuplicateIds() {
-		return newDuplicateIds;
-	}
-	public void setNewDuplicateIds(ArrayList<Integer> newDuplicateIds) {
-		this.newDuplicateIds = newDuplicateIds;
 	}
 	public Map<String, Object> getOldMetaboliteNameIdMap() {
 		return oldMetaboliteNameIdMap;
@@ -427,7 +413,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public void restoreOldCollections() {
 		LocalConfig.getInstance().setBlankMetabIds(this.oldBlankMetabIds);
-		LocalConfig.getInstance().setDuplicateIds(this.oldDuplicateIds);
 		LocalConfig.getInstance().setMetaboliteNameIdMap(this.oldMetaboliteNameIdMap);
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.oldSuspiciousMetabolites);
@@ -444,7 +429,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public void restoreNewCollections() {
 		LocalConfig.getInstance().setBlankMetabIds(this.newBlankMetabIds);
-		LocalConfig.getInstance().setDuplicateIds(this.newDuplicateIds);
 		LocalConfig.getInstance().setMetaboliteNameIdMap(this.newMetaboliteNameIdMap);
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.newSuspiciousMetabolites);

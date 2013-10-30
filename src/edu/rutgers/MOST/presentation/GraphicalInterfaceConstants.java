@@ -269,7 +269,9 @@ public class GraphicalInterfaceConstants {
     
     // duplicate metabolite
     public static final String DUPLICATE_METABOLITE_TITLE = "Duplicate Metabolite";
-    public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Add anyway?"; 
+    public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Rename As "; 
+    
+    public static final String DUPLICATE_SUFFIX = "[1]";
     
     // invalid reactions
     public static final String INVALID_REACTIONS_ERROR_TITLE = "Invalid Reactions Warning";

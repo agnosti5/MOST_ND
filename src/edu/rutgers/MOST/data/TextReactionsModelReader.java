@@ -133,7 +133,6 @@ public class TextReactionsModelReader {
 
 	public void load(File file){
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
-		LocalConfig.getInstance().getDuplicateIds().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
 		
 		DefaultTableModel reacTableModel = new DefaultTableModel();
@@ -160,7 +159,6 @@ public class TextReactionsModelReader {
 		
 		if (!LocalConfig.getInstance().hasMetabolitesFile) {
 			LocalConfig.getInstance().getMetaboliteUsedMap().clear();
-			LocalConfig.getInstance().getDuplicateIds().clear();
 			LocalConfig.getInstance().getSuspiciousMetabolites().clear();
 			LocalConfig.getInstance().getMetaboliteNameIdMap().clear();
 			LocalConfig.getInstance().setMaxMetabolite(0);
