@@ -11,6 +11,8 @@ import java.util.Collections;
 
 import javax.swing.JFrame;
 import edu.rutgers.MOST.data.MetaboliteFactory;
+import edu.rutgers.MOST.data.SBMLProduct;
+import edu.rutgers.MOST.data.SBMLReactant;
 import edu.rutgers.MOST.logic.ReactionParser;
 
 public class ReactionEditor extends JFrame {
@@ -127,7 +129,6 @@ public class ReactionEditor extends JFrame {
 		int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToModel(GraphicalInterface.getCurrentReactionsRow());
 		int id = Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 		String reactionEquation = ((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
-		System.out.println(reactionEquation);
 		
 		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
 			setArrowString("<==>");
@@ -479,20 +480,17 @@ public class ReactionEditor extends JFrame {
 		//create reaction string from these species
 		/*****************************************************************************/
 
+		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
+		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
 		ReactionParser parser = new ReactionParser();
 		if (reactionEquation != null && parser.isValid(reactionEquation)) {
 			// TODO: determine if needed
 			setOldReaction(reactionEquation);
 			parser.reactionList(reactionEquation);
-			int index = parser.getEquation().getReactants().size();
-			System.out.println(index);
-			for (int i = 0; i < index; i++) {
-				System.out.println("editor" + parser.getEquation().getReactants().get(i).toString());
-			}
-			
-			//ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionEquation.trim()).get(0);
+			reactants = parser.getEquation().getReactants();
+			products = parser.getEquation().getProducts();
 			//reactions of the type ==> b will have a reactants list of size 0
-			if (index == 0) {	
+			if (reactants.size() == 0) {	
 				for (int m = 0; m < metabList.size(); m++) {
 					cbReactant[0].addItem(metabList.get(m));
 				}
@@ -503,9 +501,11 @@ public class ReactionEditor extends JFrame {
 				reactantEditor[0].addKeyListener(new ComboKeyHandler(cbReactant[0]));
 				setNumPopulatedReacBoxes(1);
 			} else {
-				for (int r = 0; r < index; r++) {
+				for (int r = 0; r < reactants.size(); r++) {
 					for (int m = 0; m < metabList.size(); m++) {
-						cbReactant[r].addItem(metabList.get(m));
+						if (r > 0) {
+							cbReactant[r].addItem(metabList.get(m));
+						}						
 					}
 					cbReactant[r].setEnabled(true);
 					cbReactant[r].setSelectedIndex(-1);
@@ -513,33 +513,30 @@ public class ReactionEditor extends JFrame {
 					reactantEditor[r] = (JTextField)cbReactant[r].getEditor().getEditorComponent();
 					reactantEditor[r].addKeyListener(new ComboKeyHandler(cbReactant[r]));
 					setNumPopulatedReacBoxes(r);
-					System.out.println("editor" + parser.getEquation().getReactants().get(r).toString());
-					String stoicStr = Double.toString(parser.getEquation().getReactants().get(r).getStoic());
+					String stoicStr = Double.toString(reactants.get(r).getStoic());
 					if (!(Double.valueOf(stoicStr) == 1)) {
 						if (stoicStr.endsWith(".0")) {
 							stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 						}
 						reactantCoeffField[r].setText(stoicStr);
 					}
-					String reactant = parser.getEquation().getReactants().get(r).getMetaboliteAbbreviation();
+					String reactant = reactants.get(r).getMetaboliteAbbreviation();
 					cbReactant[r].setSelectedItem(reactant);
 				}
-				if (index < getNumReactantFields()) {
+				if (reactants.size() < getNumReactantFields()) {
 					for (int m = 0; m < metabList.size(); m++) {
-						cbReactant[index].addItem(metabList.get(m));
+						cbReactant[reactants.size()].addItem(metabList.get(m));
 					}
-					cbReactant[index].setEnabled(true);
-					cbReactant[index].setSelectedIndex(-1);
-					reactantEditor[index] = new JTextField();
-					reactantEditor[index] = (JTextField)cbReactant[index].getEditor().getEditorComponent();
-					reactantEditor[index].addKeyListener(new ComboKeyHandler(cbReactant[index]));
-					setNumPopulatedReacBoxes(index + 1);
+					cbReactant[reactants.size()].setEnabled(true);
+					cbReactant[reactants.size()].setSelectedIndex(-1);
+					reactantEditor[reactants.size()] = new JTextField();
+					reactantEditor[reactants.size()] = (JTextField)cbReactant[reactants.size()].getEditor().getEditorComponent();
+					reactantEditor[reactants.size()].addKeyListener(new ComboKeyHandler(cbReactant[reactants.size()]));
+					setNumPopulatedReacBoxes(reactants.size() + 1);
 				}
 			}
-			int index2 = parser.getEquation().getProducts().size();
-			//ArrayList<ArrayList<String>> products = parser.reactionList(reactionEquation.trim()).get(1);
 			//reactions of the type a ==> will will have a products list of size 0
-			if (index2 == 0) {
+			if (products.size() == 0) {
 				for (int m = 0; m < metabList.size(); m++) {
 					cbProduct[0].addItem(metabList.get(m));
 				}
@@ -550,36 +547,40 @@ public class ReactionEditor extends JFrame {
 				productEditor[0].addKeyListener(new ComboKeyHandler(cbProduct[0]));
 				setNumPopulatedProdBoxes(1);
 			} else {
-				for (int p = 0; p < index2; p++) {
+				for (int p = 0; p < products.size(); p++) {
 					for (int m = 0; m < metabList.size(); m++) {
-						cbProduct[p].addItem(metabList.get(m));
+						if (p > 0) {
+							cbProduct[p].addItem(metabList.get(m));
+						}						
 					}
 					cbProduct[p].setEnabled(true);
 					cbProduct[p].setSelectedIndex(-1);
 					productEditor[p] = new JTextField();
 					productEditor[p] = (JTextField)cbProduct[p].getEditor().getEditorComponent();
 					productEditor[p].addKeyListener(new ComboKeyHandler(cbProduct[p]));
-					String stoicStr = Double.toString(parser.getEquation().getProducts().get(p).getStoic());
+					String stoicStr = Double.toString(products.get(p).getStoic());
+					//String stoicStr = Double.toString(parser.getEquation().getProducts().get(p).getStoic());
 					if (!(Double.valueOf(stoicStr) == 1)) {
 						if (stoicStr.endsWith(".0")) {
 							stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 						}
 						productCoeffField[p].setText(stoicStr);
 					}
-					String product = parser.getEquation().getProducts().get(p).getMetaboliteAbbreviation();
+					String product = products.get(p).getMetaboliteAbbreviation();
+					//String product = parser.getEquation().getProducts().get(p).getMetaboliteAbbreviation();
 					cbProduct[p].setSelectedItem(product);
 					setNumPopulatedProdBoxes(p);
 				}
-				if (index2 < getNumProductFields()) {
+				if (products.size() < getNumProductFields()) {
 					for (int m = 0; m < metabList.size(); m++) {
-						cbProduct[index2].addItem(metabList.get(m));
+						cbProduct[products.size()].addItem(metabList.get(m));
 					}
-					cbProduct[index2].setEnabled(true);
-					cbProduct[index2].setSelectedIndex(-1);
-					productEditor[index2] = new JTextField();
-					productEditor[index2] = (JTextField)cbProduct[index2].getEditor().getEditorComponent();
-					productEditor[index2].addKeyListener(new ComboKeyHandler(cbProduct[index2]));
-					setNumPopulatedProdBoxes(index2 + 1);
+					cbProduct[products.size()].setEnabled(true);
+					cbProduct[products.size()].setSelectedIndex(-1);
+					productEditor[products.size()] = new JTextField();
+					productEditor[products.size()] = (JTextField)cbProduct[products.size()].getEditor().getEditorComponent();
+					productEditor[products.size()].addKeyListener(new ComboKeyHandler(cbProduct[products.size()]));
+					setNumPopulatedProdBoxes(products.size() + 1);
 				}
 			}
 		} else {

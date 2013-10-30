@@ -53,7 +53,7 @@ public class FBA {
 	
 	private void setConstraints() {
 		Vector<ModelReaction> reactions = this.model.getReactions();
-		setConstraints(reactions,ConType.EQUAL,0.0);
+		setConstraints(reactions, ConType.EQUAL, 0.0);
 	}	
 	
 	private void setConstraints(Vector<ModelReaction> reactions, ConType conType, double bValue) {

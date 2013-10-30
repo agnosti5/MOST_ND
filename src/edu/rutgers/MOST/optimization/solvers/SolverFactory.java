@@ -9,22 +9,24 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.optimization.FBA.FBA;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class SolverFactory {
-	static Logger log = Logger.getLogger(SolverFactory.class);
+	//static Logger log = Logger.getLogger(SolverFactory.class);
 	
 	public static Solver createSolver(){
-		log.debug("creating a solver");
+		//log.debug("creating a solver");
 		//Create the solver according to the global configuration
+		/*
 		LocalConfig config = LocalConfig.getInstance();
 		Date date = new Date();
 		Format formatter;
 		formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
 		String dateTimeStamp = formatter.format(date);
+		*/
 		
-		Solver solver = new GurobiSolver(config.getModelName() + dateTimeStamp + GraphicalInterfaceConstants.MIP_SUFFIX + ".log");
+		Solver solver = new GurobiSolver();
+		//Solver solver = new GurobiSolver(config.getModelName() + dateTimeStamp + GraphicalInterfaceConstants.MIP_SUFFIX + ".log");
 		return solver;
 	}
 	

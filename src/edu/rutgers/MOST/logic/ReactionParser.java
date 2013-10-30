@@ -20,7 +20,6 @@ public class ReactionParser {
 		ReactionParser.equation = equation;
 	}
 
-
 	// if reaction starts with [c]: for example, suffix will be appended to all
 	// species in the reaction when adding to metabolites table and maps
 	public static boolean hasPrefix = false;
