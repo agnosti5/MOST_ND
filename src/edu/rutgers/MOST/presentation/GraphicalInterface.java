@@ -883,11 +883,13 @@ public class GraphicalInterface extends JFrame {
 		selectedMetabolitesColumnStartIndex = 1;
 		selectedMetabolitesColumnEndIndex = 1;
 
-		// miscellaneous lists
+		// miscellaneous lists and maps
 		ArrayList<Integer> participatingReactions = new ArrayList<Integer>();
 		LocalConfig.getInstance().setParticipatingReactions(participatingReactions);
 		ArrayList<String> optimizationFilesList = new ArrayList<String>();
 		LocalConfig.getInstance().setOptimizationFilesList(optimizationFilesList);
+		Map<String, Object> metabDisplayCollectionMap = new HashMap<String, Object>();
+		LocalConfig.getInstance().setMetabDisplayCollectionMap(metabDisplayCollectionMap);
 
 		// meta column lists
 		ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();
