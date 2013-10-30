@@ -6268,15 +6268,19 @@ public class GraphicalInterface extends JFrame {
 				if (showDuplicatePrompt) {
 					Object[] options = {"    Yes    ", "    No    ",};
 					int choice = JOptionPane.showOptionDialog(null, 
-							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE, 
+							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_PASTE_MESSAGE, 
 							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
 							JOptionPane.YES_NO_OPTION, 
 							JOptionPane.QUESTION_MESSAGE, 
 							null, options, options[0]);
-					if (choice == JOptionPane.YES_OPTION) {	//find here
+					if (choice == JOptionPane.YES_OPTION) {	
+						value = value + duplicateSuffix(value);
 						metabolitesTable.setValueAt(value, row, col);
-						// duplicate code
-						LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
+						if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
+							LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
+						}
+						LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
+						System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 						showDuplicatePrompt = false;
 					}
 					if (choice == JOptionPane.NO_OPTION) {
@@ -6285,9 +6289,13 @@ public class GraphicalInterface extends JFrame {
 						//validPaste = false;
 					}
 				} else {
+					value = value + duplicateSuffix(value);
 					metabolitesTable.setValueAt(value, row, col);
-					// duplicate
-					LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
+					if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
+						LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
+					}
+					LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
+					System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 				}
 			} else {
 				metabolitesTable.setValueAt(value, row, col);
@@ -6301,6 +6309,18 @@ public class GraphicalInterface extends JFrame {
 		}	
 	}
 
+	public String duplicateSuffix(String value) {
+		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
+		if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value + duplicateSuffix)) {
+			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
+			while (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
+				duplicateCount += 1;
+			}
+			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
+		}
+		return duplicateSuffix;
+	}
+	
 	public boolean isMetabolitesEntryValid(int columnIndex, String value) {
 		if (columnIndex == GraphicalInterfaceConstants.CHARGE_COLUMN) {
 			if (value != null && value.trim().length() > 0) {
