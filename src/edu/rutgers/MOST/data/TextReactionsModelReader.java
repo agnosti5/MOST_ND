@@ -21,8 +21,8 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class TextReactionsModelReader {
 	
-	public boolean noReactants;     // type ==> p
-	public boolean noProducts;      // type r ==>
+//	public boolean noReactants;     // type ==> p
+//	public boolean noProducts;      // type r ==>
 	public boolean addMetabolite;
 	
 	private static DefaultTableModel reactionsTableModel;
@@ -246,15 +246,33 @@ public class TextReactionsModelReader {
 						reacRow.add(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);
 					}
 					
+					if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
+						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
+					} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
+						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+					}
+					
 					if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
 						if (isNumber(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()])) {
-							lowerBound = Double.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);							
-						} 
+							lowerBound = Double.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);
+							System.out.println("n" + lowerBound);
+						} else {
+							// false
+							if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+								lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
+								// true
+							} else if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
+								lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_REVERSIBLE_DEFAULT;
+							}
+							System.out.println(reversible);
+							System.out.println("lb" + lowerBound);
+						}
 					} 
 					// TODO : add error message here?
+					// reversible = false
 					if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
-						lowerBound = 0.0;
-					}
+						lowerBound = lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
+					} 
 					reacRow.add(Double.toString(lowerBound));
 					if (LocalConfig.getInstance().getUpperBoundColumnIndex() > -1) {
 						if (isNumber(dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()])) {

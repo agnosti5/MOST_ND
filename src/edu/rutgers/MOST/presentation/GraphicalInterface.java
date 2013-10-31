@@ -4580,7 +4580,7 @@ public class GraphicalInterface extends JFrame {
 			} else if (i==GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
 				row.addElement(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);
 			} else if (i==GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) {
-				row.addElement(GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING);
+				row.addElement(GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT_REVERSIBLE_STRING);
 			} else if (i==GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) {
 				row.addElement(GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT_STRING);
 			} else if (i==GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN) {

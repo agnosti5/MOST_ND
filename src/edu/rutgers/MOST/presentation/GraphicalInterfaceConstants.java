@@ -94,6 +94,7 @@ public class GraphicalInterfaceConstants {
     public static final double FLUX_VALUE_DEFAULT = 0.0;
     public static final String FLUX_VALUE_DEFAULT_STRING = "0.0";
     public static final double LOWER_BOUND_DEFAULT = 0.0;
+    public static final double LOWER_BOUND_REVERSIBLE_DEFAULT = -999999.0;
     public static final String LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING = "0.0";
     public static final String LOWER_BOUND_DEFAULT_REVERSIBLE_STRING = "-999999.0";
     public static final double UPPER_BOUND_DEFAULT = 999999.0;
