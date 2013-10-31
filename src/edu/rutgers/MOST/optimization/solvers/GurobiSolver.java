@@ -210,9 +210,12 @@ public class GurobiSolver extends Solver {
 			Iterator<Entry<Integer, Double>> it = s.iterator();
 			while (it.hasNext()) {
 				Map.Entry<Integer, Double> m = it.next();
-				int key = m.getKey();
-				Double v = m.getValue();
-				exprAddTermMethod.invoke(expr, new Object[]{ v, this.vars.get(key) });
+				System.out.println(m);
+				//if (m.getKey() != null) {					
+					int key = m.getKey();
+					Double v = m.getValue();
+					exprAddTermMethod.invoke(expr, new Object[]{ v, this.vars.get(key) });
+				//}			
 			}
 			
 			Method modelAddConstrMethod = modelClass.getMethod("addConstr", new Class[]{ grbLinExprClass, char.class, double.class, String.class});
