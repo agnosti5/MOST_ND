@@ -267,27 +267,17 @@ public class MetaboliteUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.CLEAR_CONTENTS) ||
 				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {	
 			copyTableUndoAction();
-//			int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
-//			numCopied -= 2;
-//			LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
-//			GraphicalInterface.metabolitesTable.setModel(LocalConfig.getInstance().getMetabolitesUndoTableModelMap().get(Integer.toString(numCopied + 1)));
 		} else if (this.undoType.equals(UndoConstants.DELETE_UNUSED)) {			
 			copyTableUndoAction();
-//			int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
-//			numCopied -= 2;
-//			LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
-//			GraphicalInterface.metabolitesTable.setModel(LocalConfig.getInstance().getMetabolitesUndoTableModelMap().get(Integer.toString(numCopied + 1)));
 		}
 		restoreOldCollections();
 	}
 	
 	public void copyTableUndoAction() {
-		/*
 		int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
 		numCopied -= 2;
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
 		GraphicalInterface.metabolitesTable.setModel(LocalConfig.getInstance().getMetabolitesUndoTableModelMap().get(Integer.toString(numCopied + 1)));
-		*/
 	}
 	
 	public void redo() {
@@ -308,27 +298,17 @@ public class MetaboliteUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.CLEAR_CONTENTS) ||
 				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {	
 			copyTableRedoAction();
-//			int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
-//			numCopied += 2;
-//			LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
-//			GraphicalInterface.metabolitesTable.setModel(LocalConfig.getInstance().getMetabolitesUndoTableModelMap().get(Integer.toString(numCopied)));
 		} else if (this.undoType.equals(UndoConstants.DELETE_UNUSED)) {
 			copyTableRedoAction();
-//			int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
-//			numCopied += 2;
-//			LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
-//			GraphicalInterface.metabolitesTable.setModel(LocalConfig.getInstance().getMetabolitesUndoTableModelMap().get(Integer.toString(numCopied)));
 		}
 		restoreNewCollections();
 	}
 	
 	public void copyTableRedoAction() {
-		/*
 		int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
 		numCopied += 2;
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
 		GraphicalInterface.metabolitesTable.setModel(LocalConfig.getInstance().getMetabolitesUndoTableModelMap().get(Integer.toString(numCopied)));
-		*/
 	}
 	
 	public boolean undoEntry() {
@@ -362,7 +342,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public void undoRename() {
 		undoEntry();
-		//rewrite reactions
 	}
 	
 	public void undoDeleteColumn() {
@@ -384,8 +363,7 @@ public class MetaboliteUndoItem implements UndoItem {
 	} 
 	
 	public void redoRename() {
-		redoEntry();
-		// rewrite reactions		
+		redoEntry();		
 	}
 	
 	public void redoAddRow() {
@@ -515,7 +493,7 @@ public class MetaboliteUndoItem implements UndoItem {
 					}
 				}
 				equn.writeReactionEquation();
-				//GraphicalInterface.updateReactionsCellById(equn.equationAbbreviations, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+				GraphicalInterface.updateReactionsCellById(equn.equationAbbreviations, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			} else if (column == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
 				for (int j = 0; j < equn.reactants.size(); j++) {
 					if (equn.reactants.get(j).getMetaboliteName().equals(oldReactant)) {
@@ -528,7 +506,7 @@ public class MetaboliteUndoItem implements UndoItem {
 					}
 				}
 				equn.writeReactionEquation();
-				//GraphicalInterface.updateReactionsCellById(equn.equationNames, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+				GraphicalInterface.updateReactionsCellById(equn.equationNames, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			}								
 		}
 		

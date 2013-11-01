@@ -197,14 +197,12 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	
 	public void copyTableUndoAction() {
-		/*
 		int numCopied = LocalConfig.getInstance().getNumReactionTablesCopied();
 		numCopied -= 2;
 		LocalConfig.getInstance().setNumReactionTablesCopied(numCopied);
 		System.out.println("copy" + numCopied);
 		GraphicalInterface.reactionsTable.setModel(LocalConfig.getInstance().getReactionsUndoTableModelMap().get(Integer.toString(numCopied + 1)));
 		System.out.println("col u" + GraphicalInterface.reactionsTable.getModel().getColumnCount());
-		*/
 	}
 	
 	public void redo() {
@@ -225,14 +223,12 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	
 	public void copyTableRedoAction() {
-		/*
 		int numCopied = LocalConfig.getInstance().getNumReactionTablesCopied();
 		numCopied += 2;
 		LocalConfig.getInstance().setNumReactionTablesCopied(numCopied);
 		System.out.println("copy" + numCopied);
 		GraphicalInterface.reactionsTable.setModel(LocalConfig.getInstance().getReactionsUndoTableModelMap().get(Integer.toString(numCopied)));
 		System.out.println("col r" + GraphicalInterface.reactionsTable.getModel().getColumnCount());
-		*/
 	}
 	
 	public boolean undoEntry() {

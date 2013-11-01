@@ -219,7 +219,7 @@ public class TextMetabolitesModelReader {
 			e.printStackTrace();
 		}
 		
-		//LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
 		LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);					
 		LocalConfig.getInstance().hasMetabolitesFile = true;
 		setMetabolitesTableModel(metabTableModel);

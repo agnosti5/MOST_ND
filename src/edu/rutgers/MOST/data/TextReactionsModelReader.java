@@ -250,12 +250,11 @@ public class TextReactionsModelReader {
 						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 					} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
 						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
-					}
+					} 
 					
 					if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
 						if (isNumber(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()])) {
 							lowerBound = Double.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);
-							System.out.println("n" + lowerBound);
 						} else {
 							// false
 							if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
@@ -264,8 +263,6 @@ public class TextReactionsModelReader {
 							} else if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
 								lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_REVERSIBLE_DEFAULT;
 							}
-							System.out.println(reversible);
-							System.out.println("lb" + lowerBound);
 						}
 					} 
 					// TODO : add error message here?
@@ -330,8 +327,6 @@ public class TextReactionsModelReader {
 		GraphicalInterface.showPrompt = true;
 		LocalConfig.getInstance().hasMetabolitesFile = false;
 		setReactionsTableModel(reacTableModel);
-		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
-		System.out.println("name id" + LocalConfig.getInstance().getMetaboliteNameIdMap());
 	}
 	
 	public void updateReactionEquation(String reactionEqun, int id, SBMLReactionEquation equation, Vector<String> reacRow) {
@@ -345,11 +340,10 @@ public class TextReactionsModelReader {
 				equation.getReactants().get(i).setReactionId(id);
 				Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(equation.getReactants().get(i).getMetaboliteAbbreviation());				
 				equation.getReactants().get(i).setMetaboliteId(metabId);
-//				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
-//					equation.getReactants().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
-//				}				
+				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
+					equation.getReactants().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
+				}				
 				reactants.add(equation.getReactants().get(i));
-				//System.out.println("reactant" + equation.getReactants().get(i).toString());
 				if (parser.isSuspicious(equation.getReactants().get(i).getMetaboliteAbbreviation())) {
 					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
@@ -363,11 +357,10 @@ public class TextReactionsModelReader {
 				equation.getProducts().get(i).setReactionId(id);
 				Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(equation.getProducts().get(i).getMetaboliteAbbreviation());				
 				equation.getProducts().get(i).setMetaboliteId(metabId);
-//				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
-//					equation.getProducts().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
-//				}				
+				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
+					equation.getProducts().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
+				}				
 				products.add(equation.getProducts().get(i));
-				//System.out.println("product" + equation.getProducts().get(i).toString());
 				if (parser.isSuspicious(equation.getProducts().get(i).getMetaboliteAbbreviation())) {
 					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
@@ -389,9 +382,7 @@ public class TextReactionsModelReader {
 	
 	public void maybeAddSpecies(String species, SBMLReactionEquation equation, String type, int index) {
 		addMetabolite = true;
-		//System.out.println(LocalConfig.getInstance().getMaxMetabolite());
 		int maxMetabId = LocalConfig.getInstance().getMaxMetabolite();
-		//System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 		boolean newMetabolite = false;
 		if (!(LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(species.trim()))) {
 			newMetabolite = true;
@@ -465,10 +456,8 @@ public class TextReactionsModelReader {
 	public void addNewMetabolite(int maxMetabId, String species) {
 		DefaultTableModel model = getMetabolitesTableModel();
 		model.addRow(createMetabolitesRow(maxMetabId));
-		//System.out.println(maxMetabId);
 		model.setValueAt(species, maxMetabId, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 		LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
-		//LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
 		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
 			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
 			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));

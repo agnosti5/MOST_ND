@@ -72,7 +72,7 @@ public class MetaboliteFactory {
 				}
 			}
 		}
-		//System.out.println(participatingReactions);
+		
 		return participatingReactions;
 	}
 
@@ -96,7 +96,7 @@ public class MetaboliteFactory {
 					}
 				}							
 			}
-			System.out.println("int metab id " + internalMetabolitesIdPositionMap);
+			
 			setInternalMetabolitesIdPositionMap(internalMetabolitesIdPositionMap);
 		}
 		
