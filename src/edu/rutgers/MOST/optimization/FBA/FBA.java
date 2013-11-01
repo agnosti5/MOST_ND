@@ -34,18 +34,12 @@ public class FBA {
 		Vector<ModelReaction> reactions = this.model.getReactions();
 		for (int i = 0; i < reactions.size(); i++) {
 			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
-			//System.out.println(reac.getId());
 			String varName = Integer.toString((Integer)this.model.getReactionsIdPositionMap().get(reac.getId()));
 			//String varName = Integer.toString(reac.getId());
 			double lb = reac.getLowerBound();
 			double ub = reac.getUpperBound();
 
 			FBA.getSolver().setVar(varName, VarType.CONTINUOUS, lb, ub);
-			/*
-			System.out.println("vn "+ varName);
-			System.out.println("lb " + lb);
-			System.out.println("ub " + ub);
-			*/
 
 			this.varNames.add(varName);
 		}
@@ -57,7 +51,6 @@ public class FBA {
 	}	
 	
 	private void setConstraints(Vector<ModelReaction> reactions, ConType conType, double bValue) {
-		//System.out.println(model);
 		ArrayList<Map<Integer, Double>> sMatrix = this.model.getSMatrix();
 		for (int i = 0; i < sMatrix.size(); i++) {
 			FBA.getSolver().addConstraint(sMatrix.get(i), conType, bValue);
@@ -67,9 +60,6 @@ public class FBA {
 	private void setObjective() {
 		FBA.getSolver().setObjType(ObjType.Maximize);
 		Vector<Double> objective = this.model.getObjective();
-
-		//System.out.println(this.model.getObjective());
-		
 		Map<Integer, Double> map = new HashMap<Integer, Double>();
 		for (int i = 0; i < objective.size(); i++) {
 			if (objective.elementAt(i) != 0.0) {
@@ -77,7 +67,6 @@ public class FBA {
 			}
 		}
 		FBA.getSolver().setObj(map);
-		//System.out.println("map " + map);
 	}
 
 	public void setFBAModel(FBAModel m) {

@@ -86,7 +86,6 @@ public class ReactionFactory {
 				Double obj = ((SBMLReaction) reactions.get(i)).getBiologicalObjective();
 				objective.add((Integer) reactionsIdPositionMap.get(id), obj);
 			}
-			System.out.println("obj " + objective);
 		}
 
 		return objective;
