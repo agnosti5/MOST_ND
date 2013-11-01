@@ -263,6 +263,17 @@ public class GraphicalInterface extends JFrame {
 		return findReplaceDialog;
 	}
 
+	private static GurobiPathInterface gurobiPathInterface;
+
+	public static GurobiPathInterface getGurobiPathInterface() {
+		return gurobiPathInterface;
+	}
+
+	public static void setGurobiPathInterface(
+			GurobiPathInterface gurobiPathInterface) {
+		GraphicalInterface.gurobiPathInterface = gurobiPathInterface;
+	}
+	
 	private static MetaboliteColAddRenameInterface metaboliteColAddRenameInterface;   
 	
 	public void setMetaboliteColAddRenameInterface(MetaboliteColAddRenameInterface metaboliteColAddRenameInterface) {
@@ -508,6 +519,16 @@ public class GraphicalInterface extends JFrame {
 		return currentReactionsColumn;
 	}
 
+    private static String gurobiPath;
+	
+	public static String getGurobiPath() {
+		return gurobiPath;
+	}
+
+	public static void setGurobiPath(String gurobiPath) {
+		GraphicalInterface.gurobiPath = gurobiPath;
+	}
+	
 	private static ArrayList<Image> icons;
 
 	public void setIconsList(ArrayList<Image> icons) {
@@ -1024,11 +1045,9 @@ public class GraphicalInterface extends JFrame {
 		analysisMenu.setMnemonic(KeyEvent.VK_A);
 
 		analysisMenu.add(fbaItem);
-		/*
 		if (!hasGurobiPath) {
 			fbaItem.setEnabled(false);
 		}
-		 */
 		fbaItem.setMnemonic(KeyEvent.VK_F);
 
 		fbaItem.addActionListener(new ActionListener() {
@@ -1047,11 +1066,10 @@ public class GraphicalInterface extends JFrame {
 				DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
 				LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
 				LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-				//System.out.println("r " + LocalConfig.getInstance().getReactionsTableModelMap());
-				//System.out.println("m " + LocalConfig.getInstance().getMetabolitesTableModelMap());
 				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
 				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-
+				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
+				
 				// Begin optimization
 
 				FBAModel model = new FBAModel();
@@ -1068,9 +1086,6 @@ public class GraphicalInterface extends JFrame {
 
 				if (LocalConfig.getInstance().hasValidGurobiKey) {
 					Writer writer = null;
-					//listModel.addElement(optimizeName);				
-					//DynamicTreePanel.treePanel.addObject(new Solution(optimizeName, optimizeName));
-					//DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 					try {
 						StringBuffer outputText = new StringBuffer();
 						outputText.append("FBA\n");
@@ -1113,6 +1128,30 @@ public class GraphicalInterface extends JFrame {
 
 		menuBar.add(analysisMenu);
 
+		analysisMenu.add(gdbbItem);
+		if (!hasGurobiPath) {
+			gdbbItem.setEnabled(false);
+		}
+		gdbbItem.setMnemonic(KeyEvent.VK_G);
+
+//		TODO Optimization using GDBB
+		//	Action Listener for GDBB optimization
+		gdbbItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				Utilities u = new Utilities();
+				//load original db into tables
+				//reloadTables(getDatabaseName());
+				highlightUnusedMetabolites = false;
+				highlightUnusedMetabolitesItem.setState(false);
+
+				String dateTimeStamp = u.createDateTimeStamp();
+
+				//textInput.setObjectiveColumnNames();
+				
+		        //textInput.setVisible(true);
+			}
+		});
+		
 		//Edit menu
 		JMenu editMenu = new JMenu("Edit");
 		editMenu.setMnemonic(KeyEvent.VK_E);
@@ -1432,12 +1471,12 @@ public class GraphicalInterface extends JFrame {
 		JMenu optionsMenu = new JMenu("Options");
 		optionsMenu.setMnemonic(KeyEvent.VK_O);
 
-		JMenuItem setGurobiPath = new JMenuItem("Set Gurobi Path");
+		JMenuItem setGurobiPath = new JMenuItem(GraphicalInterfaceConstants.GUROBI_JAR_PATH_OPTIONS_MENU_ITEM);
 		optionsMenu.add(setGurobiPath);
 		setGurobiPath.setMnemonic(KeyEvent.VK_G);
 		setGurobiPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				//getGurobiPathInterface().setVisible(true);
+				getGurobiPathInterface().setVisible(true);
 			}    	     
 		});
 
@@ -7432,10 +7471,10 @@ public class GraphicalInterface extends JFrame {
 		saveCSVReactionsItem.setEnabled(true);
 		saveSQLiteItem.setEnabled(true);
 		clearItem.setEnabled(true);
-		//if (hasGurobiPath) {
-		fbaItem.setEnabled(true);
-		gdbbItem.setEnabled(true);
-		//}		
+		if (hasGurobiPath) {
+			fbaItem.setEnabled(true);
+			gdbbItem.setEnabled(true);
+		}		
 		addReacRowItem.setEnabled(true);
 		addMetabRowItem.setEnabled(true);
 		addReacColumnItem.setEnabled(true);
@@ -7595,6 +7634,147 @@ public class GraphicalInterface extends JFrame {
 	//end progressBar methods
 	/*******************************************************************************/
 	
+	/******************************************************************************/
+	// Gurobi path methods
+	/******************************************************************************/
+	
+	public static void loadGurobiPathInterface() {
+		GurobiPathInterface gpi = new GurobiPathInterface();
+		setGurobiPathInterface(gpi);
+		gpi.setIconImages(icons);					
+		gpi.setSize(600, 150);
+		gpi.setResizable(false);
+		gpi.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		gpi.setLocationRelativeTo(null);		
+		gpi.setAlwaysOnTop(true);	
+		gpi.setModal(true);
+		gpi.textField.setText(findGurobiPath());
+		if (gurobiPathFound) {
+			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
+			setGurobiPath(findGurobiPath());
+		} else {
+			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_NOT_FOUND_LABEL);
+		}
+		gpi.fileButton.addActionListener(fileButtonActionListener);
+		gpi.okButton.addActionListener(gpiOKActionListener);
+		gpi.cancelButton.addActionListener(gpiCancelActionListener);
+		gpi.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				gpiCloseAction();	        	
+			}
+		});	
+		gpi.setVisible(true);
+		gurobiPathErrorShown = false;
+		openGurobiPathFilechooser = true;
+		gurobiFileChooserShown = false; 
+	}
+	
+	static ActionListener fileButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			getGurobiPathInterface().setAlwaysOnTop(false);
+			JTextArea output = null;
+			JFileChooser fileChooser = new JFileChooser(); 
+			fileChooser.setDialogTitle(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FILE_CHOOSER_TITLE);
+			// no matter what is tried this file filter will not work (?????)
+//			fileChooser.setFileFilter(new SBMLFileFilter());
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);							
+			fileChooser.setCurrentDirectory(new File("C:\\"));
+			if (openGurobiPathFilechooser && !gurobiFileChooserShown) {
+				//... Open a file dialog.
+				int retval = fileChooser.showOpenDialog(output);
+				if (retval == JFileChooser.APPROVE_OPTION) {
+					//... The user selected a file, get it, use it.          	
+					File file = fileChooser.getSelectedFile();
+					String rawPathName = file.getAbsolutePath();
+					getGurobiPathInterface().textField.setText(rawPathName);
+					if (!rawPathName.endsWith(".jar")) {
+						getGurobiPathInterface().setAlwaysOnTop(false);
+						JOptionPane.showMessageDialog(null,                
+								"Not a Valid Jar File.",                
+								"Invalid Jar File",                                
+								JOptionPane.ERROR_MESSAGE);
+						getGurobiPathInterface().setAlwaysOnTop(true);
+					} else {
+						setGurobiPath(rawPathName);
+						gurobiPathSelected = true;
+					}					
+					gurobiFileChooserShown = true;
+				}
+			}
+			openGurobiPathFilechooser = true;
+			gurobiFileChooserShown = false;
+			getGurobiPathInterface().setAlwaysOnTop(true);
+		}
+	};
+	
+	static ActionListener gpiOKActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			String lastGurobi_path = curSettings.get("LastGurobi");
+			if (lastGurobi_path == null) {
+				lastGurobi_path = ".";
+			}
+			setGurobiPath(getGurobiPathInterface().textField.getText());
+			String path = getGurobiPath();
+			System.out.println(path);
+			curSettings.add("LastGurobi", path);
+			hasGurobiPath = true;
+			gurobiPathSelected = false;
+			fbaItem.setEnabled(true);
+			gdbbItem.setEnabled(true);
+			getGurobiPathInterface().setVisible(false);
+			getGurobiPathInterface().dispose();
+		}
+	};
+	
+	static ActionListener gpiCancelActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			gpiCloseAction();
+		}
+	};
+	
+	public static void gpiCloseAction() {
+		getGurobiPathInterface().setAlwaysOnTop(false);
+		String lastGurobi_path = curSettings.get("LastGurobi");
+		if (!gurobiPathErrorShown && lastGurobi_path == null) {
+			JOptionPane.showMessageDialog(null,                
+					GraphicalInterfaceConstants.NO_GUROBI_JAR_PATH_ERROR,                
+					GraphicalInterfaceConstants.NO_GUROBI_JAR_PATH_ERROR_TITLE,                                
+					JOptionPane.ERROR_MESSAGE);	
+		}
+		gurobiPathErrorShown = true;
+	    hasGurobiPath = false;	
+		getGurobiPathInterface().setVisible(false);
+		getGurobiPathInterface().dispose();
+	}
+	
+	public static String findGurobiPath() {
+		String gurobiPath = "";
+		gurobiPathFound = false;
+		
+		String variable = System.getenv("GUROBI_HOME");  
+		if (variable != null) {
+			gurobiPath = variable;
+			gurobiPathFound = true;
+		}
+		
+		if (gurobiPathFound) {
+			gurobiPath = gurobiPath + "\\lib\\gurobi.jar";
+			File f = new File(gurobiPath);
+			// uncomment to test Gurobi not found
+			//File f = new File("none");
+			if (f.exists()) {
+		        gurobiPathFound = true;
+		    } else {
+		    	gurobiPathFound = false;
+		    }
+		}
+		return gurobiPath;
+	}
+	
+	/******************************************************************************/
+	// end Gurobi path methods
+	/******************************************************************************/
+	
 	public static void main(String[] args) throws Exception {
 		curSettings = new SettingsFactory();
 
@@ -7603,6 +7783,16 @@ public class GraphicalInterface extends JFrame {
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 
+		gurobiPathFound = false;
+		hasGurobiPath = true;
+		String lastGurobi_path = curSettings.get("LastGurobi");
+		if (lastGurobi_path == null) {
+			openGurobiPathFilechooser = true;
+			loadGurobiPathInterface();
+		} else {
+			setGurobiPath(lastGurobi_path);
+		}
+		
 		GraphicalInterface frame = new GraphicalInterface();
 		frame.setIconImages(icons);
 		frame.setSize(1000, 600);

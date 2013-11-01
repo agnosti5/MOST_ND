@@ -57,7 +57,9 @@ public class GurobiSolver extends Solver {
 
 	public GurobiSolver(String logName) {
 		try {
-			File gurobiJARFile = new File("C:\\gurobi500\\win64\\lib\\gurobi.jar");
+			System.out.println(GraphicalInterface.getGurobiPath());
+			File gurobiJARFile = new File(GraphicalInterface.getGurobiPath());
+			//File gurobiJARFile = new File("C:\\gurobi500\\win64\\lib\\gurobi.jar");
 			classLoader = URLClassLoader.newInstance(new URL[]{ gurobiJARFile.toURI().toURL() });
 			grbClass = classLoader.loadClass("gurobi.GRB");
 			
