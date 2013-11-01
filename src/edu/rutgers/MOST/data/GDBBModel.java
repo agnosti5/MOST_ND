@@ -33,7 +33,7 @@ public class GDBBModel extends FBAModel {
 		C = c;
 	}
 
-	public GDBBModel() {
+	public GDBBModel(String columnName) {
 		
 		ReactionFactory rFactory = new ReactionFactory("SBML");
 		

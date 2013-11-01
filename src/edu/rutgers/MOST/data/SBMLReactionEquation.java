@@ -79,6 +79,9 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 						reacNamesBfr.append(metabAbbrev);
 					}									
 				} else {
+					if (stoicStr.endsWith(".0")) {
+						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+					}
 					reacBfr.append(stoicStr + " " + metabAbbrev);
 					if (metabName != null && metabName.trim().length() > 0) {
 						reacNamesBfr.append(stoicStr + " " + metabName);
@@ -94,9 +97,11 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 						reacNamesBfr.append(" + " + metabName);
 					} else {
 						reacNamesBfr.append(" + " + metabAbbrev);
-					}
-					
+					}					
 				} else {
+					if (stoicStr.endsWith(".0")) {
+						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+					}
 					reacBfr.append(" + " + stoicStr + " " + metabAbbrev);
 					if (metabName != null && metabName.trim().length() > 0) {
 						reacNamesBfr.append(" + " + stoicStr + " " + metabName);
@@ -121,6 +126,9 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 						prodNamesBfr.append(metabAbbrev);
 					}									
 				} else {
+					if (stoicStr.endsWith(".0")) {
+						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+					}
 					prodBfr.append(stoicStr + " " + metabAbbrev);
 					if (metabName != null && metabName.trim().length() > 0) {
 						prodNamesBfr.append(stoicStr + " " + metabName);
@@ -139,6 +147,9 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 					}
 					
 				} else {
+					if (stoicStr.endsWith(".0")) {
+						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+					}
 					prodBfr.append(" + " + stoicStr + " " + metabAbbrev);
 					if (metabName != null && metabName.trim().length() > 0) {
 						prodNamesBfr.append(" + " + stoicStr + " " + metabName);
@@ -152,11 +163,11 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 		// prevents arrow only from being displayed if there are no reactants and no products
 		if (reacBfr.toString().trim().length() > 0 || prodBfr.toString().trim().length() > 0) {
 			if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
-				rxnBfr.append(reacBfr).append(" " + this.irreversibleArrow + " ").append(prodBfr);
-				rxnNamesBfr.append(reacNamesBfr).append(" " + this.irreversibleArrow + " ").append(prodNamesBfr);
+				rxnBfr.append(reacBfr).append(" " + this.irreversibleArrow).append(prodBfr);
+				rxnNamesBfr.append(reacNamesBfr).append(" " + this.irreversibleArrow).append(prodNamesBfr);
 			} else {
-				rxnBfr.append(reacBfr).append(" " + this.reversibleArrow + " ").append(prodBfr);
-				rxnNamesBfr.append(reacNamesBfr).append(" " + this.reversibleArrow + " ").append(prodNamesBfr);
+				rxnBfr.append(reacBfr).append(" " + this.reversibleArrow).append(prodBfr);
+				rxnNamesBfr.append(reacNamesBfr).append(" " + this.reversibleArrow).append(prodNamesBfr);
 			}
 		}
 			
@@ -169,9 +180,20 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 	
 	@Override
 	public String toString() {
+		String reactantsString = "";
+		for (int i = 0; i < reactants.size(); i++) {
+			reactantsString += reactants.get(i).toString() + " ";
+		}
+		String productsString = "";
+		for (int j = 0; j < products.size(); j++) {
+			productsString += products.get(j).toString() + " ";
+		}
+		
 		return "SBMLReactionEquation [reversible=" + reversible
 		+ ", reversibleArrow=" + reversibleArrow
 		+ ", irreversibleArrow=" + irreversibleArrow
+		+ ", reactants=" + reactantsString
+		+ ", products=" + productsString
 		+ ", equationAbbreviations=" + equationAbbreviations
 		+ ", equationNames=" + equationNames + "]";
 	}

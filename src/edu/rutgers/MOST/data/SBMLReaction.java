@@ -1,5 +1,8 @@
 package edu.rutgers.MOST.data;
 
+import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+
 public class SBMLReaction implements ModelReaction {
 	
 	private int id;	
@@ -148,6 +151,23 @@ public class SBMLReaction implements ModelReaction {
 		
 	}
 
+	public void loadByRow(Integer row) {
+		this.setId(Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
+		this.setKnockout((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.KO_COLUMN));
+		this.setFluxValue(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN)));
+		this.setReactionAbbreviation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN));
+		this.setReactionName((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_NAME_COLUMN));
+		this.setReactionEqunAbbr((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
+		this.setReversible((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REVERSIBLE_COLUMN));				
+		this.setLowerBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
+		this.setUpperBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
+		this.setBiologicalObjective(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN)));
+		this.setGeneAssociation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN));
+		this.setProteinAssociation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.PROTEIN_ASSOCIATION_COLUMN));
+		this.setSubsystem((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.SUBSYSTEM_COLUMN));
+		this.setProteinClass((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.PROTEIN_CLASS_COLUMN));
+	}
+	
 	/*
 	@Override
 	public String toString() {
