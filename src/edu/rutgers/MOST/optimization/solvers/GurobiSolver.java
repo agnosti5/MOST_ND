@@ -33,7 +33,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class GurobiSolver extends Solver {
 	
-	static Logger log = Logger.getLogger(GurobiSolver.class);
+	//static Logger log = Logger.getLogger(GurobiSolver.class);
 	
 	private URLClassLoader classLoader;
 	private Class<?> grbClass;
@@ -49,13 +49,14 @@ public class GurobiSolver extends Solver {
 	private static boolean isAbort = false;
 	
 	public static void main(String[] args) {
-		GurobiSolver gurobiSolver = new GurobiSolver("test.log");
+		//GurobiSolver gurobiSolver = new GurobiSolver("test.log");
 	}
 	public static void setAbort(boolean isAbort) {
 		GurobiSolver.isAbort = isAbort;
 	}
 
-	public GurobiSolver(String logName) {
+	public GurobiSolver() {
+	//public GurobiSolver(String logName) {
 		try {
 			System.out.println(GraphicalInterface.getGurobiPath());
 			File gurobiJARFile = new File(GraphicalInterface.getGurobiPath());
@@ -63,13 +64,15 @@ public class GurobiSolver extends Solver {
 			classLoader = URLClassLoader.newInstance(new URL[]{ gurobiJARFile.toURI().toURL() });
 			grbClass = classLoader.loadClass("gurobi.GRB");
 			
-			log.debug("creating Gurobi environment");
+			//log.debug("creating Gurobi environment");
 			
 			envClass = classLoader.loadClass("gurobi.GRBEnv");
-			Constructor<?> envConstr = envClass.getConstructor(new Class[]{ String.class });
-			env = envConstr.newInstance(new Object[]{ logName });
+//			Constructor<?> envConstr = envClass.getConstructor(new Class[]{ String.class });
+//			env = envConstr.newInstance(new Object[]{ logName });
+			Constructor<?> envConstr = envClass.getConstructor(new Class[]{});
+			env = envConstr.newInstance(new Object[]{});
 			
-			log.debug("setting Gurobi parameters");
+			//log.debug("setting Gurobi parameters");
 			
 			Class<?> grbDoubleParam = classLoader.loadClass("gurobi.GRB$DoubleParam");
 			Class<?> grbIntParam = classLoader.loadClass("gurobi.GRB$IntParam");	
@@ -97,7 +100,7 @@ public class GurobiSolver extends Solver {
 				}
 			}
 			
-			log.debug("creating Gurobi Model");
+			//log.debug("creating Gurobi Model");
 			
 			modelClass = classLoader.loadClass("gurobi.GRBModel");
 			Constructor<?> modelConstr = modelClass.getConstructor(new Class[]{ envClass });
@@ -285,8 +288,8 @@ public class GurobiSolver extends Solver {
 		Method envGetErrorMsgMethod;
 		try {
 			envGetErrorMsgMethod = envClass.getMethod("getErrorMsg", null);
-			log.error("Gurobi error: " + (String) envGetErrorMsgMethod.invoke(env, null));
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			//log.error("Gurobi error: " + (String) envGetErrorMsgMethod.invoke(env, null));
+		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -369,9 +372,9 @@ public class GurobiSolver extends Solver {
 			Method modelOptimizeMethod = modelClass.getMethod("optimize", null);
 			modelOptimizeMethod.invoke(model, null);
 			
-			Method modelWriteMethod = modelClass.getMethod("write", new Class[]{ String.class });
-			modelWriteMethod.invoke(model, new Object[]{ "model.lp" });
-			modelWriteMethod.invoke(model, new Object[]{ "model.mps" });
+//			Method modelWriteMethod = modelClass.getMethod("write", new Class[]{ String.class });
+//			modelWriteMethod.invoke(model, new Object[]{ "model.lp" });
+//			modelWriteMethod.invoke(model, new Object[]{ "model.mps" });
 			
 			Class<?> grbDoubleAttr = classLoader.loadClass("gurobi.GRB$DoubleAttr");
 				
@@ -397,7 +400,7 @@ public class GurobiSolver extends Solver {
 
 	public void setEnv(double timeLimit, int numThreads) {
 		try {
-			log.debug("setting Gurobi parameters");
+			//log.debug("setting Gurobi parameters");
 			
 			Class<?> grbDoubleParam = classLoader.loadClass("gurobi.GRB$DoubleParam");
 			Class<?> grbIntParam = classLoader.loadClass("gurobi.GRB$IntParam");	
