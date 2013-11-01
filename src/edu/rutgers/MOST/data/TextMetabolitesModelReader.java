@@ -30,6 +30,8 @@ public class TextMetabolitesModelReader {
 		TextMetabolitesModelReader.metabolitesTableModel = metabolitesTableModel;
 	}
 
+	public static Map<Object, String> metaboliteIdNameMap = new HashMap<Object, String>();
+	
 	public ArrayList<String> columnNamesFromFile(File file, int row) {
 		ArrayList<String> columnNamesFromFile = new ArrayList<String>();
 
@@ -125,19 +127,16 @@ public class TextMetabolitesModelReader {
 			metabTableModel.addColumn(LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(n));
 		}
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
-		LocalConfig.getInstance().getDuplicateIds().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
 		LocalConfig.getInstance().getMetaboliteNameIdMap().clear();
 
-		//if first row of file in not column names, starts reading after row that contains names
+		//if first row of file is not column names, starts reading after row that contains names
 		int correction = LocalConfig.getInstance().getMetabolitesNextRowCorrection();
 		int row = 1;
 		
 		CSVReader reader;
 		
-		Map<String, Object> metaboliteNameIdMap = new HashMap<String, Object>();
 		ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
-		ArrayList<Integer> duplicateIds = new ArrayList<Integer>();
 		
 		try {
 			reader = new CSVReader(new FileReader(file), ',');
@@ -171,18 +170,20 @@ public class TextMetabolitesModelReader {
 					String boundary = "";
 					
 	                String metaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()];
-	                metabRow.add(metaboliteAbbreviation);
+	                
 					if (metaboliteAbbreviation == null || metaboliteAbbreviation.trim().length() == 0) {
-						blankMetabIds.add(i - correction);		
+						blankMetabIds.add(id);		
 					} else {
-						if (metaboliteNameIdMap.containsKey(metaboliteAbbreviation)) {
-							duplicateIds.add(i - correction - 1);
-						} else {
-							metaboliteNameIdMap.put(metaboliteAbbreviation, new Integer(i - correction - 1));
-						}							
+						if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metaboliteAbbreviation)) {
+							metaboliteAbbreviation = metaboliteAbbreviation + duplicateSuffix(metaboliteAbbreviation);
+						}
+						LocalConfig.getInstance().getMetaboliteNameIdMap().put(metaboliteAbbreviation, id);
 					}
+					System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
+					metabRow.add(metaboliteAbbreviation);
 					
 					metabRow.add(dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()]);
+					metaboliteIdNameMap.put(new Integer(id), dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()]);
 					//metaboliteName = dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()];
 					//chargeString = dataArray[LocalConfig.getInstance().getChargeColumnIndex()];	
 					metabRow.add(dataArray[LocalConfig.getInstance().getChargeColumnIndex()]);	
@@ -218,13 +219,23 @@ public class TextMetabolitesModelReader {
 			e.printStackTrace();
 		}
 		
-		LocalConfig.getInstance().setMetaboliteNameIdMap(metaboliteNameIdMap);
-		System.out.println(metaboliteNameIdMap);
-		LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);				
-		LocalConfig.getInstance().setDuplicateIds(duplicateIds);	
+		//LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+		LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);					
 		LocalConfig.getInstance().hasMetabolitesFile = true;
 		setMetabolitesTableModel(metabTableModel);
 		//System.out.println("Done");		
+	}
+	
+	public String duplicateSuffix(String value) {
+		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
+		if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value + duplicateSuffix)) {
+			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
+			while (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
+				duplicateCount += 1;
+			}
+			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
+		}
+		return duplicateSuffix;
 	}
 }
 

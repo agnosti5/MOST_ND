@@ -282,10 +282,12 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	
 	public void copyTableUndoAction() {
+		/*
 		int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
 		numCopied -= 2;
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
 		GraphicalInterface.metabolitesTable.setModel(LocalConfig.getInstance().getMetabolitesUndoTableModelMap().get(Integer.toString(numCopied + 1)));
+		*/
 	}
 	
 	public void redo() {
@@ -321,10 +323,12 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	
 	public void copyTableRedoAction() {
+		/*
 		int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
 		numCopied += 2;
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
 		GraphicalInterface.metabolitesTable.setModel(LocalConfig.getInstance().getMetabolitesUndoTableModelMap().get(Integer.toString(numCopied)));
+		*/
 	}
 	
 	public boolean undoEntry() {
@@ -511,7 +515,7 @@ public class MetaboliteUndoItem implements UndoItem {
 					}
 				}
 				equn.writeReactionEquation();
-				GraphicalInterface.updateReactionsCellById(equn.equationAbbreviations, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+				//GraphicalInterface.updateReactionsCellById(equn.equationAbbreviations, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			} else if (column == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
 				for (int j = 0; j < equn.reactants.size(); j++) {
 					if (equn.reactants.get(j).getMetaboliteName().equals(oldReactant)) {
@@ -524,7 +528,7 @@ public class MetaboliteUndoItem implements UndoItem {
 					}
 				}
 				equn.writeReactionEquation();
-				GraphicalInterface.updateReactionsCellById(equn.equationNames, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+				//GraphicalInterface.updateReactionsCellById(equn.equationNames, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			}								
 		}
 		
