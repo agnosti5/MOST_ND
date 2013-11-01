@@ -166,18 +166,7 @@ public class LocalConfig {
 		LocalConfig.metaboliteNameIdMap = metaboliteNameIdMap;
 	}
 	
-	private static Map<Object, String> metaboliteIdNameMap;
-	
-    public static Map<Object, String> getMetaboliteIdNameMap() {
-		return metaboliteIdNameMap;
-	}
-
-	public static void setMetaboliteIdNameMap(
-			Map<Object, String> metaboliteIdNameMap) {
-		LocalConfig.metaboliteIdNameMap = metaboliteIdNameMap;
-	}
-
-	private static ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
+    private static ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
 	
 	public ArrayList<Integer> getBlankMetabIds() {
 		return blankMetabIds;
@@ -185,6 +174,16 @@ public class LocalConfig {
 	
 	public void setBlankMetabIds(ArrayList<Integer> blankMetabIds) {
 		LocalConfig.blankMetabIds = blankMetabIds;
+	}
+	
+	private static ArrayList<Integer> duplicateIds = new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getDuplicateIds() {
+		return duplicateIds;
+	}
+	
+	public void setDuplicateIds(ArrayList<Integer> duplicateIds) {
+		LocalConfig.duplicateIds = duplicateIds;
 	}
 	
 	//used for determining id when adding a metabolite when a reaction is
@@ -273,6 +272,26 @@ public class LocalConfig {
 	public void setReactionsMetaColumnNames(
 			ArrayList<String> reactionsMetaColumnNames) {
 		LocalConfig.reactionsMetaColumnNames = reactionsMetaColumnNames;
+	}
+	
+    private static ArrayList<Integer> hiddenReactionsColumns = new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getHiddenReactionsColumns() {
+		return hiddenReactionsColumns;
+	}
+	
+	public void setHiddenReactionsColumns(ArrayList<Integer> hiddenReactionsColumns) {
+		LocalConfig.hiddenReactionsColumns = hiddenReactionsColumns;
+	}
+	
+    private static ArrayList<Integer> hiddenMetabolitesColumns = new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getHiddenMetabolitesColumns() {
+		return hiddenMetabolitesColumns;
+	}
+	
+	public void setHiddenMetabolitesColumns(ArrayList<Integer> hiddenMetabolitesColumns) {
+		LocalConfig.hiddenMetabolitesColumns = hiddenMetabolitesColumns;
 	}
 	
 	private static ArrayList<Integer> suspiciousMetabolites = new ArrayList<Integer>();
@@ -615,181 +634,4 @@ public class LocalConfig {
 	public static void setReplaceEntryList(ArrayList<String> replaceEntryList) {
 		LocalConfig.replaceEntryList = replaceEntryList;
 	}
-	
-	private static Map<String, Object> metabDisplayCollectionMap = new HashMap<String, Object>();
-	
-	public static Map<String, Object> getMetabDisplayCollectionMap() {
-		return metabDisplayCollectionMap;
-	}
-
-	public static void setMetabDisplayCollectionMap(
-			Map<String, Object> metabDisplayCollectionMap) {
-		LocalConfig.metabDisplayCollectionMap = metabDisplayCollectionMap;
-	}
-
-	/********************************************************************************/
-	// undo/redo
-	/********************************************************************************/
-	
-	private static Map<Object, Object> undoItemMap = new HashMap<Object, Object>();	
-
-	public static Map<Object, Object> getUndoItemMap() {
-		return undoItemMap;
-	}
-
-	public static void setUndoItemMap(Map<Object, Object> undoItemMap) {
-		LocalConfig.undoItemMap = undoItemMap;
-	}
-	
-	private static Map<Object, Object> redoItemMap = new HashMap<Object, Object>();	
-
-	public static Map<Object, Object> getRedoItemMap() {
-		return redoItemMap;
-	}
-
-	public static void setRedoItemMap(Map<Object, Object> redoItemMap) {
-		LocalConfig.redoItemMap = redoItemMap;
-	}
-	
-	private Integer undoMenuIndex;
-
-	public Integer getUndoMenuIndex() {
-		return undoMenuIndex;
-	}
-
-	public void setUndoMenuIndex(Integer undoMenuIndex) {
-		this.undoMenuIndex = undoMenuIndex;
-	}	
-	
-	// used for remembering sort events for undo
-	private ArrayList<Integer> reactionsSortColumns = new ArrayList<Integer>();	
-	private ArrayList<SortOrder> reactionsSortOrderList = new ArrayList<SortOrder>();	
-	private ArrayList<Integer> metabolitesSortColumns = new ArrayList<Integer>();	
-	private ArrayList<SortOrder> metabolitesSortOrderList = new ArrayList<SortOrder>();
-	private ArrayList<Integer> reactionsRedoSortColumns = new ArrayList<Integer>();	
-	private ArrayList<SortOrder> reactionsRedoSortOrderList = new ArrayList<SortOrder>();	
-	private ArrayList<Integer> metabolitesRedoSortColumns = new ArrayList<Integer>();	
-	private ArrayList<SortOrder> metabolitesRedoSortOrderList = new ArrayList<SortOrder>();
-	
-	public ArrayList<Integer> getReactionsSortColumns() {
-		return reactionsSortColumns;
-	}
-
-	public void setReactionsSortColumns(ArrayList<Integer> reactionsSortColumns) {
-		this.reactionsSortColumns = reactionsSortColumns;
-	}
-
-	public ArrayList<SortOrder> getReactionsSortOrderList() {
-		return reactionsSortOrderList;
-	}
-
-	public void setReactionsSortOrderList(ArrayList<SortOrder> reactionsSortOrderList) {
-		this.reactionsSortOrderList = reactionsSortOrderList;
-	}
-
-	public ArrayList<Integer> getMetabolitesSortColumns() {
-		return metabolitesSortColumns;
-	}
-
-	public void setMetabolitesSortColumns(ArrayList<Integer> metabolitesSortColumns) {
-		this.metabolitesSortColumns = metabolitesSortColumns;
-	}
-
-	public ArrayList<SortOrder> getMetabolitesSortOrderList() {
-		return metabolitesSortOrderList;
-	}
-
-	public void setMetabolitesSortOrderList(ArrayList<SortOrder> metabolitesSortOrderList) {
-		this.metabolitesSortOrderList = metabolitesSortOrderList;
-	}
-	
-	public ArrayList<Integer> getReactionsRedoSortColumns() {
-		return reactionsRedoSortColumns;
-	}
-
-	public void setReactionsRedoSortColumns(
-			ArrayList<Integer> reactionsRedoSortColumns) {
-		this.reactionsRedoSortColumns = reactionsRedoSortColumns;
-	}
-
-	public ArrayList<SortOrder> getReactionsRedoSortOrderList() {
-		return reactionsRedoSortOrderList;
-	}
-
-	public void setReactionsRedoSortOrderList(
-			ArrayList<SortOrder> reactionsRedoSortOrderList) {
-		this.reactionsRedoSortOrderList = reactionsRedoSortOrderList;
-	}
-
-	public ArrayList<Integer> getMetabolitesRedoSortColumns() {
-		return metabolitesRedoSortColumns;
-	}
-
-	public void setMetabolitesRedoSortColumns(
-			ArrayList<Integer> metabolitesRedoSortColumns) {
-		this.metabolitesRedoSortColumns = metabolitesRedoSortColumns;
-	}
-
-	public ArrayList<SortOrder> getMetabolitesRedoSortOrderList() {
-		return metabolitesRedoSortOrderList;
-	}
-
-	public void setMetabolitesRedoSortOrderList(
-			ArrayList<SortOrder> metabolitesRedoSortOrderList) {
-		this.metabolitesRedoSortOrderList = metabolitesRedoSortOrderList;
-	}
-
-	private int numReactionTablesCopied;
-	
-	private int numMetabolitesTableCopied;
-
-	public int getNumReactionTablesCopied() {
-		return numReactionTablesCopied;
-	}
-
-	public void setNumReactionTablesCopied(int numReactionTablesCopied) {
-		this.numReactionTablesCopied = numReactionTablesCopied;
-	}
-
-	public int getNumMetabolitesTableCopied() {
-		return numMetabolitesTableCopied;
-	}
-
-	public void setNumMetabolitesTableCopied(int numMetabolitesTableCopied) {
-		this.numMetabolitesTableCopied = numMetabolitesTableCopied;
-	}
-	
-	// used in undo for removing metabolites added when editing reactions
-	private ArrayList<Integer> addedMetabolites = new ArrayList<Integer>();
-
-	public ArrayList<Integer> getAddedMetabolites() {
-		return addedMetabolites;
-	}
-
-	public void setAddedMetabolites(ArrayList<Integer> addedMetabolites) {
-		this.addedMetabolites = addedMetabolites;
-	}
-	
-	private static Map<String, DefaultTableModel> metabolitesUndoTableModelMap;
-	
-	public static Map<String, DefaultTableModel> getMetabolitesUndoTableModelMap() {
-		return metabolitesUndoTableModelMap;
-	}
-
-	public static void setMetabolitesUndoTableModelMap(
-			Map<String, DefaultTableModel> metabolitesUndoTableModelMap) {
-		LocalConfig.metabolitesUndoTableModelMap = metabolitesUndoTableModelMap;
-	}
-
-	private static Map<String, DefaultTableModel> reactionsUndoTableModelMap;
-
-	public static Map<String, DefaultTableModel> getReactionsUndoTableModelMap() {
-		return reactionsUndoTableModelMap;
-	}
-
-	public static void setReactionsUndoTableModelMap(
-			Map<String, DefaultTableModel> reactionsUndoTableModelMap) {
-		LocalConfig.reactionsUndoTableModelMap = reactionsUndoTableModelMap;
-	}
-
 }

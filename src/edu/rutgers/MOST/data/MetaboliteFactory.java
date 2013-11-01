@@ -36,17 +36,6 @@ public class MetaboliteFactory {
 		}
 		return new SBMLMetabolite(); //Default behavior.
 	}
-	
-	public ModelMetabolite getMetaboliteByRow(Integer row){
-
-
-		if("SBML".equals(sourceType)){
-			SBMLMetabolite metabolite = new SBMLMetabolite();
-			metabolite.loadByRow(row);
-			return metabolite;
-		}
-		return new SBMLMetabolite(); //Default behavior.
-	}
 
 	public ArrayList<Integer> participatingReactions(String metaboliteAbbreviation) {
 		ArrayList<Integer> participatingReactions = new ArrayList<Integer>();
@@ -162,10 +151,12 @@ public class MetaboliteFactory {
 				if (GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null &&	
 						((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() > 0) {
 					int id = Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));	
-					SBMLMetabolite metabolite = new SBMLMetabolite();
-					metabolite.setId(Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
-					metabolite.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
-					metabolites.add(metabolite);						
+					if (!LocalConfig.getInstance().getDuplicateIds().contains(id)) {
+						SBMLMetabolite metabolite = new SBMLMetabolite();
+						metabolite.setId(Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
+						metabolite.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
+						metabolites.add(metabolite);
+					}						
 				}							
 			}
 			System.out.println("int metab id " + internalMetabolitesIdPositionMap);

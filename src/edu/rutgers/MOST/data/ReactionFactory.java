@@ -1,7 +1,6 @@
 package edu.rutgers.MOST.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,28 +36,18 @@ public class ReactionFactory {
 		return new SBMLReaction(); //Default behavior.
 	}
 
-	public ModelReaction getReactionByRow(Integer row){
-		if("SBML".equals(sourceType)){
-			SBMLReaction reaction = new SBMLReaction();
-			reaction.loadByRow(row);
-			return reaction;
-		}
-		return new SBMLReaction(); //Default behavior.
-	}
-	
 	public Vector<ModelReaction> getAllReactions() {
 		Vector<ModelReaction> reactions = new Vector<ModelReaction>();
 		Map<Object, Object> reactionsIdPositionMap = new HashMap<Object, Object>();
 		int count = 0;
-		ArrayList<Integer> idList = new ArrayList<Integer>();
 
 		if("SBML".equals(sourceType)){
 			// returns a list of SBMLReactions
 			// what parameters are actually needed, for example
 			// reaction name is not going to be changed by any analysis			
 			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
-//				if (GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) != null &&
-//						((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN)).trim().length() > 0) {
+				if (GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) != null &&
+						((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN)).trim().length() > 0) {
 					SBMLReaction reaction = new SBMLReaction();
 					reaction.setId(Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 					reaction.setKnockout((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.KO_COLUMN));
@@ -70,11 +59,7 @@ public class ReactionFactory {
 					reactions.add(reaction);
 					reactionsIdPositionMap.put(reaction.getId(), count);
 					count += 1;
-					
-					idList.add(Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)) + 1);
-				//}
-				Collections.sort(idList);
-				System.out.println(idList);
+				}				
 			}
 			setReactionsIdPositionMap(reactionsIdPositionMap);
 			//System.out.println("idpos " + reactionsIdPositionMap);
@@ -105,7 +90,7 @@ public class ReactionFactory {
 		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
 		for (int i = 0; i < fluxes.size(); i++) {
 			//System.out.println(fluxes.get(i));
-			reactionsOptModel.setValueAt(fluxes.get(i).toString(), i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
+			reactionsOptModel.setValueAt(fluxes.get(i), i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 		}
 	}
 

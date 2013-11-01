@@ -133,7 +133,12 @@ public class ReactionColAddRenameInterface  extends JDialog {
 				duplicate = true;
 				columnIndex = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + j;
 			}
-		}	
+		}
+		if (columnIndex > -1) {
+			if (LocalConfig.getInstance().getHiddenReactionsColumns().contains(columnIndex)) {
+				duplicate = false;
+			}
+		}		
 		return duplicate;
 	}
 	

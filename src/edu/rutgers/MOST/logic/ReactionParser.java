@@ -20,6 +20,7 @@ public class ReactionParser {
 		ReactionParser.equation = equation;
 	}
 
+
 	// if reaction starts with [c]: for example, suffix will be appended to all
 	// species in the reaction when adding to metabolites table and maps
 	public static boolean hasPrefix = false;
@@ -69,9 +70,9 @@ public class ReactionParser {
 				createSBMLReactionEquation(rawProducts, "product");
 			}		
 		}
-		//System.out.println("eq" + getEquation().getReactants());
-		//System.out.println("eq" + getEquation().getProducts());
-		//System.out.println(getEquation().toString());
+		System.out.println("eq" + getEquation().getReactants());
+		System.out.println("eq" + getEquation().getProducts());
+		System.out.println(getEquation().toString());
 		hasPrefix = false;		
 	}
 	
@@ -112,8 +113,8 @@ public class ReactionParser {
 				products.add(prod);
 			}
 		}
-		//System.out.println(reactants);
-		//System.out.println(products);
+		System.out.println(reactants);
+		System.out.println(products);
 		if (type == "reactant") {
 			//setReactants(reactants);
 			getEquation().setReactants(reactants);
@@ -160,6 +161,7 @@ public class ReactionParser {
 		SBMLReactant reactant = new SBMLReactant();
 		reactant.setStoic(Double.valueOf(stoicAndSpecies.get(0)));
 		reactant.setMetaboliteAbbreviation(stoicAndSpecies.get(1));
+		System.out.println(reactant);
 		return reactant;
 	}
 	
@@ -167,6 +169,7 @@ public class ReactionParser {
 		SBMLProduct product = new SBMLProduct();
 		product.setStoic(Double.valueOf(stoicAndSpecies.get(0)));
 		product.setMetaboliteAbbreviation(stoicAndSpecies.get(1));
+		System.out.println(product);
 		return product;
 	}
 	

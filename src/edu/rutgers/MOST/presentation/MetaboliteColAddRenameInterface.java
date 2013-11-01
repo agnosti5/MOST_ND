@@ -136,6 +136,11 @@ public class MetaboliteColAddRenameInterface  extends JDialog {
 				columnIndex = GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + j;
 			}
 		}
+		if (columnIndex > -1) {
+			if (LocalConfig.getInstance().getHiddenMetabolitesColumns().contains(columnIndex)) {
+				duplicate = false;
+			}
+		}
 		return duplicate;
 	}
 	

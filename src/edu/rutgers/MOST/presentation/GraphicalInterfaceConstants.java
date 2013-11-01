@@ -94,7 +94,6 @@ public class GraphicalInterfaceConstants {
     public static final double FLUX_VALUE_DEFAULT = 0.0;
     public static final String FLUX_VALUE_DEFAULT_STRING = "0.0";
     public static final double LOWER_BOUND_DEFAULT = 0.0;
-    public static final double LOWER_BOUND_REVERSIBLE_DEFAULT = -999999.0;
     public static final String LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING = "0.0";
     public static final String LOWER_BOUND_DEFAULT_REVERSIBLE_STRING = "-999999.0";
     public static final double UPPER_BOUND_DEFAULT = 999999.0;
@@ -270,10 +269,7 @@ public class GraphicalInterfaceConstants {
     
     // duplicate metabolite
     public static final String DUPLICATE_METABOLITE_TITLE = "Duplicate Metabolite";
-    public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Rename As "; 
-    public static final String DUPLICATE_METABOLITE_PASTE_MESSAGE = "Duplicate Metabolites. Names Will Be Appended With '[1]', '[2]', etc.";
-    
-    public static final String DUPLICATE_SUFFIX = "[1]";
+    public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Add anyway?"; 
     
     // invalid reactions
     public static final String INVALID_REACTIONS_ERROR_TITLE = "Invalid Reactions Warning";
@@ -331,11 +327,11 @@ public class GraphicalInterfaceConstants {
     
     // other
     public static final String[] REVERSIBLE_ARROWS =
-    {"<==> ", "<=> ", "= "
+    {"<==> ", "<=>", "="
     };
     
     public static final String[] NOT_REVERSIBLE_ARROWS =
-    {"=> ", "--> ", "-> "
+    {"=>", "-->", "->"
     };
     
     public static final int PROGRESS_BAR_WIDTH = 175;
@@ -376,14 +372,11 @@ public class GraphicalInterfaceConstants {
     //public static final Color FIND_ALL_COLOR = new Color(190,205,225);
     public static final Color SELECTED_AREA_COLOR = new Color(190,205,225);
     
-    public static final String GUROBI_JAR_PATH_INTERFACE_TITLE = "Gurobi Jar Path Locator";
-    public static final String GUROBI_JAR_PATH_NOT_FOUND_LABEL = "Gurobi Jar Path Not Found. Click Load Gurobi Jar Path to Browse For Path";
-    public static final String GUROBI_JAR_PATH_FOUND_LABEL = "Gurobi Jar Path Found. Click 'OK' if Correct or Click 'Load Gurobi Jar Path' if Not Correct.";
-    public static final String GUROBI_JAR_PATH_BUTTON = "Load Gurobi Jar Path";
-    public static final String NO_GUROBI_JAR_PATH_ERROR = "There is no Gurobi Jar path set.\n FBA and GDBB will not function";
-    public static final String NO_GUROBI_JAR_PATH_ERROR_TITLE = "No Gurobi Jar Path";
-    public static final String GUROBI_JAR_PATH_FILE_CHOOSER_TITLE = "Browse For Gurobi Jar Path";
-    public static final String GUROBI_JAR_PATH_OPTIONS_MENU_ITEM = "Set Gurobi Jar Path";
+    public static final String GUROBI_PATH_INTERFACE_TITLE = "Gurobi Path Locator";
+    public static final String GUROBI_PATH_NOT_FOUND_LABEL = "Gurobi Path Not Found. Click Load Gurobi Path to Browse For Path";
+    public static final String GUROBI_PATH_FOUND_LABEL = "Gurobi Path Found. Click OK if Correct or Load Gurobi Path if Not Correct.";
+    public static final String GUROBI_PATH_BUTTON = "Load Gurobi Path";
+    public static final String NO_GUROBI_PATH_ERROR = "There is no Gurobi path set.\n FBA and GDBB will not function";
     
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
@@ -392,7 +385,5 @@ public class GraphicalInterfaceConstants {
     
     // spaces for alignment
     public static final String ROW_HEADER_TITLE = "   Row";
-
-	public static final String GDBB_PREFIX = "GDBB";
 }
 

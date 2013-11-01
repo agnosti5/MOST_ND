@@ -1,8 +1,5 @@
 package edu.rutgers.MOST.data;
 
-import edu.rutgers.MOST.presentation.GraphicalInterface;
-import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
-
 public class SBMLMetabolite implements ModelMetabolite {
 	
 	private Integer id;
@@ -66,15 +63,6 @@ public class SBMLMetabolite implements ModelMetabolite {
 
 	public void loadById(Integer id) {
 
-	}
-	
-	public void loadByRow(Integer row) {
-		this.setId(Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
-		this.setMetaboliteAbbreviation((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN));
-		this.setMetaboliteName((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN));
-		this.setCharge((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.CHARGE_COLUMN));
-		this.setCompartment((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.COMPARTMENT_COLUMN));
-		this.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
 	}
 
 	/*

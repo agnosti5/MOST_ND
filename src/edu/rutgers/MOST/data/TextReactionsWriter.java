@@ -19,9 +19,7 @@ public class TextReactionsWriter {
 			String headerNames = "";
 			//start with 1 to avoid reading database id
 			for (int i = 1; i < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; i++) {
-				if (i != GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
-					headerNames += GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[i] + "\t";
-				}				
+				headerNames += GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[i] + "\t";
 			}
 			
 			int metaColumnCount = LocalConfig.getInstance().getReactionsMetaColumnNames().size();
@@ -41,6 +39,7 @@ public class TextReactionsWriter {
 				String reactionAbbreviation = " ";
 				String reactionName = " ";
 				String reactionEqunAbbr = " ";
+				String reactionEqunNames = " ";
 				String reversible = " ";
 				String lowerBound = "-999999";
 				String upperBound = "999999";
@@ -61,7 +60,7 @@ public class TextReactionsWriter {
 				}
 				if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN)!= null) {
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN).toString().length() > 0) {							
-						fluxValue = ((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN));
+						fluxValue = Double.toString((Double) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN));
 					} else {
 						fluxValue = "0.0";
 					}
@@ -85,6 +84,13 @@ public class TextReactionsWriter {
 						reactionEqunAbbr = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					} else {
 						reactionEqunAbbr = " ";
+					}
+				}
+				if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN)!= null) {
+					if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN).toString().length() > 0) {	
+						reactionEqunNames = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+					} else {
+						reactionEqunNames = " ";
 					}
 				}
 				if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN)!= null) {
@@ -165,10 +171,10 @@ public class TextReactionsWriter {
 				}
 				
 				if (metaString.length() > 0) {
-					String [] entries = (knockout + "\t" + fluxValue + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass + "\t" + metaString.substring(0, metaString.length() - 1)).split("\t");
+					String [] entries = (knockout + "\t" + fluxValue + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reactionEqunNames + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass + "\t" + metaString.substring(0, metaString.length() - 1)).split("\t");
 					writer.writeNext(entries);
 				} else {
-					String [] entries = (knockout + "\t" + fluxValue + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass).split("\t");
+					String [] entries = (knockout + "\t" + fluxValue + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reactionEqunNames + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass).split("\t");
 					writer.writeNext(entries);
 				}		
 			}	
