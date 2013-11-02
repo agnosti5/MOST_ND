@@ -327,6 +327,7 @@ public class TextReactionsModelReader {
 		GraphicalInterface.showPrompt = true;
 		LocalConfig.getInstance().hasMetabolitesFile = false;
 		setReactionsTableModel(reacTableModel);
+		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 	}
 	
 	public void updateReactionEquation(String reactionEqun, int id, SBMLReactionEquation equation, Vector<String> reacRow) {

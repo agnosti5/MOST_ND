@@ -331,11 +331,11 @@ public class GraphicalInterfaceConstants {
     
     // other
     public static final String[] REVERSIBLE_ARROWS =
-    {"<==> ", "<=>", "="
+    {"<==> ", "<=> ", "= "
     };
     
     public static final String[] NOT_REVERSIBLE_ARROWS =
-    {"=>", "-->", "->"
+    {"=> ", "--> ", "-> "
     };
     
     public static final int PROGRESS_BAR_WIDTH = 175;

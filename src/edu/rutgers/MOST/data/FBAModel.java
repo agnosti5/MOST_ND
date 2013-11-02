@@ -61,6 +61,8 @@ public class FBAModel {
 				sMatrix.get((Integer) metaboliteInternalIdMap.get(product.getMetaboliteId())).put((Integer) reactionsIdPositionMap.get(product.getReactionId()), product.getStoic());
 			}
 		}
+		
+		//System.out.println(sMatrix);
 
 		
 //		for (int i = 0; i < metabolites.size(); i++) {

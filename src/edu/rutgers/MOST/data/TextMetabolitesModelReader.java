@@ -179,7 +179,6 @@ public class TextMetabolitesModelReader {
 						}
 						LocalConfig.getInstance().getMetaboliteNameIdMap().put(metaboliteAbbreviation, id);
 					}
-					System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 					metabRow.add(metaboliteAbbreviation);
 					
 					metabRow.add(dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()]);
