@@ -1079,17 +1079,18 @@ public class GraphicalInterface extends JFrame {
 
 		JMenuItem loadCSVItem = new JMenuItem("Load CSV");
 		modelMenu.add(loadCSVItem);
-		loadCSVItem.setMnemonic(KeyEvent.VK_C);
+		// does not work
+		//loadCSVItem.setMnemonic(KeyEvent.VK_C);
 		loadCSVItem.addActionListener(new LoadCSVAction());
 
 		modelMenu.add(loadExistingItem);
-		loadExistingItem.setMnemonic(KeyEvent.VK_Q);
+		//loadExistingItem.setMnemonic(KeyEvent.VK_Q);
 		loadExistingItem.addActionListener(new LoadExistingItemAction());
 
 		modelMenu.addSeparator();
 
 		modelMenu.add(saveSBMLItem);
-		saveSBMLItem.setMnemonic(KeyEvent.VK_O);
+		saveSBMLItem.setMnemonic(KeyEvent.VK_S);
 		saveSBMLItem.addActionListener(new SaveSBMLItemAction());
 
 		modelMenu.add(saveCSVMetabolitesItem);
@@ -1591,7 +1592,8 @@ public class GraphicalInterface extends JFrame {
 		setGurobiPath.setMnemonic(KeyEvent.VK_G);
 		setGurobiPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				getGurobiPathInterface().setVisible(true);
+				//getGurobiPathInterface().setVisible(true);
+				loadGurobiPathInterface();
 			}    	     
 		});
 
@@ -8916,9 +8918,9 @@ public class GraphicalInterface extends JFrame {
 
 		if (gurobiPathFound) {
 			gurobiPath = gurobiPath + "\\lib\\gurobi.jar";
-			File f = new File(gurobiPath);
+			//File f = new File(gurobiPath);
 			// uncomment to test Gurobi not found
-			//File f = new File("none");
+			File f = new File("none");
 			if (f.exists()) {
 				gurobiPathFound = true;
 			} else {
