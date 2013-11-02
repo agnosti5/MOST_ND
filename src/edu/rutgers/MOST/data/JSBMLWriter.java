@@ -9,12 +9,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import org.sbml.jsbml.ASTNode;
 import org.sbml.jsbml.Compartment;
 import org.sbml.jsbml.KineticLaw;
-
 import org.sbml.jsbml.LocalParameter;
 import org.sbml.jsbml.Model;
 import org.sbml.jsbml.Reaction;
@@ -45,7 +46,16 @@ public class JSBMLWriter implements TreeModelListener{
 	public Map<String,SpeciesReference> speciesRefMap;
 	public File outFile;
 	public SettingsFactory curSettings;
+	public String optFilePath;
 	
+	public String getOptFilePath() {
+		return optFilePath;
+	}
+
+	public void setOptFilePath(String optFilePath) {
+		this.optFilePath = optFilePath;
+	}
+
 	/**
 	 * @param args
 	 */
@@ -123,6 +133,13 @@ public class JSBMLWriter implements TreeModelListener{
 		}
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new File(lastSaveSBML_path));
+		if (GraphicalInterface.saveOptFile) {	
+			String path = getOptFilePath() + ".xml";
+			System.out.println(path);
+			File theFileToSave = new File(path);
+			chooser.setSelectedFile(theFileToSave);
+			System.out.println("ch " + chooser.getSelectedFile());
+		} 		
 		chooser.setApproveButtonText("Save");
 		chooser.setDialogTitle("Save to");
 		chooser.setFileFilter(new XMLFileFilter());
@@ -138,7 +155,9 @@ public class JSBMLWriter implements TreeModelListener{
 				}
 				File theFileToSave = new File(path);				
 				this.setOutFile(theFileToSave);
+
 				String rawPathName = chooser.getSelectedFile().getAbsolutePath();
+				System.out.println(rawPathName);
 				curSettings.add("LastSaveSBML", rawPathName);
 				return true;
 			}
@@ -394,7 +413,14 @@ public class JSBMLWriter implements TreeModelListener{
 				}
 				//curSpec.setCharge(charge);
 				if (null != bound) {
-					curSpec.setBoundaryCondition(Boolean.getBoolean(bound));
+					boolean b = false;
+					if (bound.equals("true")) {
+						b = true;
+					} else if (bound.equals("false")) {
+						b = false;
+					}
+					//curSpec.setBoundaryCondition(Boolean.getBoolean(bound));
+					curSpec.setBoundaryCondition(b);
 				}
 				//curSpec.setCharge(charge);
 				

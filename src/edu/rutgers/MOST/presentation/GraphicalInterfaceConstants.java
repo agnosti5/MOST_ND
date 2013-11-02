@@ -392,6 +392,11 @@ public class GraphicalInterfaceConstants {
     
     // spaces for alignment
     public static final String ROW_HEADER_TITLE = "   Row";
+    
+    // this is used when exiting to choose what is default for saving opt files
+    // should be csv if user is building a model since it accepts anything, sbml
+    // is much more stringent and should only be used for models that are "mature"
+    public static final String DEFAULT_FILE_TYPE = "csv";
 
 	public static final String GDBB_PREFIX = "GDBB";
 }

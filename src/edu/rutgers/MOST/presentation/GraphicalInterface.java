@@ -549,6 +549,16 @@ public class GraphicalInterface extends JFrame {
 		return currentReactionsColumn;
 	}
 
+	private static String fileType;
+	
+	public static String getFileType() {
+		return fileType;
+	}
+
+	public static void setFileType(String fileType) {
+		GraphicalInterface.fileType = fileType;
+	}
+
 	private static String gurobiPath;
 
 	public static String getGurobiPath() {
@@ -831,6 +841,7 @@ public class GraphicalInterface extends JFrame {
 		setBooleanDefaults();
 		setSortDefault();
 		setUpCellSelectionMode();
+		setFileType(GraphicalInterfaceConstants.DEFAULT_FILE_TYPE);
 		// TODO: need to account for adding metabolites when creating model in blank gui
 		LocalConfig.getInstance().setMaxMetabolite(0);
 		LocalConfig.getInstance().setMaxMetaboliteId(GraphicalInterfaceConstants.BLANK_METABOLITE_ROW_COUNT);
@@ -2270,6 +2281,7 @@ public class GraphicalInterface extends JFrame {
 					} else {
 						listModel.clear();						
 						DynamicTreePanel.treePanel.clear();
+						setFileType("sbml");
 						String filename;
 						if (rawFilename.endsWith(".xml")) {
 							filename = rawFilename.substring(0, rawFilename.length() - 4);
@@ -2378,6 +2390,7 @@ public class GraphicalInterface extends JFrame {
 
 			DynamicTreePanel.treePanel.clear();
 			listModel.clear();
+			setFileType("csv");
 
 			TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
 			reader.load(LocalConfig.getInstance().getMetabolitesCSVFile());	
@@ -2445,6 +2458,7 @@ public class GraphicalInterface extends JFrame {
 
 			DynamicTreePanel.treePanel.clear();
 			listModel.clear();
+			setFileType("csv");
 
 			TextReactionsModelReader reader = new TextReactionsModelReader();
 			reader.load(LocalConfig.getInstance().getReactionsCSVFile());	
@@ -2500,6 +2514,7 @@ public class GraphicalInterface extends JFrame {
 					loadSetUp();
 					listModel.clear();
 					DynamicTreePanel.treePanel.clear();
+					setFileType("sbml");
 					String path = getModelCollectionTable().getPath();
 					File file = new File(path);
 					setSBMLFile(file);
@@ -2890,7 +2905,19 @@ public class GraphicalInterface extends JFrame {
 				if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {				
 					for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
 						saveOptFile = true;
-						saveReactionsTextFileChooser();
+						if (getFileType().equals("csv")) {
+							saveReactionsTextFileChooser();
+						} else if (getFileType().equals("sbml")) {
+							try {
+								JSBMLWriter jWrite = new JSBMLWriter();
+								jWrite.setOptFilePath(DynamicTreePanel.treePanel.getTree().getLastSelectedPathComponent().toString());
+								jWrite.formConnect(LocalConfig.getInstance());
+								
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						} 
 					}
 				}
 				deleteAllOptimizationFiles();
