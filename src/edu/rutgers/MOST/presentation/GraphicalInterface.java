@@ -1282,22 +1282,30 @@ public class GraphicalInterface extends JFrame {
 						}
 					}
 					LocalConfig.getInstance().setUnusedList(unusedList);
-					System.out.println(unusedList);
+					//System.out.println(unusedList);
 					for (int i = 0; i < unusedList.size(); i++) {
 						deleteMetabolitesRowById(unusedList.get(i));
 					}	
-					for (int j = 0; j < LocalConfig.getInstance().getBlankMetabIds().size(); j++) {
-						deleteMetabolitesRowById(LocalConfig.getInstance().getBlankMetabIds().get(j));
+					for (int j = 0; j < LocalConfig.getInstance().getBlankMetabIds().size(); j++) {			
+						deleteMetabolitesRowById(LocalConfig.getInstance().getBlankMetabIds().get(j));						
 					}
+					LocalConfig.getInstance().getBlankMetabIds().clear();
 					highlightUnusedMetabolites = false;
 					highlightUnusedMetabolitesItem.setState(false);
-					formulaBar.setText("");
+					formulaBar.setText("");				
 					LocalConfig.getInstance().getUnusedList().clear();
 					LocalConfig.getInstance().setMetaboliteNameIdMap(idMap);
 					DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
+					setUpMetabolitesTable(newMetabolitesModel);
 					copyMetabolitesTableModels(newMetabolitesModel); 
 					setUndoNewCollections(undoItem);
 					setUpMetabolitesUndo(undoItem);	
+					if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
+						setLoadErrorMessage("Model contains suspicious metabolites.");
+						statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
+					} else {
+						statusBar.setText("Row 1");
+					}
 				} catch (Exception e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
@@ -3565,13 +3573,16 @@ public class GraphicalInterface extends JFrame {
 		for (int i = 0; i < metabolitesTable.getRowCount(); i++) {
 			metabolitesIdRowMap.put((String) metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
 		}
-		System.out.println(metabolitesIdRowMap);
-		System.out.println(id);
-		String row = (metabolitesIdRowMap.get(Integer.toString(id))).toString();
-		int rowNum = Integer.valueOf(row);
-		DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
-		model.removeRow(rowNum);
-		setUpMetabolitesTable(model);
+		try {
+			String row = (metabolitesIdRowMap.get(Integer.toString(id))).toString();
+			int rowNum = Integer.valueOf(row);
+			DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
+			model.removeRow(rowNum);
+			setUpMetabolitesTable(model);
+		} catch (Throwable t) {
+			
+		}
+		
 	}
 
 	/*****************************************************************************/
