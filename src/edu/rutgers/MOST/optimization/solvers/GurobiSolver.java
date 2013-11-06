@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.Solution;
-//import edu.rutgers.MOST.optimization.GDBB.GDBB;
+import edu.rutgers.MOST.optimization.GDBB.GDBB;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
@@ -350,7 +350,7 @@ public class GurobiSolver extends Solver {
 
 								Solution solution = new Solution((double) grbCallbackGetDoubleInfoMethod.invoke(self, new Object[]{ grbClass.getDeclaredField("CB_MIPSOL_OBJ").getInt(null) }), 
 										(double[]) grbCallbackGetSolutionMethod.invoke(self, new Object[]{ vars }));
-//								GDBB.intermediateSolution.add(solution);
+								GDBB.intermediateSolution.add(solution);
 							}
 						} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | NoSuchMethodException e) {
 							// TODO Auto-generated catch block

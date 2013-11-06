@@ -731,8 +731,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {
 		// make this true only when troubleshooting, false for actual use
-		showIdColumn = true;
-		//showIdColumn = false;
+		//showIdColumn = true;
+		showIdColumn = false;
 
 		gi = this;
 
@@ -793,7 +793,7 @@ public class GraphicalInterface extends JFrame {
 		textInput.setModal(true);
 		textInput.setIconImages(icons);
 		textInput.setTitle("GDBB");
-		textInput.setSize(300, 300);
+		textInput.setSize(350, 300);
 		textInput.setResizable(false);
 		textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		textInput.setLocationRelativeTo(null);
@@ -1214,16 +1214,12 @@ public class GraphicalInterface extends JFrame {
 		//	Action Listener for GDBB optimization
 		gdbbItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				Utilities u = new Utilities();
-				//load original db into tables
-				//reloadTables(getDatabaseName());
 				highlightUnusedMetabolites = false;
 				highlightUnusedMetabolitesItem.setState(false);
-
-				String dateTimeStamp = u.createDateTimeStamp();
-
-				textInput.setObjectiveColumnNames();
-
+				// The line below is not needed for now. If in future it is desired to
+				// use an added column instead of Synthetic Objective this method needs
+				// to be rewritten in GDBBDialog to not use a database
+				//textInput.setObjectiveColumnNames();
 				textInput.setVisible(true);
 			}
 		});
@@ -5705,16 +5701,21 @@ public class GraphicalInterface extends JFrame {
 				equn.writeReactionEquation();
 				updateReactionsCellById(equn.equationAbbreviations, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-				for (int j = 0; j < equn.reactants.size(); j++) {
-					if (equn.reactants.get(j).getMetaboliteName().equals(metabName)) {
-						equn.reactants.get(j).setMetaboliteName(newName);
+				if (metabName != null && metabName.length() > 0) {
+					for (int j = 0; j < equn.reactants.size(); j++) {
+						if (equn.reactants.get(j).getMetaboliteName().equals(metabName)) {
+							equn.reactants.get(j).setMetaboliteName(newName);
+						}
 					}
-				}
-				for (int j = 0; j < equn.products.size(); j++) {
-					if (equn.products.get(j).getMetaboliteName().equals(metabName)) {
-						equn.products.get(j).setMetaboliteName(newName);
+					for (int j = 0; j < equn.products.size(); j++) {
+						if (equn.products.get(j).getMetaboliteName().equals(metabName)) {
+							equn.products.get(j).setMetaboliteName(newName);
+						}
 					}
+				} else {
+					
 				}
+				 
 				equn.writeReactionEquation();
 				updateReactionsCellById(equn.equationNames, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			}								
