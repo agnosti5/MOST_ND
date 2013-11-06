@@ -14,6 +14,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 public class ReactionFactory {
 	private String sourceType;
 	private Map<Object, Object> reactionsIdPositionMap;
+	private static String columnName;
 
 	public ReactionFactory(String sourceType) {
 		this.sourceType = sourceType;
@@ -208,6 +209,14 @@ public class ReactionFactory {
 		}
 
 		return reactionIdList;
+	}
+	
+	public static String getColumnName() {
+		return columnName;
+	}
+
+	public void setColumnName(String columnName) {
+		ReactionFactory.columnName = columnName;
 	}
 
 	public static void main(String[] args) {
