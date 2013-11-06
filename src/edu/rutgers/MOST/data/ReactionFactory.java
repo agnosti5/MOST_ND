@@ -106,6 +106,7 @@ public class ReactionFactory {
 
 		Vector<String> uniqueGeneAssociations = getUniqueGeneAssociations();
 		Vector<String> geneAssocaitons = getGeneAssociations();
+		ArrayList<Integer> rowList = new ArrayList<Integer>();
 
 		String queryKVector = "";
 		for (int i = 0; i < geneAssocaitons.size(); i++) {
@@ -120,7 +121,8 @@ public class ReactionFactory {
 			}
 
 			if(kVector.get(i).doubleValue() != 0.0) {
-				queryKVector += " when " + (i + 1) + " then " + "\"" + GraphicalInterfaceConstants.BOOLEAN_VALUES[1] + "\"";
+				rowList.add(i);
+				//queryKVector += " when " + (i + 1) + " then " + "\"" + GraphicalInterfaceConstants.BOOLEAN_VALUES[1] + "\"";
 			}
 		}
 
@@ -139,7 +141,10 @@ public class ReactionFactory {
 		//				}
 		//			}
 
-		if (queryKVector.length() != 0) {
+		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
+		for (int j = 0; j < rowList.size(); j++) {
+		//if (queryKVector.length() != 0) {
+			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowList.get(j), GraphicalInterfaceConstants.KO_COLUMN);
 			//String query = "update reactions set knockout = case id" + queryKVector + " end";
 		}	
 
@@ -151,17 +156,17 @@ public class ReactionFactory {
 	 */
 
 	public Vector<String> getGeneAssociations() {
+		Vector<ModelReaction> reactions = getAllReactions();
 		Vector<String> geneAssociations = new Vector<String>();
 
 		if("SBML".equals(sourceType)){
-			//("select gene_associations from reactions where length(reaction_abbreviation) > 0;");
-
-			/*
-				while (rs.next()) {
-					geneAssociations.add(rs.getString("gene_associations")); 
-				}
-			 */
+			for (int i = 0; i < reactions.size(); i++) {
+				int id = ((SBMLReaction) reactions.get(i)).getId();
+				String geneAssoc = ((SBMLReaction) reactions.get(i)).getGeneAssociation();
+				geneAssociations.add((Integer) reactionsIdPositionMap.get(id), geneAssoc);
+			}
 		}
+		System.out.println("gene assoc " + geneAssociations);
 
 		return geneAssociations;
 	}
