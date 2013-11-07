@@ -606,7 +606,7 @@ public class SBMLModelReader {
 		LocalConfig.getInstance().setReactionsMetaColumnNames(reactionsMetaColumnNames);
 		LocalConfig.getInstance().setMetaboliteNameIdMap(metaboliteNameIdMap);
 		//System.out.println(metaboliteNameIdMap);
-		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+		//LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
 		//System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 		LocalConfig.getInstance().setReactionEquationMap(reactionEquationMap);
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());

@@ -176,13 +176,9 @@ public class TextMetabolitesModelReader {
 					} else {
 						if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metaboliteAbbreviation)) {
 							metaboliteAbbreviation = metaboliteAbbreviation + duplicateSuffix(metaboliteAbbreviation);
-							//metaboliteAbbreviation = metaboliteAbbreviation + GraphicalInterfaceConstants.DUPLICATE_SUFFIX;	
-							System.out.println("if " + metaboliteAbbreviation);
 						}
 						LocalConfig.getInstance().getMetaboliteNameIdMap().put(metaboliteAbbreviation, id);
 					}
-					System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
-					System.out.println("aft " + metaboliteAbbreviation);
 					metabRow.add(metaboliteAbbreviation);
 					
 					metabRow.add(dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()]);
@@ -223,7 +219,6 @@ public class TextMetabolitesModelReader {
 		}
 		
 		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
-		//System.out.println("idn" + metaboliteIdNameMap);
 		LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);					
 		LocalConfig.getInstance().hasMetabolitesFile = true;
 		setMetabolitesTableModel(metabTableModel);

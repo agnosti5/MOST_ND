@@ -36,7 +36,7 @@ public class MetaboliteFactory {
 		}
 		return new SBMLMetabolite(); //Default behavior.
 	}
-	
+
 	public ModelMetabolite getMetaboliteByRow(Integer row){
 
 
@@ -47,7 +47,7 @@ public class MetaboliteFactory {
 		}
 		return new SBMLMetabolite(); //Default behavior.
 	}
-
+	
 	public ArrayList<Integer> participatingReactions(String metaboliteAbbreviation) {
 		ArrayList<Integer> participatingReactions = new ArrayList<Integer>();
 		if("SBML".equals(sourceType)){
@@ -72,7 +72,7 @@ public class MetaboliteFactory {
 				}
 			}
 		}
-		//System.out.println(participatingReactions);
+		
 		return participatingReactions;
 	}
 
@@ -96,10 +96,10 @@ public class MetaboliteFactory {
 					}
 				}							
 			}
-			System.out.println("int metab id " + internalMetabolitesIdPositionMap);
+			
 			setInternalMetabolitesIdPositionMap(internalMetabolitesIdPositionMap);
 		}
-		//System.out.println("internal metab " + metabolites);
+		
 		return metabolites;
 	}
 	
@@ -165,13 +165,12 @@ public class MetaboliteFactory {
 					SBMLMetabolite metabolite = new SBMLMetabolite();
 					metabolite.setId(Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
 					metabolite.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
-					metabolites.add(metabolite);						
-				}							
+					metabolites.add(metabolite);
+				}													
 			}
-			System.out.println("int metab id " + internalMetabolitesIdPositionMap);
 			setInternalMetabolitesIdPositionMap(internalMetabolitesIdPositionMap);
 		}
-		//System.out.println("internal metab " + metabolites);
+		
 		return metabolites;
 	}
 	

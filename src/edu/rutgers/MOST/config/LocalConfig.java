@@ -616,6 +616,17 @@ public class LocalConfig {
 		LocalConfig.replaceEntryList = replaceEntryList;
 	}
 	
+	private static Map<String, Object> metabDisplayCollectionMap = new HashMap<String, Object>();
+	
+	public static Map<String, Object> getMetabDisplayCollectionMap() {
+		return metabDisplayCollectionMap;
+	}
+
+	public static void setMetabDisplayCollectionMap(
+			Map<String, Object> metabDisplayCollectionMap) {
+		LocalConfig.metabDisplayCollectionMap = metabDisplayCollectionMap;
+	}
+
 	/********************************************************************************/
 	// undo/redo
 	/********************************************************************************/

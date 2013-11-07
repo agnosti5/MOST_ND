@@ -14,6 +14,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 public class ReactionFactory {
 	private String sourceType;
 	private Map<Object, Object> reactionsIdPositionMap;
+	private static String columnName;
 
 	public ReactionFactory(String sourceType) {
 		this.sourceType = sourceType;
@@ -55,8 +56,8 @@ public class ReactionFactory {
 			// what parameters are actually needed, for example
 			// reaction name is not going to be changed by any analysis			
 			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
-				if (GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) != null &&
-						((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN)).trim().length() > 0) {
+//				if (GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) != null &&
+//						((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN)).trim().length() > 0) {
 					SBMLReaction reaction = new SBMLReaction();
 					reaction.setId(Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 					reaction.setKnockout((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.KO_COLUMN));
@@ -68,12 +69,11 @@ public class ReactionFactory {
 					reactions.add(reaction);
 					reactionsIdPositionMap.put(reaction.getId(), count);
 					count += 1;
-				}				
+				//}				
 			}
 			setReactionsIdPositionMap(reactionsIdPositionMap);
-			//System.out.println("idpos " + reactionsIdPositionMap);
 		}
-		//System.out.println("all reactions " + reactions);
+		
 		return reactions;
 	}
 
@@ -85,11 +85,8 @@ public class ReactionFactory {
 			for (int i = 0; i < reactions.size(); i++) {
 				int id = ((SBMLReaction) reactions.get(i)).getId();
 				Double obj = ((SBMLReaction) reactions.get(i)).getBiologicalObjective();
-				//System.out.println("id " + id);
-				//System.out.println("pos " + (Integer) reactionsIdPositionMap.get(id));
 				objective.add((Integer) reactionsIdPositionMap.get(id), obj);
 			}
-			System.out.println("obj " + objective);
 		}
 
 		return objective;
@@ -98,7 +95,6 @@ public class ReactionFactory {
 	public void setFluxes(ArrayList<Double> fluxes) {
 		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
 		for (int i = 0; i < fluxes.size(); i++) {
-			//System.out.println(fluxes.get(i));
 			reactionsOptModel.setValueAt(fluxes.get(i).toString(), i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 		}
 	}
@@ -110,6 +106,7 @@ public class ReactionFactory {
 
 		Vector<String> uniqueGeneAssociations = getUniqueGeneAssociations();
 		Vector<String> geneAssocaitons = getGeneAssociations();
+		ArrayList<Integer> rowList = new ArrayList<Integer>();
 
 		String queryKVector = "";
 		for (int i = 0; i < geneAssocaitons.size(); i++) {
@@ -124,7 +121,8 @@ public class ReactionFactory {
 			}
 
 			if(kVector.get(i).doubleValue() != 0.0) {
-				queryKVector += " when " + (i + 1) + " then " + "\"" + GraphicalInterfaceConstants.BOOLEAN_VALUES[1] + "\"";
+				rowList.add(i);
+				//queryKVector += " when " + (i + 1) + " then " + "\"" + GraphicalInterfaceConstants.BOOLEAN_VALUES[1] + "\"";
 			}
 		}
 
@@ -143,7 +141,10 @@ public class ReactionFactory {
 		//				}
 		//			}
 
-		if (queryKVector.length() != 0) {
+		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
+		for (int j = 0; j < rowList.size(); j++) {
+		//if (queryKVector.length() != 0) {
+			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowList.get(j), GraphicalInterfaceConstants.KO_COLUMN);
 			//String query = "update reactions set knockout = case id" + queryKVector + " end";
 		}	
 
@@ -155,48 +156,47 @@ public class ReactionFactory {
 	 */
 
 	public Vector<String> getGeneAssociations() {
+		Vector<ModelReaction> reactions = getAllReactions();
 		Vector<String> geneAssociations = new Vector<String>();
 
 		if("SBML".equals(sourceType)){
-			//("select gene_associations from reactions where length(reaction_abbreviation) > 0;");
-
-			/*
-				while (rs.next()) {
-					geneAssociations.add(rs.getString("gene_associations")); 
-				}
-			 */
+			for (int i = 0; i < reactions.size(); i++) {
+				int id = ((SBMLReaction) reactions.get(i)).getId();
+				String geneAssoc = ((SBMLReaction) reactions.get(i)).getGeneAssociation();
+				geneAssociations.add((Integer) reactionsIdPositionMap.get(id), geneAssoc);
+			}
 		}
+		System.out.println("gene assoc " + geneAssociations);
 
 		return geneAssociations;
 	}
 
 	public Vector<String> getUniqueGeneAssociations() {
-		Vector<String> geneAssociations = new Vector<String>();
+		Vector<String> geneAssociations = getGeneAssociations();
+		Vector<String> uniqueGeneAssociations = new Vector<String>();
 
 		if("SBML".equals(sourceType)){
-
-			//("select distinct gene_associations from reactions where length(reaction_abbreviation) > 0;");
-
-			//System.out.println(rs.getRow());
-
-			//geneAssociations.add(rs.getString("gene_associations")); 
-
+			for (int i = 0; i < geneAssociations.size(); i++) {
+				if (!uniqueGeneAssociations.contains(geneAssociations.get(i))) {
+					uniqueGeneAssociations.add(geneAssociations.get(i));
+				}
+			}
 		}
-
-		return geneAssociations;
+		System.out.println("unique gene assoc " + uniqueGeneAssociations);
+		
+		return uniqueGeneAssociations;
 	}
 
 	public Vector<Double> getSyntheticObjectiveVector() {
+		Vector<ModelReaction> reactions = getAllReactions();
 		Vector<Double> syntheticObjectiveVector = new Vector<Double>();
 
 		if("SBML".equals(sourceType)){
-			//("select synthetic_objective from reactions;");
-			//System.out.println("ReactionFactory, columnName = " + columnName);
-			//				ResultSet rs = stat.executeQuery("select " + columnName + " from reactions;");
-
-			//syntheticObjectiveVector.add(rs.getDouble("synthetic_objective"));
-
-
+			for (int i = 0; i < reactions.size(); i++) {
+				int id = ((SBMLReaction) reactions.get(i)).getId();
+				Double obj = ((SBMLReaction) reactions.get(i)).getSyntheticObjective();
+				syntheticObjectiveVector.add((Integer) reactionsIdPositionMap.get(id), obj);
+			}
 		}
 
 		return syntheticObjectiveVector;
@@ -213,6 +213,14 @@ public class ReactionFactory {
 		}
 
 		return reactionIdList;
+	}
+	
+	public static String getColumnName() {
+		return columnName;
+	}
+
+	public void setColumnName(String columnName) {
+		ReactionFactory.columnName = columnName;
 	}
 
 	public static void main(String[] args) {

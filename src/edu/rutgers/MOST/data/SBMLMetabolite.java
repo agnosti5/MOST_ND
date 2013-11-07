@@ -67,7 +67,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 	public void loadById(Integer id) {
 
 	}
-	
+
 	public void loadByRow(Integer row) {
 		this.setId(Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
 		this.setMetaboliteAbbreviation((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN));
@@ -76,7 +76,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 		this.setCompartment((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.COMPARTMENT_COLUMN));
 		this.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
 	}
-
+	
 	/*
 	@Override
 	public String toString() {

@@ -36,15 +36,12 @@ public class FBAModel {
 		this.metabolites = mFactory.getAllInternalMetabolites();
 		this.metaboliteInternalIdList = mFactory.metaboliteInternalIdList();
 		this.metaboliteInternalIdMap = mFactory.getInternalMetabolitesIdPositionMap();
-		//System.out.println("fba int id pos " + this.metaboliteInternalIdMap);
 
 		ReactantFactory reactantFactory = new ReactantFactory("SBML");
 		ArrayList<SBMLReactant> reactantList = reactantFactory.getAllReactants();		
 		ProductFactory productFactory = new ProductFactory("SBML");
 		ArrayList<SBMLProduct> productList = productFactory.getAllProducts();
 		
-		//System.out.println("m int id list " + metaboliteInternalIdList);
-		System.out.println("r id list " + reactionIdList);
 		this.sMatrix = new ArrayList<Map<Integer, Double>>(metaboliteInternalIdList.size());
 		for (int i = 0; i < metaboliteInternalIdList.size(); i++) {
 			Map<Integer, Double> sRow = new HashMap<Integer, Double>();
@@ -65,7 +62,8 @@ public class FBAModel {
 			}
 		}
 		
-		System.out.println("sMatrix " + sMatrix);
+		//System.out.println(sMatrix);
+
 		
 //		for (int i = 0; i < metabolites.size(); i++) {
 //			Iterator<Integer> iterator = sMatrix.get(i).keySet().iterator();

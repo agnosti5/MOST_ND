@@ -94,6 +94,7 @@ public class GraphicalInterfaceConstants {
     public static final double FLUX_VALUE_DEFAULT = 0.0;
     public static final String FLUX_VALUE_DEFAULT_STRING = "0.0";
     public static final double LOWER_BOUND_DEFAULT = 0.0;
+    public static final double LOWER_BOUND_REVERSIBLE_DEFAULT = -999999.0;
     public static final String LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING = "0.0";
     public static final String LOWER_BOUND_DEFAULT_REVERSIBLE_STRING = "-999999.0";
     public static final double UPPER_BOUND_DEFAULT = 999999.0;
@@ -391,7 +392,12 @@ public class GraphicalInterfaceConstants {
     
     // spaces for alignment
     public static final String ROW_HEADER_TITLE = "   Row";
+    
+    // this is used when exiting to choose what is default for saving opt files
+    // should be csv if user is building a model since it accepts anything, sbml
+    // is much more stringent and should only be used for models that are "mature"
+    public static final String DEFAULT_FILE_TYPE = "csv";
 
-	public static final String GDBB_PREFIX = "GDBB";
+	public static final String GDBB_PREFIX = "GDBB_";
 }
 

@@ -21,8 +21,8 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class TextReactionsModelReader {
 	
-	public boolean noReactants;     // type ==> p
-	public boolean noProducts;      // type r ==>
+//	public boolean noReactants;     // type ==> p
+//	public boolean noProducts;      // type r ==>
 	public boolean addMetabolite;
 	
 	private static DefaultTableModel reactionsTableModel;
@@ -246,15 +246,30 @@ public class TextReactionsModelReader {
 						reacRow.add(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);
 					}
 					
+					if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
+						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
+					} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
+						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+					} 
+					
 					if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
 						if (isNumber(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()])) {
-							lowerBound = Double.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);							
-						} 
+							lowerBound = Double.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);
+						} else {
+							// false
+							if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+								lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
+								// true
+							} else if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
+								lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_REVERSIBLE_DEFAULT;
+							}
+						}
 					} 
 					// TODO : add error message here?
+					// reversible = false
 					if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
-						lowerBound = 0.0;
-					}
+						lowerBound = lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
+					} 
 					reacRow.add(Double.toString(lowerBound));
 					if (LocalConfig.getInstance().getUpperBoundColumnIndex() > -1) {
 						if (isNumber(dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()])) {
@@ -312,8 +327,7 @@ public class TextReactionsModelReader {
 		GraphicalInterface.showPrompt = true;
 		LocalConfig.getInstance().hasMetabolitesFile = false;
 		setReactionsTableModel(reacTableModel);
-		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
-		System.out.println("name id" + LocalConfig.getInstance().getMetaboliteNameIdMap());
+		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 	}
 	
 	public void updateReactionEquation(String reactionEqun, int id, SBMLReactionEquation equation, Vector<String> reacRow) {
@@ -331,7 +345,6 @@ public class TextReactionsModelReader {
 					equation.getReactants().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
 				}				
 				reactants.add(equation.getReactants().get(i));
-				//System.out.println("reactant" + equation.getReactants().get(i).toString());
 				if (parser.isSuspicious(equation.getReactants().get(i).getMetaboliteAbbreviation())) {
 					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
@@ -349,7 +362,6 @@ public class TextReactionsModelReader {
 					equation.getProducts().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
 				}				
 				products.add(equation.getProducts().get(i));
-				//System.out.println("product" + equation.getProducts().get(i).toString());
 				if (parser.isSuspicious(equation.getProducts().get(i).getMetaboliteAbbreviation())) {
 					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
@@ -371,9 +383,7 @@ public class TextReactionsModelReader {
 	
 	public void maybeAddSpecies(String species, SBMLReactionEquation equation, String type, int index) {
 		addMetabolite = true;
-		//System.out.println(LocalConfig.getInstance().getMaxMetabolite());
 		int maxMetabId = LocalConfig.getInstance().getMaxMetabolite();
-		//System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 		boolean newMetabolite = false;
 		if (!(LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(species.trim()))) {
 			newMetabolite = true;
@@ -447,10 +457,8 @@ public class TextReactionsModelReader {
 	public void addNewMetabolite(int maxMetabId, String species) {
 		DefaultTableModel model = getMetabolitesTableModel();
 		model.addRow(createMetabolitesRow(maxMetabId));
-		//System.out.println(maxMetabId);
 		model.setValueAt(species, maxMetabId, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 		LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
-		//LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
 		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
 			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
 			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));
