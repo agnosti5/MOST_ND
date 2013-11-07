@@ -761,10 +761,11 @@ public class GraphicalInterface extends JFrame {
 				if (node == null) return;
 
 				Solution nodeInfo = (Solution)node.getUserObject();
+				String solutionName = nodeInfo.getSolutionName();
 				if (node.isLeaf()) {
-					String solutionName = nodeInfo.getSolutionName();
-					System.out.println("s " + solutionName);
+					//String solutionName = nodeInfo.getSolutionName();
 					if (solutionName != null) {
+						System.out.println("node " + node.getUserObject().toString());
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
 							enableMenuItems();
 							clearOutputPane();
@@ -775,8 +776,9 @@ public class GraphicalInterface extends JFrame {
 							setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 							setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
 							isRoot = true;
-						} else {
+						} else {							
 							if (node.getUserObject().toString() != null) {
+								System.out.println("node " + node.getUserObject().toString());
 								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 								if (solutionName.endsWith(node.getUserObject().toString())) {
@@ -791,6 +793,22 @@ public class GraphicalInterface extends JFrame {
 							}
 						}		
 					}								
+				} else {
+					if (node.getUserObject().toString() != null) {
+						System.out.println("else " + node.getUserObject().toString());
+						System.out.println("node " + node.getUserObject().toString());
+						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
+						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
+						if (solutionName.endsWith(node.getUserObject().toString())) {
+							loadOutputPane(solutionName + ".log");
+							if (getPopout() != null) {
+								getPopout().load(solutionName + ".log");
+							}										
+						}
+						disableMenuItems();
+						setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
+						isRoot = false;	
+					}					
 				}
 			}
 		});
@@ -1243,6 +1261,7 @@ public class GraphicalInterface extends JFrame {
 				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
 				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
 				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
+				System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
 				
         		listModel.addElement(optimizeName);
         		LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
