@@ -172,32 +172,31 @@ public class ReactionFactory {
 	}
 
 	public Vector<String> getUniqueGeneAssociations() {
-		Vector<String> geneAssociations = new Vector<String>();
+		Vector<String> geneAssociations = getGeneAssociations();
+		Vector<String> uniqueGeneAssociations = new Vector<String>();
 
 		if("SBML".equals(sourceType)){
-
-			//("select distinct gene_associations from reactions where length(reaction_abbreviation) > 0;");
-
-			//System.out.println(rs.getRow());
-
-			//geneAssociations.add(rs.getString("gene_associations")); 
-
+			for (int i = 0; i < geneAssociations.size(); i++) {
+				if (!uniqueGeneAssociations.contains(geneAssociations.get(i))) {
+					uniqueGeneAssociations.add(geneAssociations.get(i));
+				}
+			}
 		}
-
-		return geneAssociations;
+		System.out.println("unique gene assoc " + uniqueGeneAssociations);
+		
+		return uniqueGeneAssociations;
 	}
 
 	public Vector<Double> getSyntheticObjectiveVector() {
+		Vector<ModelReaction> reactions = getAllReactions();
 		Vector<Double> syntheticObjectiveVector = new Vector<Double>();
 
 		if("SBML".equals(sourceType)){
-			//("select synthetic_objective from reactions;");
-			//System.out.println("ReactionFactory, columnName = " + columnName);
-			//				ResultSet rs = stat.executeQuery("select " + columnName + " from reactions;");
-
-			//syntheticObjectiveVector.add(rs.getDouble("synthetic_objective"));
-
-
+			for (int i = 0; i < reactions.size(); i++) {
+				int id = ((SBMLReaction) reactions.get(i)).getId();
+				Double obj = ((SBMLReaction) reactions.get(i)).getSyntheticObjective();
+				syntheticObjectiveVector.add((Integer) reactionsIdPositionMap.get(id), obj);
+			}
 		}
 
 		return syntheticObjectiveVector;

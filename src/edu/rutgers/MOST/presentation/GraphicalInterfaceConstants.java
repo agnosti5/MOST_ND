@@ -398,6 +398,6 @@ public class GraphicalInterfaceConstants {
     // is much more stringent and should only be used for models that are "mature"
     public static final String DEFAULT_FILE_TYPE = "csv";
 
-	public static final String GDBB_PREFIX = "GDBB";
+	public static final String GDBB_PREFIX = "GDBB_";
 }
 

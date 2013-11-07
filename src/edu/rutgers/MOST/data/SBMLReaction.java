@@ -14,6 +14,7 @@ public class SBMLReaction implements ModelReaction {
 	private String reactionEqunNames;
 	private String reversible;
 	private double biologicalObjective;
+	private double syntheticObjective;
 	private double upperBound;
 	private double lowerBound;	
 	private String geneAssociation;
@@ -93,6 +94,14 @@ public class SBMLReaction implements ModelReaction {
 		this.biologicalObjective = biologicalObjective;
 	}
 
+	public double getSyntheticObjective() {
+		return syntheticObjective;
+	}
+
+	public void setSyntheticObjective(double syntheticObjective) {
+		this.syntheticObjective = syntheticObjective;
+	}
+
 	public double getLowerBound() {
 		return lowerBound;
 	}
@@ -162,6 +171,7 @@ public class SBMLReaction implements ModelReaction {
 		this.setLowerBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 		this.setUpperBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 		this.setBiologicalObjective(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN)));
+		this.setSyntheticObjective(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN)));
 		this.setGeneAssociation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN));
 		this.setProteinAssociation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.PROTEIN_ASSOCIATION_COLUMN));
 		this.setSubsystem((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.SUBSYSTEM_COLUMN));
