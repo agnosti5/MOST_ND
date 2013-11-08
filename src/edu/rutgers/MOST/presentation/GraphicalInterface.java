@@ -741,8 +741,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {
 		// make this true only when troubleshooting, false for actual use
-		//showIdColumn = true;
-		showIdColumn = false;
+		showIdColumn = true;
+		//showIdColumn = false;
 
 		gi = this;
 
@@ -762,6 +762,7 @@ public class GraphicalInterface extends JFrame {
 
 				Solution nodeInfo = (Solution)node.getUserObject();
 				String solutionName = nodeInfo.getSolutionName();
+				System.out.println("soln " + solutionName);
 				if (node.isLeaf()) {
 					//String solutionName = nodeInfo.getSolutionName();
 					if (solutionName != null) {
@@ -8704,8 +8705,19 @@ public class GraphicalInterface extends JFrame {
 					// need to lock if process is busy
 					solution = GDBB.intermediateSolution.poll();
 					System.out.println("obj" + solution.getObjectiveValue());
+					solution.setSolutionName(optimizeName + "_" + Double.toString(solution.getObjectiveValue()));
 					solution.setDatabaseName(optimizeName);
 					publish(solution);
+					
+					// copy models, run optimization on these model
+					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+					DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+					LocalConfig.getInstance().getReactionsTableModelMap().put(solution.getSolutionName(), reactionsOptModel);
+					LocalConfig.getInstance().getMetabolitesTableModelMap().put(solution.getSolutionName(), metabolitesOptModel);
+					setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solution.getSolutionName()));
+					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
+					LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
+					System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
 				}
 			}
 			return null;
@@ -8795,6 +8807,7 @@ public class GraphicalInterface extends JFrame {
 				getPopout().load(getOptimizeName() + ".log");
 			}                                
 
+			textInput.setVisible(false);
 			//DynamicTreePanel.treePanel.getTree().setSelectionPath(DynamicTreePanel.treePanel.getTree().getPathForRow(DynamicTreePanel.treePanel.getTree().getRowCount() - 1));
 		}
 
