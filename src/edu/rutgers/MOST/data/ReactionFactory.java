@@ -65,6 +65,7 @@ public class ReactionFactory {
 					reaction.setLowerBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 					reaction.setUpperBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 					reaction.setBiologicalObjective(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN)));
+					reaction.setSyntheticObjective(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN)));
 					reaction.setGeneAssociation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN));
 					reactions.add(reaction);
 					reactionsIdPositionMap.put(reaction.getId(), count);
@@ -198,7 +199,8 @@ public class ReactionFactory {
 				syntheticObjectiveVector.add((Integer) reactionsIdPositionMap.get(id), obj);
 			}
 		}
-
+		System.out.println("syn" + syntheticObjectiveVector);
+		
 		return syntheticObjectiveVector;
 	}
 
