@@ -200,14 +200,14 @@ public class GDBBDialog extends JDialog
 		return reactionNameDBColumnMapping;
 	}
 
-	private Component createComboBox() {
-		// TODO Auto-generated method stub
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		setColumnList(new JComboBox<String>());
-		panel.add(new JLabel("Synthetic Objective Vector "));
-		panel.add(getColumnList());
-		return panel;
-	}
+//	private Component createComboBox() {
+//		// TODO Auto-generated method stub
+//		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//		setColumnList(new JComboBox<String>());
+//		panel.add(new JLabel("Synthetic Objective Vector "));
+//		panel.add(getColumnList());
+//		return panel;
+//	}
 
 	private JComponent createTimer() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));

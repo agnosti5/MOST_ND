@@ -8713,8 +8713,7 @@ public class GraphicalInterface extends JFrame {
 					System.out.println("obj" + solution.getObjectiveValue());
 					solutionName = optimizeName + "_" + Double.toString(solution.getObjectiveValue());
 					listModel.addElement(solutionName);
-					solution.setSolutionName(solutionName);
-					//solution.setSolutionName(optimizeName + "_" + Double.toString(solution.getObjectiveValue()));
+					solution.setSolutionName(solutionName);					
 					solution.setDatabaseName(optimizeName);
 					publish(solution);
 					
@@ -8727,6 +8726,7 @@ public class GraphicalInterface extends JFrame {
 					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
 					LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
 					
+					System.out.println("opt " + LocalConfig.getInstance().getOptimizationFilesList());
 					System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
 				}
 			}
@@ -9091,9 +9091,18 @@ public class GraphicalInterface extends JFrame {
 		frame.setIconImages(icons);
 		frame.setSize(1000, 600);
 		frame.setMinimumSize(new Dimension(800, 600));
-		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);		
+		frame.setVisible(true);
+		
+		// based on http://iitdu.forumsmotion.com/t593-java-swing-adding-confirmation-dialogue-for-closing-window-in-jframe
+		// prevents window from closing when cancel button is pressed in Save Changes Prompt
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		showPrompt = true;
+		
+		// selected row default at first
+		statusBar.setText("Row 1");
+	
 	}
 }
 
