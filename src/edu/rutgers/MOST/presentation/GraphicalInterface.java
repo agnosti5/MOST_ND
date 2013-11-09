@@ -766,7 +766,7 @@ public class GraphicalInterface extends JFrame {
 				if (node.isLeaf()) {
 					//String solutionName = nodeInfo.getSolutionName();
 					if (solutionName != null) {
-						System.out.println("node " + node.getUserObject().toString());
+						//System.out.println("node " + node.getUserObject().toString());
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
 							enableMenuItems();
 							clearOutputPane();
@@ -779,7 +779,7 @@ public class GraphicalInterface extends JFrame {
 							isRoot = true;
 						} else {							
 							if (node.getUserObject().toString() != null) {
-								System.out.println("node " + node.getUserObject().toString());
+								//System.out.println("node " + node.getUserObject().toString());
 								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 								if (solutionName.endsWith(node.getUserObject().toString())) {
@@ -796,8 +796,7 @@ public class GraphicalInterface extends JFrame {
 					}								
 				} else {
 					if (node.getUserObject().toString() != null) {
-						System.out.println("else " + node.getUserObject().toString());
-						System.out.println("node " + node.getUserObject().toString());
+						//System.out.println("else " + node.getUserObject().toString());
 						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 						if (solutionName.endsWith(node.getUserObject().toString())) {
@@ -8667,7 +8666,8 @@ public class GraphicalInterface extends JFrame {
 		private StringBuffer outputText;
 		private ArrayList<Double> soln;
 		private String dateTimeStamp;
-		private String optimizeName;
+		//private String optimizeName;
+		private String solutionName;
 
 		GDBBTask() {
 			model = new GDBBModel(textInput.getReactionNameDBColumnMapping().get((String)textInput.getColumnList().getSelectedItem()));
@@ -8690,22 +8690,25 @@ public class GraphicalInterface extends JFrame {
 			knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
 
 			soln = new ArrayList<Double>();
-			Format formatter;
-			formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
+//			Format formatter;
+//			formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
 			Solution solution;
 
 			while (gdbb.isAlive() || GDBB.intermediateSolution.size() > 0) {
 				if (GDBB.intermediateSolution.size() > 0) {
-					dateTimeStamp = formatter.format(new Date());
-					optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
-					listModel.addElement(optimizeName);                                
-					LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
-					setOptimizeName(optimizeName);
+//					dateTimeStamp = formatter.format(new Date());
+//					optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
+//					setOptimizeName(optimizeName);
+//					listModel.addElement(optimizeName);                                
+//					LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
+//					setOptimizeName(optimizeName);
 
 					// need to lock if process is busy
 					solution = GDBB.intermediateSolution.poll();
 					System.out.println("obj" + solution.getObjectiveValue());
-					solution.setSolutionName(optimizeName + "_" + Double.toString(solution.getObjectiveValue()));
+					solutionName = optimizeName + "_" + Double.toString(solution.getObjectiveValue());
+					solution.setSolutionName(solutionName);
+					//solution.setSolutionName(optimizeName + "_" + Double.toString(solution.getObjectiveValue()));
 					solution.setDatabaseName(optimizeName);
 					publish(solution);
 					
@@ -8717,6 +8720,7 @@ public class GraphicalInterface extends JFrame {
 					setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solution.getSolutionName()));
 					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
 					LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
+					
 					System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
 				}
 			}
@@ -8769,7 +8773,7 @@ public class GraphicalInterface extends JFrame {
 
 			textInput.enableStart();
 			textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
+			
 			writer = null;
 			//if (optimizeName.contains(ConfigConstants.DEFAULT_DATABASE_NAME)) {
 				setrFactory(new ReactionFactory("SBML"));
@@ -8808,7 +8812,24 @@ public class GraphicalInterface extends JFrame {
 			}                                
 
 			textInput.setVisible(false);
+			System.out.println(reactionsTable.getModel().getValueAt(5, 2));
 			//DynamicTreePanel.treePanel.getTree().setSelectionPath(DynamicTreePanel.treePanel.getTree().getPathForRow(DynamicTreePanel.treePanel.getTree().getRowCount() - 1));
+			// set table model to be loaded when folder GDBB clicked
+			// this will result in the last solution being loaded when folder clicked
+			LocalConfig.getInstance().getMetabolitesTableModelMap().remove(getOptimizeName());
+			LocalConfig.getInstance().getReactionsTableModelMap().remove(getOptimizeName());
+			System.out.println(getOptimizeName());
+			System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
+				
+			DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+			DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+			DefaultTableModel metabolitesOptModelCopy = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+			DefaultTableModel reactionsOptModelCopy = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+			//DefaultTableModel reactionsOptModelCopy = copyReactionsTableModel((DefaultTableModel) LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));				
+			LocalConfig.getInstance().getReactionsTableModelMap().put(solutionName, reactionsOptModel);
+			LocalConfig.getInstance().getMetabolitesTableModelMap().put(solutionName, metabolitesOptModel);
+			LocalConfig.getInstance().getReactionsTableModelMap().put(getOptimizeName(), reactionsOptModelCopy);
+			LocalConfig.getInstance().getMetabolitesTableModelMap().put(getOptimizeName(), metabolitesOptModelCopy);
 		}
 
 		public ReactionFactory getrFactory() {
