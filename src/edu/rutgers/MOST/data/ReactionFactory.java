@@ -206,7 +206,7 @@ public class ReactionFactory {
 				syntheticObjectiveVector.add((Integer) reactionsIdPositionMap.get(id), obj);
 			}
 		}
-		System.out.println("syn" + syntheticObjectiveVector);
+		//System.out.println("syn" + syntheticObjectiveVector);
 		
 		return syntheticObjectiveVector;
 	}

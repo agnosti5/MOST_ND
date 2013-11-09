@@ -78,12 +78,15 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.channels.FileChannel;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -779,15 +782,16 @@ public class GraphicalInterface extends JFrame {
 							isRoot = true;
 						} else {							
 							if (node.getUserObject().toString() != null) {
-								//System.out.println("node " + node.getUserObject().toString());
+								System.out.println("node " + node.getUserObject().toString());
 								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
-								if (solutionName.endsWith(node.getUserObject().toString())) {
+								//if (solutionName.endsWith(node.getUserObject().toString())) {
+									System.out.println(solutionName + ".log");
 									loadOutputPane(solutionName + ".log");
 									if (getPopout() != null) {
 										getPopout().load(solutionName + ".log");
 									}										
-								}
+								//}
 								disableMenuItems();
 								setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
 								isRoot = false;					
@@ -8802,9 +8806,9 @@ public class GraphicalInterface extends JFrame {
 					outputText.append("Knockouts:");
 					outputText.append(kString);
 
-					File file = new File(getOptimizeName() + ".log");
+					File file = new File(solutionName + ".log");
 					writer = new BufferedWriter(new FileWriter(file));
-					writer.write(outputText.toString());                        
+					writer.write(outputText.toString());                     
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -8844,6 +8848,7 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(solutionName, metabolitesOptModel);
 			LocalConfig.getInstance().getReactionsTableModelMap().put(getOptimizeName(), reactionsOptModelCopy);
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(getOptimizeName(), metabolitesOptModelCopy);
+			copyLogFile(solutionName, getOptimizeName());  
 		}
 
 		public ReactionFactory getrFactory() {
@@ -8855,7 +8860,43 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
+	public void copyLogFile(String oldLog, String newLog) {
 
+		File sourceFile = new File(oldLog + ".log");
+		File destFile = new File(newLog + ".log");
+		try{
+			copyFile(sourceFile, destFile);
+		}
+		catch(IOException exc){
+
+			exc.printStackTrace();
+
+		}
+	}
+	
+	public static void copyFile(File sourceFile, File destFile) throws IOException {
+		if(!destFile.exists()) {
+			destFile.createNewFile();
+		}
+
+		FileChannel source = null;
+		FileChannel destination = null;
+
+		try {
+			source = new FileInputStream(sourceFile).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
+			destination.transferFrom(source, 0, source.size());
+		}
+		finally {
+			if(source != null) {
+				source.close();
+			}
+			if(destination != null) {
+				destination.close();
+			}
+		}
+	}
+	
 	class TimeListener implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			if (LocalConfig.getInstance().getProgress() > 0) {
