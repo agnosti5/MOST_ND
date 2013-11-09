@@ -409,6 +409,7 @@ public class SBMLModelReader {
 						String noteItem = "";
 						//removes xmlns (xml namespace tags)
 						if (noteString.contains("xmlns")) {
+							//System.out.println(noteString);
 							if (!noteString.endsWith("/>")) {
 								noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
 								String endtag = noteString.substring(noteString.lastIndexOf("<"));
@@ -417,7 +418,7 @@ public class SBMLModelReader {
 									noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
 									noteItemList.add(noteItem);										
 								}
-							}
+							} 
 						} else {
 							if ((noteString.indexOf(">") + 1) < noteString.lastIndexOf("<")) {
 								//for "<>", "</>" types of nodes, tags are removed

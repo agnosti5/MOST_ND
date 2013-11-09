@@ -21,6 +21,7 @@ import org.sbml.jsbml.Model;
 import org.sbml.jsbml.Reaction;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLWriter;
+import org.sbml.jsbml.SBase;
 import org.sbml.jsbml.Species;
 import org.sbml.jsbml.SpeciesReference;
 import org.sbml.jsbml.Unit;
@@ -613,11 +614,20 @@ public class JSBMLWriter implements TreeModelListener{
 				curReact.setName(name);
 				curReact.setReversible(reversible);
 				
+				String noteString = "";
 				String gAssoc = "GENE_ASSOCIATION:" + " " + cur.getGeneAssociation();
-				curReact.setNotes(gAssoc);
-				
 				String pAssoc = "PROTEIN_ASSOCIATION:" + " " + cur.getProteinAssociation();
-				curReact.setNotes(pAssoc);
+				String subsys = "SUBSYSTEM:" + " " + cur.getSubsystem();
+				String pClass = "PROTEIN_CLASS:" + " " + cur.getProteinClass();
+//				noteString += gAssoc + "</p><p>" + pAssoc + "</p><p>" + subsys + "</p><p>" + pClass;
+//				curReact.setNotes(noteString);
+				
+				// this site may be helpful
+				//http://sourceforge.net/mailarchive/forum.php?thread_name=E1TujW6-0000Tp-Vd%40sfp-svn-1.v30.ch3.sourceforge.com&forum_name=jsbml-svn
+				// no clue how to create an sbase
+//				sbase.appendNotes(gAssoc);
+//				sbase.appendNotes(pAssoc);
+//				curReact.setNotes(sbase.getNotes());
 				
 				/*
 				String geneAssoc = cur.getGeneAssociation();
