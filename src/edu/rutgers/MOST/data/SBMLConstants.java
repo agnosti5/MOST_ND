@@ -21,4 +21,7 @@ public class SBMLConstants {
 	public static final String RENAME_COLUMN_MESSAGE = "Do you wish to rename a column? If \"No\", column names will be ";
 	public static final String DUPLICATE_COLUMN_SUFFIX = "_1";
 	
+	public static final String METABOLITE_ABBREVIATION_PREFIX = "M_";
+	public static final String REACTION_ABBREVIATION_PREFIX = "R_";
+	
 }

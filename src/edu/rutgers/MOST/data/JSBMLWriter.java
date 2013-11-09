@@ -31,6 +31,8 @@ import org.sbml.jsbml.xml.XMLNode;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class JSBMLWriter implements TreeModelListener{
 	public String sourceType;
@@ -315,25 +317,39 @@ public class JSBMLWriter implements TreeModelListener{
 			System.out.print("\n");
 			*/
 			int metabRow = 0;
+			int blankMetabAbbrCount = 1;
 			compartments = new HashMap();
 			for (int i=0; i < length; i++) {
 				SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteByRow(i);
 				//SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteById(i);
 				//System.out.println(curMeta);
-				
-				if (curMeta.getMetaboliteAbbreviation() != null && curMeta.getMetaboliteAbbreviation().length() > 0) {
+				if (curMeta.getMetaboliteAbbreviation() == null || curMeta.getMetaboliteAbbreviation().trim().length() == 0) {
+					curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "[" + blankMetabAbbrCount + "]");
+					//GraphicalInterface.metabolitesTable.getModel().setValueAt(curMeta.getMetaboliteAbbreviation(), i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+					blankMetabAbbrCount += 1;
+				}
+				Utilities u = new Utilities();
+				String abbr = u.makeValidID(curMeta.getMetaboliteAbbreviation());
+				//System.out.println(abbr);
+				curMeta.setMetaboliteAbbreviation(abbr);
+//				if (curMeta.getMetaboliteAbbreviation().contains("-")) {
+//					String abbr = curMeta.getMetaboliteAbbreviation();
+//					abbr.replaceAll("-", "_");
+//					curMeta.setMetaboliteAbbreviation(abbr);
+//				}
+				//if (curMeta.getMetaboliteAbbreviation() != null && curMeta.getMetaboliteAbbreviation().length() > 0) {
 					String comp = curMeta.getCompartment();
-					
-					if (!compartments.containsKey(comp)) {
-						Compartment temp = model.createCompartment(comp);
-						compartments.put(comp,temp);
+					String compTrim = comp.trim();
+					if (!compartments.containsKey(compTrim)) {
+						Compartment temp = model.createCompartment(compTrim);
+						compartments.put(compTrim,temp);
 					}
 					
 					this.allMetabolites.add(curMeta);	
 					metabolitesMap.put(metabRow, curMeta);
 					//metabolitesMap.put(i, curMeta);
 					metabRow += 1;
-				}			
+				//}			
 			}
 			
 			if (this.model != null) {
@@ -367,23 +383,6 @@ public class JSBMLWriter implements TreeModelListener{
 			return true;
 		}
 		
-		public String makeValidID(String mAbrv) {
-			//if (!isValidID(mAbrv)) {
-			if (mAbrv.contains("[") && mAbrv.contains("]")) {
-				mAbrv = mAbrv.replace("[","_");
-				mAbrv = mAbrv.replace("]","");
-			}
-				
-				//mAbrv = "m_" + mAbrv;
-				if (!mAbrv.startsWith("M_")) {
-					mAbrv = "M_" + mAbrv;
-				}
-				
-			//}
-			return mAbrv;
-			
-		}
-		
 		public void devModel() {
 			Vector<Species> curSpecies;
 			
@@ -398,7 +397,8 @@ public class JSBMLWriter implements TreeModelListener{
 				String bound = cur.getBoundary();
 				String mAbrv = cur.getMetaboliteAbbreviation();
 				
-				mAbrv = this.makeValidID(mAbrv);
+				Utilities u = new Utilities();
+				mAbrv = u.makeValidID(mAbrv);
 				
 				String mName = cur.getMetaboliteName();
 				if (null != cur) { 
@@ -465,13 +465,19 @@ public class JSBMLWriter implements TreeModelListener{
 			int length = rFactory.getAllReactions().size();
 			
 			int reacCount = 0;
+			int blankReacAbbrCount = 1;
+			int duplCount = 1;
 			for (int i = 0 ; i< length; i++) {
 				SBMLReaction curReact = (SBMLReaction) rFactory.getReactionByRow(i);
 				//SBMLReaction curReact = (SBMLReaction) rFactory.getReactionById(i);
 				//System.out.println(curReact);
-				if (curReact.getReactionAbbreviation() != null && curReact.getReactionAbbreviation().length() > 0) {
-					
+				//if (curReact.getReactionAbbreviation() != null && curReact.getReactionAbbreviation().length() > 0) {
+				if (curReact.getReactionAbbreviation() == null || curReact.getReactionAbbreviation().trim().length() == 0) {
+					curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "[" + curReact.getReactionAbbreviation() + "]");
+					GraphicalInterface.reactionsTable.getModel().setValueAt(curReact.getReactionAbbreviation(), i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
+					blankReacAbbrCount += 1;
 				}
+								
 				allReactions.add(curReact);				
 			}
 			
@@ -550,7 +556,7 @@ public class JSBMLWriter implements TreeModelListener{
 			ASTNode math = new ASTNode();
 			//math.setName("FLUX_VALUE");
 			int curReacCount = 0;
-			
+			ArrayList<String> abbrList = new ArrayList<String>();
 			for (SBMLReaction cur : allReactions) {
 				
 				String id = cur.getReactionAbbreviation();
@@ -590,8 +596,20 @@ public class JSBMLWriter implements TreeModelListener{
 				law.addLocalParameter(curParam.get(redStr));
 						
 				//law.addDeclaredNamespace("FLUX_VALUE", "http://www.w3.org/1998/Math/MathML");
-								
-				Reaction curReact = model.createReaction(id);
+				
+				Utilities u = new Utilities();
+				String validId = u.makeValidReactionID(id);
+				if (!abbrList.contains(validId)) {
+					abbrList.add(validId);
+				} else {
+					System.out.println("contains");
+					validId = validId + u.duplicateSuffix(validId, abbrList);
+					abbrList.add(validId);
+					System.out.println(validId);
+				}
+				System.out.println(abbrList);
+				System.out.println("reac id " + validId);
+				Reaction curReact = model.createReaction(validId);
 				curReact.setName(name);
 				curReact.setReversible(reversible);
 				
@@ -643,13 +661,16 @@ public class JSBMLWriter implements TreeModelListener{
 					//String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
 					//System.out.println(reactAbbrv);
 					//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
-					reactAbbrv = reactAbbrv.replace("[","_");
-					reactAbbrv = reactAbbrv.replace("]","");
+//					if (reactAbbrv.contains("[") && reactAbbrv.contains("]")) {
+//						reactAbbrv = reactAbbrv.replace("[","_");
+//						reactAbbrv = reactAbbrv.replace("]","");
+//					}					
 					//reactAbbrv = "m" + reactAbbrv;
-					if (!reactAbbrv.startsWith("M_")) {
-						reactAbbrv = "M_" + reactAbbrv;
-					}
+					//Utilities u = new Utilities();
+					String abbr = u.makeValidID(reactAbbrv);
+					reactAbbrv = abbr;
 					
+					System.out.println(reactAbbrv);
 					//reactAbbrv = makeValidID(reactAbbrv);
 					curSpec.setSpecies(reactAbbrv); 
 					//curSpec.setName(reactAbbrv);
@@ -674,13 +695,11 @@ public class JSBMLWriter implements TreeModelListener{
 					//String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
 					//System.out.println(reactAbbrv);
 					//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
-					reactAbbrv = reactAbbrv.replace("[","_");
-					reactAbbrv = reactAbbrv.replace("]","");
-					//reactAbbrv = "m" + reactAbbrv;
-					if (!reactAbbrv.startsWith("M_")) {
-						reactAbbrv = "M_" + reactAbbrv;
-					}
+					//Utilities u = new Utilities();
+					String abbr = u.makeValidID(reactAbbrv);
+					reactAbbrv = abbr;
 					
+					System.out.println(reactAbbrv);
 					//reactAbbrv = makeValidID(reactAbbrv);
 					curSpec.setSpecies(reactAbbrv); 
 					//curSpec.setName(reactAbbrv);
@@ -714,8 +733,8 @@ public class JSBMLWriter implements TreeModelListener{
 						reactAbbrv = reactAbbrv.replace("[","_");
 						reactAbbrv = reactAbbrv.replace("]","");
 						//reactAbbrv = "m" + reactAbbrv;
-						if (!reactAbbrv.startsWith("M_")) {
-							reactAbbrv = "M_" + reactAbbrv;
+						if (!reactAbbrv.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX)) {
+							reactAbbrv = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + reactAbbrv;
 						}
 						
 						//reactAbbrv = makeValidID(reactAbbrv);
@@ -747,8 +766,8 @@ public class JSBMLWriter implements TreeModelListener{
 						mAbbrv = mAbbrv.replace("[","_");
 						mAbbrv = mAbbrv.replace("]","");
 						//mAbbrv = "m" + mAbbrv;
-						if (!mAbbrv.startsWith("M_")) {
-							mAbbrv = "M_" + mAbbrv;
+						if (!mAbbrv.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX)) {
+							mAbbrv = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + mAbbrv;
 						}
 						
 						curSpec.setSpecies(mAbbrv);

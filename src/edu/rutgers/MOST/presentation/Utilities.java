@@ -3,7 +3,11 @@ package edu.rutgers.MOST.presentation;
 import java.io.File;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+
+import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.SBMLConstants;
 
 public class Utilities {
 
@@ -79,5 +83,54 @@ public class Utilities {
             //System.out.println("Error renmaing file");
         }
     }
+	
+	public String makeValidID(String mAbrv) {
+		//if (!isValidID(mAbrv)) {
+		if (mAbrv.contains("[") && mAbrv.contains("]")) {
+			mAbrv = mAbrv.replace("[","_");
+			mAbrv = mAbrv.replace("]","");
+		}
+
+		if (!mAbrv.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX)) {
+			mAbrv = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + mAbrv;
+		}
+
+		if (mAbrv.contains("-")) {
+			mAbrv = mAbrv.replaceAll("-", "_");
+		}
+				
+		return mAbrv;
+
+	}
+	
+	public String makeValidReactionID(String rAbrv) {
+		if (rAbrv.contains("[") && rAbrv.contains("]")) {
+			rAbrv = rAbrv.replace("[","_");
+			rAbrv = rAbrv.replace("]","");
+		}
+		
+		if (!rAbrv.startsWith(SBMLConstants.REACTION_ABBREVIATION_PREFIX)) {
+			rAbrv = SBMLConstants.REACTION_ABBREVIATION_PREFIX + rAbrv;
+		}
+
+		if (rAbrv.contains("-")) {
+			rAbrv = rAbrv.replaceAll("-", "_");
+		}
+				
+		return rAbrv;
+
+	}
+	
+	public String duplicateSuffix(String value, ArrayList<String> list) {
+		String duplicateSuffix = "_1";
+		if (list.contains(value + duplicateSuffix)) {
+			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length()));
+			while (list.contains(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
+				duplicateCount += 1;
+			}
+			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
+		}
+		return duplicateSuffix;
+	}
 	
 }
