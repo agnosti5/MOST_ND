@@ -315,6 +315,9 @@ public class ReactionParser {
 
 	
 	public static boolean hasPrefix(String reactionEquation) {
+		// corrects error if {} are used instead of []
+		reactionEquation = reactionEquation.replace("{", "[");
+		reactionEquation = reactionEquation.replace("}", "]");
 		if (reactionEquation.startsWith("[") && reactionEquation.indexOf("]") == 2 && reactionEquation.contains(":")) {
 			return true;
 		}

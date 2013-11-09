@@ -324,7 +324,7 @@ public class JSBMLWriter implements TreeModelListener{
 				//SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteById(i);
 				//System.out.println(curMeta);
 				if (curMeta.getMetaboliteAbbreviation() == null || curMeta.getMetaboliteAbbreviation().trim().length() == 0) {
-					curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "[" + blankMetabAbbrCount + "]");
+					curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
 					//GraphicalInterface.metabolitesTable.getModel().setValueAt(curMeta.getMetaboliteAbbreviation(), i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 					blankMetabAbbrCount += 1;
 				}
@@ -473,7 +473,7 @@ public class JSBMLWriter implements TreeModelListener{
 				//System.out.println(curReact);
 				//if (curReact.getReactionAbbreviation() != null && curReact.getReactionAbbreviation().length() > 0) {
 				if (curReact.getReactionAbbreviation() == null || curReact.getReactionAbbreviation().trim().length() == 0) {
-					curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "[" + curReact.getReactionAbbreviation() + "]");
+					curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "_" + blankReacAbbrCount);
 					GraphicalInterface.reactionsTable.getModel().setValueAt(curReact.getReactionAbbreviation(), i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 					blankReacAbbrCount += 1;
 				}

@@ -85,18 +85,14 @@ public class Utilities {
     }
 	
 	public String makeValidID(String mAbrv) {
-		//if (!isValidID(mAbrv)) {
+		mAbrv = replaceInvalidSBMLCharacters(mAbrv);
 		if (mAbrv.contains("[") && mAbrv.contains("]")) {
 			mAbrv = mAbrv.replace("[","_");
 			mAbrv = mAbrv.replace("]","");
 		}
-
+		
 		if (!mAbrv.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX)) {
 			mAbrv = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + mAbrv;
-		}
-
-		if (mAbrv.contains("-")) {
-			mAbrv = mAbrv.replaceAll("-", "_");
 		}
 				
 		return mAbrv;
@@ -104,6 +100,7 @@ public class Utilities {
 	}
 	
 	public String makeValidReactionID(String rAbrv) {
+		rAbrv = replaceInvalidSBMLCharacters(rAbrv);
 		if (rAbrv.contains("[") && rAbrv.contains("]")) {
 			rAbrv = rAbrv.replace("[","_");
 			rAbrv = rAbrv.replace("]","");
@@ -112,13 +109,48 @@ public class Utilities {
 		if (!rAbrv.startsWith(SBMLConstants.REACTION_ABBREVIATION_PREFIX)) {
 			rAbrv = SBMLConstants.REACTION_ABBREVIATION_PREFIX + rAbrv;
 		}
-
-		if (rAbrv.contains("-")) {
-			rAbrv = rAbrv.replaceAll("-", "_");
-		}
-				
+						
 		return rAbrv;
 
+	}
+	
+	public String replaceInvalidSBMLCharacters(String value) {
+		String corrected = "";
+		
+		if (value.contains("-")) {
+			value = value.replaceAll("-", "_");
+		}
+		if (value.contains("*")) {
+			value = value.replace("*", SBMLConstants.ASTERIC_REPLACEMENT);
+		}
+		if (value.contains("(")) {
+			value = value.replace("(", SBMLConstants.PARENTHESIS_REPLACEMENT);
+		}
+		if (value.contains(")")) {
+			value = value.replace(")", SBMLConstants.PARENTHESIS_REPLACEMENT);
+		}
+		if (value.contains(":")) {
+			value = value.replace(":", SBMLConstants.COLON_CHARACTER_REPLACEMENT);
+		}
+		if (value.contains("{")) {
+			value = value.replace("{", "[");
+		}
+		if (value.contains("}")) {
+			value = value.replace("}", "]");
+		}
+		if (value.contains("'")) {
+			value = value.replace("'", SBMLConstants.APOSTROPHE_REPLACEMENT);
+		}
+		if (value.contains("#")) {
+			value = value.replace("#", SBMLConstants.NUMBER_SIGN_REPLACEMENT);
+		}
+		if (value.contains(" ")) {
+			value = value.replace(" ", "_");
+		}
+		corrected = value;
+		
+		return corrected;
+		
 	}
 	
 	public String duplicateSuffix(String value, ArrayList<String> list) {
