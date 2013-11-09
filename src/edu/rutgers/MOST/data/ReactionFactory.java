@@ -62,11 +62,18 @@ public class ReactionFactory {
 					reaction.setId(Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 					reaction.setKnockout((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.KO_COLUMN));
 					reaction.setFluxValue(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN)));
+					reaction.setReactionAbbreviation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN));
+					reaction.setReactionName((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_NAME_COLUMN));
+					reaction.setReactionEqunAbbr((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
+					reaction.setReversible((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REVERSIBLE_COLUMN));				
 					reaction.setLowerBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 					reaction.setUpperBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 					reaction.setBiologicalObjective(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN)));
 					reaction.setSyntheticObjective(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN)));
 					reaction.setGeneAssociation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN));
+					reaction.setProteinAssociation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.PROTEIN_ASSOCIATION_COLUMN));
+					reaction.setSubsystem((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.SUBSYSTEM_COLUMN));
+					reaction.setProteinClass((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.PROTEIN_CLASS_COLUMN));
 					reactions.add(reaction);
 					reactionsIdPositionMap.put(reaction.getId(), count);
 					count += 1;
@@ -204,6 +211,21 @@ public class ReactionFactory {
 		return syntheticObjectiveVector;
 	}
 
+	public Vector<String> getReactionAbbreviations() {
+		Vector<ModelReaction> reactions = getAllReactions();
+		Vector<String> reactionAbbreviations = new Vector<String>();
+
+		if("SBML".equals(sourceType)){
+			for (int i = 0; i < reactions.size(); i++) {
+				int id = ((SBMLReaction) reactions.get(i)).getId();
+				String reacAbbr = ((SBMLReaction) reactions.get(i)).getReactionAbbreviation();
+				reactionAbbreviations.add((Integer) reactionsIdPositionMap.get(id), reacAbbr);
+			}
+		}
+        System.out.println(reactionAbbreviations);
+		return reactionAbbreviations;
+	}
+	
 	public ArrayList<Integer> reactionIdList() {
 		ArrayList<Integer> reactionIdList = new ArrayList<Integer>();
 

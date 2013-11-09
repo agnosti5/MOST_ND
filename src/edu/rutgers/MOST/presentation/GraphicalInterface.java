@@ -8668,6 +8668,7 @@ public class GraphicalInterface extends JFrame {
 		private String dateTimeStamp;
 		//private String optimizeName;
 		private String solutionName;
+		private String kString;
 
 		GDBBTask() {
 			model = new GDBBModel(textInput.getReactionNameDBColumnMapping().get((String)textInput.getColumnList().getSelectedItem()));
@@ -8746,7 +8747,8 @@ public class GraphicalInterface extends JFrame {
 			double[] x = solution.getKnockoutVector();
 			double objectiveValue = solution.getObjectiveValue();
 
-			String kString = "";
+			kString = "";
+			//String kString = "";
 			soln.clear();
 			for (int j = 0; j < x.length; j++) {
 				soln.add(x[j]);
@@ -8785,10 +8787,20 @@ public class GraphicalInterface extends JFrame {
 				System.out.println("optimizeName = " + getOptimizeName());
 				writer = null;
 				try {
+					String synObjString = "";
+					for (int i = 0; i < getrFactory().getSyntheticObjectiveVector().size(); i ++) {
+						if (getrFactory().getSyntheticObjectiveVector().get(i) > 0) {
+							synObjString += "Reaction '" + getrFactory().getReactionAbbreviations().get(i) + "' Synthetic Objective = " + getrFactory().getSyntheticObjectiveVector().get(i) + "\n";
+						}
+					}
+					outputText.append("GDBB" + "\n");
+					outputText.append(synObjString);
+					outputText.append("Number of Knockouts = " + model.getC() + "\n");
 					//                                outputText.append(getDatabaseName() + "\n");
 					outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
 					outputText.append("Maximum synthetic objective: "        + gdbb.getMaxObj() + "\n");
-					outputText.append("knockouts: \n");
+					outputText.append("Knockouts:");
+					outputText.append(kString);
 
 					File file = new File(getOptimizeName() + ".log");
 					writer = new BufferedWriter(new FileWriter(file));
@@ -8806,7 +8818,7 @@ public class GraphicalInterface extends JFrame {
 						e.printStackTrace();
 					}
 				}
-				//loadOutputPane(getOptimizeName() + ".log");
+				loadOutputPane(getOptimizeName() + ".log");
 			//}
 			//                loadOutputPane(getOptimizePath() + ".log");
 			if (getPopout() != null) {
