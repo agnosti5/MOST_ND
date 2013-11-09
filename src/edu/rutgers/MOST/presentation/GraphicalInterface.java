@@ -8707,6 +8707,7 @@ public class GraphicalInterface extends JFrame {
 					solution = GDBB.intermediateSolution.poll();
 					System.out.println("obj" + solution.getObjectiveValue());
 					solutionName = optimizeName + "_" + Double.toString(solution.getObjectiveValue());
+					listModel.addElement(solutionName);
 					solution.setSolutionName(solutionName);
 					//solution.setSolutionName(optimizeName + "_" + Double.toString(solution.getObjectiveValue()));
 					solution.setDatabaseName(optimizeName);
@@ -8762,6 +8763,7 @@ public class GraphicalInterface extends JFrame {
 			GraphicalInterface.outputTextArea.append("\n\n" + model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n" + "Maximum synthetic objective: " + objectiveValue + "\nKnockouts:" + kString);
 			//DynamicTreePanel.treePanel.setNodeSelected(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1);
 			DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+			System.out.println("lm " + listModel);
 		}
 
 		@Override
