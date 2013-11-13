@@ -771,7 +771,7 @@ public class GraphicalInterface extends JFrame {
 					if (solutionName != null) {
 						//System.out.println("node " + node.getUserObject().toString());
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
-							enableMenuItems();
+							isRoot = true;
 							clearOutputPane();
 							if (getPopout() != null) {
 								getPopout().clear();
@@ -779,22 +779,21 @@ public class GraphicalInterface extends JFrame {
 							setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 							setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 							setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
-							isRoot = true;
+							enableMenuItems();
 						} else {							
 							if (node.getUserObject().toString() != null) {
 								System.out.println("node " + node.getUserObject().toString());
 								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
-								//if (solutionName.endsWith(node.getUserObject().toString())) {
-									System.out.println(solutionName + ".log");
-									loadOutputPane(solutionName + ".log");
-									if (getPopout() != null) {
-										getPopout().load(solutionName + ".log");
-									}										
-								//}
+								System.out.println(solutionName + ".log");
+								loadOutputPane(solutionName + ".log");
+								if (getPopout() != null) {
+									getPopout().load(solutionName + ".log");
+								}										
+								isRoot = false;	
 								disableMenuItems();
 								setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
-								isRoot = false;					
+												
 							}
 						}		
 					}								
@@ -1348,12 +1347,7 @@ public class GraphicalInterface extends JFrame {
 					copyMetabolitesTableModels(newMetabolitesModel); 
 					setUndoNewCollections(undoItem);
 					setUpMetabolitesUndo(undoItem);	
-					if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-						setLoadErrorMessage("Model contains suspicious metabolites.");
-						statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
-					} else {
-						statusBar.setText("Row 1");
-					}
+					maybeDisplaySuspiciousMetabMessage(statusBarRow());
 				} catch (Exception e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
@@ -2172,12 +2166,7 @@ public class GraphicalInterface extends JFrame {
 				String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
 				if (tabIndex == 0 && reactionsTable.getSelectedRow() > - 1) {
 					selectedCellChanged = true;
-					if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-						setLoadErrorMessage("Model contains suspicious metabolites.");
-						statusBar.setText("Row " + reactionRow + "                   " + getLoadErrorMessage());
-					} else {
-						statusBar.setText("Row " + reactionRow);
-					}
+					maybeDisplaySuspiciousMetabMessage(reactionRow);
 					// prevents invisible id column from setting id in formulaBar for find events
 					if (reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > 0) {
 						int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
@@ -2187,12 +2176,7 @@ public class GraphicalInterface extends JFrame {
 					enableOrDisableReactionsItems();
 				} else if (tabIndex == 1 && metabolitesTable.getSelectedRow() > - 1) {
 					selectedCellChanged = true;
-					if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-						setLoadErrorMessage("Model contains suspicious metabolites.");
-						statusBar.setText("Row " + metaboliteRow + "                   " + getLoadErrorMessage());
-					} else {
-						statusBar.setText("Row " + metaboliteRow);
-					}					
+					maybeDisplaySuspiciousMetabMessage(metaboliteRow);				
 					if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > 0) {
 						int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 						formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn())); 
@@ -2200,12 +2184,7 @@ public class GraphicalInterface extends JFrame {
 					}
 					enableOrDisableMetabolitesItems();
 				} else {
-					if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-						setLoadErrorMessage("Model contains suspicious metabolites.");
-						statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
-					} else {
-						statusBar.setText("Row 1");
-					}
+					maybeDisplaySuspiciousMetabMessage(statusBarRow());
 					formulaBar.setText("");
 				}
 			}
@@ -3130,10 +3109,7 @@ public class GraphicalInterface extends JFrame {
 						updateReactionEquation(newValue, id, rowIndex, parser.getEquation());
 					}
 				} 
-				if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-					setLoadErrorMessage("Model contains suspicious metabolites.");
-					statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
-				}
+				maybeDisplaySuspiciousMetabMessage(statusBarRow());
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.KO_COLUMN) {
 			if (validator.validTrueEntry(newValue)) {
@@ -3687,15 +3663,7 @@ public class GraphicalInterface extends JFrame {
 			highlightUnusedMetabolitesItem.setEnabled(false);
 			deleteUnusedItem.setEnabled(false);
 		}
-		if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-			setLoadErrorMessage("Model contains suspicious metabolites.");
-			// selected row default at row 1 (index 0)
-			statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
-			findSuspiciousItem.setEnabled(true);
-		} else {
-			statusBar.setText("Row 1");
-			findSuspiciousItem.setEnabled(false);
-		}		
+		maybeDisplaySuspiciousMetabMessage(statusBarRow());	
 
 		if (getMetabolitesSortColumnIndex() >= 0) {
 			metabolitesTable.setSortOrder(getMetabolitesSortColumnIndex(), getMetabolitesSortOrder());
@@ -3716,14 +3684,7 @@ public class GraphicalInterface extends JFrame {
 			setReactionsSortColumnIndex(0);
 			setReactionsSortOrder(SortOrder.ASCENDING);
 		}	
-		// selected row default at row 1 (index 0)
-		if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-			setLoadErrorMessage("Model contains suspicious metabolites.");
-			// selected row default at row 1 (index 0)
-			statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
-		} else {
-			statusBar.setText("Row 1");
-		}				   
+		maybeDisplaySuspiciousMetabMessage(statusBarRow());			   
 	}
 
 	public void setUpTables() {
@@ -3734,14 +3695,7 @@ public class GraphicalInterface extends JFrame {
 		enableMenuItems();
 		setSortDefault();
 		setUpCellSelectionMode();
-		// selected row default at row 1 (index 0)
-		if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-			setLoadErrorMessage("Model contains suspicious metabolites.");
-			// selected row default at row 1 (index 0)
-			statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
-		} else {
-			statusBar.setText("Row 1");
-		}	
+		maybeDisplaySuspiciousMetabMessage(statusBarRow());
 	}
 
 	public void setBooleanDefaults() {
@@ -3978,12 +3932,7 @@ public class GraphicalInterface extends JFrame {
 				}
 			}
 			String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
-			if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-				setLoadErrorMessage("Model contains suspicious metabolites.");
-				statusBar.setText("Row " + reactionRow + "                   " + getLoadErrorMessage());
-			} else {
-				statusBar.setText("Row " + reactionRow);
-			}
+			maybeDisplaySuspiciousMetabMessage(reactionRow);
 			if (reactionsTable.getRowCount() > 0 && reactionsTable.getSelectedRow() > -1 && tabbedPane.getSelectedIndex() == 0) {
 				enableOrDisableReactionsItems();
 				// if any cell selected any existing find all highlighting is unhighlighted
@@ -4030,12 +3979,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			if (reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > -1 && tabbedPane.getSelectedIndex() == 0) {
 				String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
-				if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-					setLoadErrorMessage("Model contains suspicious metabolites.");
-					statusBar.setText("Row " + reactionRow + "                   " + getLoadErrorMessage());
-				} else {
-					statusBar.setText("Row " + reactionRow);
-				}
+				maybeDisplaySuspiciousMetabMessage(reactionRow);
 				enableOrDisableReactionsItems();
 				// if any cell selected any existing find all highlighting is unhighlighted
 				reactionsFindAll = false;
@@ -4351,17 +4295,8 @@ public class GraphicalInterface extends JFrame {
 					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}				
 			}
-			String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
-			try {
-				if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-					setLoadErrorMessage("Model contains suspicious metabolites.");
-					statusBar.setText("Row " + metaboliteRow + "                   " + getLoadErrorMessage());
-				} else {
-					statusBar.setText("Row " + metaboliteRow);
-				}
-			} catch (Throwable t) {
-
-			}			
+			//String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
+			maybeDisplaySuspiciousMetabMessage(statusBarRow());			
 			if (metabolitesTable.getRowCount() > 0 && metabolitesTable.getSelectedRow() > -1 && tabbedPane.getSelectedIndex() == 1) {
 				if (metabolitesTable.getSelectedRow() > -1) {
 					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
@@ -4987,42 +4922,11 @@ public class GraphicalInterface extends JFrame {
 				}				
 			}
 			/*
-		    updateReactionsDatabaseRow(viewRow, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(viewRow, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());
-
-			ReactionsUpdater updater = new ReactionsUpdater();
-			updater.updateReactionEquations(id, reactionEditor.getOldReaction(), reactionEditor.getReactionEquation(), LocalConfig.getInstance().getLoadedDatabase());			
-			if (LocalConfig.getInstance().noButtonClicked) {
-				reactionsTable.getModel().setValueAt(updater.reactionEqunAbbr, viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-				updateReactionsDatabaseRow(viewRow, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(viewRow, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());				
-			}
-			 */
-
-			// TODO: ReactionEditor should store arrow string so that reaction created by editor has same arrow as previous
-			// so undo item not created when reaction not changed but arrow changed and for uniformity
-			/*
-		    if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null && reactionEditor.getOldReaction() != null) {
-				if (!reactionEditor.getOldReaction().equals((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN))) {
-					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null) {
-						undoItem.setNewValue((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
-					} 
-					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) != null) {
-						undoItem.setEquationNames((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN));
-					} else {
-						undoItem.setEquationNames("");
-					}
-					setUpReactionsUndo(undoItem);
-				}
-			} 
-			 */
-			/*
 			if (highlightParticipatingRxns) {
 				scrollFirstParticipatingRxnToView();
 			}
 			 */
-			if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-				setLoadErrorMessage("Model contains suspicious metabolites.");
-				statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
-			}
+			maybeDisplaySuspiciousMetabMessage(statusBarRow());	
 			// update reaction equation - metabolite names
 			//reactionsTable.getModel().setValueAt(updater.reactionEqunNames, viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			if (okToClose) {
@@ -8544,7 +8448,7 @@ public class GraphicalInterface extends JFrame {
 			highlightUnusedMetabolitesItem.setEnabled(true);
 			deleteUnusedItem.setEnabled(true);
 		}
-		findSuspiciousItem.setEnabled(true);
+		maybeDisplaySuspiciousMetabMessage(statusBarRow());
 		if (hasGurobiPath) {
 			fbaItem.setEnabled(true);
 			gdbbItem.setEnabled(true);
@@ -8568,6 +8472,36 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
+	public void maybeDisplaySuspiciousMetabMessage(String row) {
+		try {
+			if (isRoot && LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
+				setLoadErrorMessage("Model contains suspicious metabolites.");
+				// selected row default at row 1 (index 0)
+				statusBar.setText("Row " + row + "                   " + getLoadErrorMessage());
+				findSuspiciousItem.setEnabled(true);
+			} else {
+				statusBar.setText("Row " + row);
+				findSuspiciousItem.setEnabled(false);
+			}
+		} catch (Throwable t) {
+			statusBar.setText("Row " + row);
+		}		
+	}
+	
+	public String statusBarRow() {
+		String row = "1";
+		if (tabbedPane.getSelectedIndex() == 0) {
+			if (reactionsTable.getSelectedRow() > -1) {
+				row = Integer.toString((reactionsTable.getSelectedRow() + 1));
+			} 
+		} else if (tabbedPane.getSelectedIndex() == 1) {
+			if (metabolitesTable.getSelectedRow() > -1) {
+				row = Integer.toString((metabolitesTable.getSelectedRow() + 1));
+			}
+		}
+		return row;
+	}
+	
 	// disables menu items when optimization is selected in analysis pane (tree)
 	public void disableMenuItems() {
 		saveSBMLItem.setEnabled(false);
