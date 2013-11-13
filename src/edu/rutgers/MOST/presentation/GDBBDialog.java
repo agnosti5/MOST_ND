@@ -30,6 +30,7 @@ import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
@@ -94,7 +95,28 @@ public class GDBBDialog extends JDialog
 				System.out.println("It is not an integer");
 				isInteger = false;
 				exception.setText("Not an integer!");
-				startButton.setEnabled(false);
+				setAlwaysOnTop(false);
+				JOptionPane.showMessageDialog(null,                
+						GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
+						GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
+						JOptionPane.ERROR_MESSAGE);
+				// if non-integer is entered in these fields after numerical error
+				// prompt, set to default value
+				try {
+					Integer.parseInt(numKnockouts.getText());
+				}
+				catch(NumberFormatException nfe2) {
+					numKnockouts.setText("1");
+				}
+				try {
+					Integer.parseInt(totalTime.getText());
+				}
+				catch(NumberFormatException nfe2) {
+					totalTime.setText("300");
+				}
+				
+				setAlwaysOnTop(true);
+				//startButton.setEnabled(false);
 			}
 			return isInteger;
 		}

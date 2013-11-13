@@ -829,7 +829,7 @@ public class GraphicalInterface extends JFrame {
 		textInput.setTitle("GDBB");
 		//textInput.setSize(300, 300);
 		// actually get different results when size is changed
-        textInput.setSize(330, 300);
+        textInput.setSize(360, 330);
 		textInput.setResizable(false);
 		textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		textInput.setLocationRelativeTo(null);
