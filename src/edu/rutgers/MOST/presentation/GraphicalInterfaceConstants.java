@@ -314,7 +314,7 @@ public class GraphicalInterfaceConstants {
     
     // delete optimize database and log files
     public static final String DELETE_ASSOCIATED_FILES_TITLE = "Delete Associated Files?";
-    public static final String DELETE_ASSOCIATED_FILES = "Delete Associated database and log Files?";
+    public static final String DELETE_ASSOCIATED_FILES = "Delete Associated log Files?";
     
     // tab names
     public static final String DEFAULT_METABOLITE_TABLE_TAB_NAME = "Metabolites";

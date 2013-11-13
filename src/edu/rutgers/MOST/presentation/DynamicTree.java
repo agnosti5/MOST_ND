@@ -87,7 +87,8 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		DynamicTree.row = row;
 	}
 
-	public JPopupMenu jPopupMenu = new JPopupMenu();         
+	public JPopupMenu jPopupMenu = new JPopupMenu();
+	public JMenuItem saveItem = new JMenuItem("Save As SQLite");         
 	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV Reactions");    
 	public JMenuItem saveAsSBMLItem = new JMenuItem("Save As SBML");
 	//public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");
@@ -147,6 +148,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     		        	// http://www.javadocexamples.com/java_source/org/gui4j/core/listener/Gui4jMouseListenerTree.java.html
     		        	tree.setSelectionPath(selPath);
     		        	
+    		        	saveItem.setEnabled(true);
         				saveAsCSVItem.setEnabled(true);
     					//saveAsSBMLItem.setEnabled(true); // will enable when SBML save works
     					//saveAllItem.setEnabled(true);
@@ -157,6 +159,18 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     			}
     		}
     	});
+        
+        jPopupMenu.add(saveItem);
+        saveItem.setEnabled(false);
+        saveItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					String item = GraphicalInterface.listModel.getElementAt(getRow());
+					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
+					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
+				}				
+			}
+		});
         
         jPopupMenu.add(saveAsCSVItem);
 		saveAsCSVItem.setEnabled(false);
@@ -189,16 +203,14 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				if (getRow() > 0) {
-					// TODO: set table model to original loaded file
-					//LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
-					String item = GraphicalInterface.listModel.getElementAt(getRow());
-					LocalConfig.getInstance().getOptimizationFilesList().remove(item);
-					GraphicalInterface.listModel.remove(getRow());
-					removeCurrentNode();
-//					GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
-//					GraphicalInterface.fileList.setSelectedIndex(0);
-//					GraphicalInterface.fileListPane.repaint();
-					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+//					String item = GraphicalInterface.listModel.getElementAt(getRow());
+//					LocalConfig.getInstance().getOptimizationFilesList().remove(item);
+//					GraphicalInterface.listModel.remove(getRow());
+//					removeCurrentNode();
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+							tree.getLastSelectedPathComponent();
+					treeModel.removeNodeFromParent(node);
+					setNodeSelected(0);
 				}				
 			}
 		});
@@ -207,17 +219,12 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		clearItem.setEnabled(false);
 		clearItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				// TODO: set table model to original loaded file
-				//LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
 				GraphicalInterface.listModel.clear();
 				GraphicalInterface.listModel.addElement(LocalConfig.getInstance().getModelName());
-//				GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
-//				GraphicalInterface.fileListPane.repaint();
 				clearButFirst();
 				GraphicalInterface.outputTextArea.setText("");
 				LocalConfig.getInstance().getOptimizationFilesList().clear();
-				//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
-//				setSelectedIndex(0);
+				setNodeSelected(0);
 			}
 		});
 		

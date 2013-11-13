@@ -1015,13 +1015,13 @@ public class GraphicalInterface extends JFrame {
 
 		DynamicTreePanel.treePanel.deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				deleteItemFromDynamicTree();		
+				deleteItemFromDynamicTree();
 			}
 		});
 
 		DynamicTreePanel.treePanel.clearItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				deleteAllItemsFromDynamicTree();			
+				deleteAllItemsFromDynamicTree();
 			}
 		});
 
@@ -8395,13 +8395,6 @@ public class GraphicalInterface extends JFrame {
 				JOptionPane.QUESTION_MESSAGE, 
 				null, options, options[0]);
 		if (choice == JOptionPane.YES_OPTION) {//here
-			/*
-			System.out.println("database name: "
-					+ LocalConfig.getInstance()
-							.getOptimizationFilesList()
-							.get(DynamicTree.getRow() - 1) + ".db");
-			 */
-			u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".db");
 			File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
 			if (f.exists()) {
 				u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
@@ -8415,9 +8408,6 @@ public class GraphicalInterface extends JFrame {
 		if (choice == JOptionPane.NO_OPTION) {
 
 		}
-		// TODO; reload tables
-		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());
-		clearOutputPane();
 	}
 
 	public void deleteAllItemsFromDynamicTree() {
@@ -8434,7 +8424,6 @@ public class GraphicalInterface extends JFrame {
 		if (choice == JOptionPane.NO_OPTION) {
 
 		}
-		// TODO: reload tables here	
 	}
 
 	// enables menu items when main file is selected in analysis pane
