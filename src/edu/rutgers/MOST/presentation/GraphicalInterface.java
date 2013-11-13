@@ -4474,7 +4474,7 @@ public class GraphicalInterface extends JFrame {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
 			int viewRow = metabolitesTable.convertRowIndexToModel(adapter.row);			
 			int id = Integer.valueOf(metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString());					
-			if (metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null) {
+			if (isRoot && metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null) {
 				if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(id)) {					
 					return true;
 				}
@@ -4488,7 +4488,7 @@ public class GraphicalInterface extends JFrame {
 	HighlightPredicate unusedPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
 			int viewRow = metabolitesTable.convertRowIndexToModel(adapter.row);
-			if (metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null) {
+			if (isRoot && metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null) {
 				if (highlightUnusedMetabolites == true && !(LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN).toString()))) {					
 					return true;
 				}
@@ -8540,6 +8540,11 @@ public class GraphicalInterface extends JFrame {
 		saveCSVReactionsItem.setEnabled(true);
 		saveSQLiteItem.setEnabled(true);
 		clearItem.setEnabled(true);
+		if (LocalConfig.getInstance().getUnusedList().size() > 0) {
+			highlightUnusedMetabolitesItem.setEnabled(true);
+			deleteUnusedItem.setEnabled(true);
+		}
+		findSuspiciousItem.setEnabled(true);
 		if (hasGurobiPath) {
 			fbaItem.setEnabled(true);
 			gdbbItem.setEnabled(true);
@@ -8563,13 +8568,16 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
-	// disables menu items when optimization is selected in analysis pane
+	// disables menu items when optimization is selected in analysis pane (tree)
 	public void disableMenuItems() {
 		saveSBMLItem.setEnabled(false);
 		saveCSVMetabolitesItem.setEnabled(false);
 		saveCSVReactionsItem.setEnabled(false);
 		clearItem.setEnabled(false);
 		saveSQLiteItem.setEnabled(false);
+		highlightUnusedMetabolitesItem.setEnabled(false);
+		deleteUnusedItem.setEnabled(false);
+		findSuspiciousItem.setEnabled(false);
 		fbaItem.setEnabled(false);
 		gdbbItem.setEnabled(false);
 		addReacRowItem.setEnabled(false);
