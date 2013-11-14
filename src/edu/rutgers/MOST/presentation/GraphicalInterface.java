@@ -1263,11 +1263,11 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
 				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
 				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
+				//LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
 				System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
 				
         		listModel.addElement(optimizeName);
-        		LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
+        		//LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
 
         		setOptimizeName(optimizeName);
 
@@ -8611,6 +8611,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected Void doInBackground() {
+			LocalConfig.getInstance().getOptimizationFilesList().add(getOptimizeName());
 			rFactory = new ReactionFactory("SBML");
 			uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
 
