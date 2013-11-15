@@ -100,18 +100,12 @@ public class JSBMLWriter implements TreeModelListener{
 	}
 	
 	public void formConnect(LocalConfig config) throws Exception {
-		//config.setLoadedDatabase(ConfigConstants.DEFAULT_DATABASE_NAME);
-		//System.out.println(config.getDatabaseName());
 		curSettings = new SettingsFactory();
 		load = false;
 		if (setOutFile()) {
 		    load = true;
-		    System.out.println("load " + load);
 		    
 			curConfig = config;
-			
-			//databaseName = config.getDatabaseName();
-			
 					
 			sourceType = "SBML";
 			
@@ -147,7 +141,6 @@ public class JSBMLWriter implements TreeModelListener{
 		chooser.setCurrentDirectory(new File(lastSaveSBML_path));
 		if (GraphicalInterface.saveOptFile) {	
 			String path = getOptFilePath() + ".xml";
-			//System.out.println(path);
 			File theFileToSave = new File(path);
 			chooser.setSelectedFile(theFileToSave);
 			//System.out.println("ch " + chooser.getSelectedFile());
@@ -156,8 +149,6 @@ public class JSBMLWriter implements TreeModelListener{
 		chooser.setDialogTitle("Save to");
 		chooser.setFileFilter(new XMLFileFilter());
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		
-		//int option = chooser.showOpenDialog(output); 
 
 		boolean done = false;
 		boolean cancel = false;
@@ -186,7 +177,6 @@ public class JSBMLWriter implements TreeModelListener{
 							this.setOutFile(theFileToSave);
 
 							String rawPathName = chooser.getSelectedFile().getAbsolutePath();
-							//System.out.println(rawPathName);
 							curSettings.add("LastSaveSBML", rawPathName);
 						} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
 							done = false;
@@ -200,7 +190,6 @@ public class JSBMLWriter implements TreeModelListener{
 						this.setOutFile(theFileToSave);
 
 						String rawPathName = chooser.getSelectedFile().getAbsolutePath();
-						//System.out.println(rawPathName);
 						curSettings.add("LastSaveSBML", rawPathName);
 					}
 				}
@@ -369,35 +358,23 @@ public class JSBMLWriter implements TreeModelListener{
 			for (int i=0; i < length; i++) {
 				SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteByRow(i);
 				//SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteById(i);
-				//System.out.println(curMeta);
 				if (curMeta.getMetaboliteAbbreviation() == null || curMeta.getMetaboliteAbbreviation().trim().length() == 0) {
 					curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
-					//GraphicalInterface.metabolitesTable.getModel().setValueAt(curMeta.getMetaboliteAbbreviation(), i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 					blankMetabAbbrCount += 1;
 				}
 				Utilities u = new Utilities();
 				String abbr = u.makeValidID(curMeta.getMetaboliteAbbreviation());
-				//System.out.println(abbr);
 				curMeta.setMetaboliteAbbreviation(abbr);
-//				GraphicalInterface.metabolitesTable.getModel().setValueAt(curMeta.getMetaboliteAbbreviation(), i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-//				if (curMeta.getMetaboliteAbbreviation().contains("-")) {
-//					String abbr = curMeta.getMetaboliteAbbreviation();
-//					abbr.replaceAll("-", "_");
-//					curMeta.setMetaboliteAbbreviation(abbr);
-//				}
-				//if (curMeta.getMetaboliteAbbreviation() != null && curMeta.getMetaboliteAbbreviation().length() > 0) {
-					String comp = curMeta.getCompartment();
-					String compTrim = comp.trim();
-					if (!compartments.containsKey(compTrim)) {
-						Compartment temp = model.createCompartment(compTrim);
-						compartments.put(compTrim,temp);
-					}
-					
-					this.allMetabolites.add(curMeta);	
-					metabolitesMap.put(metabRow, curMeta);
-					//metabolitesMap.put(i, curMeta);
-					metabRow += 1;
-				//}			
+				String comp = curMeta.getCompartment();
+				String compTrim = comp.trim();
+				if (!compartments.containsKey(compTrim)) {
+					Compartment temp = model.createCompartment(compTrim);
+					compartments.put(compTrim,temp);
+				}
+
+				this.allMetabolites.add(curMeta);	
+				metabolitesMap.put(metabRow, curMeta);
+				metabRow += 1;		
 			}
 			
 			if (this.model != null) {
@@ -518,11 +495,8 @@ public class JSBMLWriter implements TreeModelListener{
 			for (int i = 0 ; i< length; i++) {
 				SBMLReaction curReact = (SBMLReaction) rFactory.getReactionByRow(i);
 				//SBMLReaction curReact = (SBMLReaction) rFactory.getReactionById(i);
-				//System.out.println(curReact);
-				//if (curReact.getReactionAbbreviation() != null && curReact.getReactionAbbreviation().length() > 0) {
 				if (curReact.getReactionAbbreviation() == null || curReact.getReactionAbbreviation().trim().length() == 0) {
 					curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "_" + blankReacAbbrCount);
-//					GraphicalInterface.reactionsTable.getModel().setValueAt(curReact.getReactionAbbreviation(), i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 					blankReacAbbrCount += 1;
 				}
 								
@@ -653,64 +627,22 @@ public class JSBMLWriter implements TreeModelListener{
 					validId = validId + u.duplicateSuffix(validId, abbrList);
 					abbrList.add(validId);
 				}
-//				System.out.println(abbrList);
-//				System.out.println("reac id " + validId);
 				Reaction curReact = model.createReaction(validId);
-//				GraphicalInterface.reactionsTable.getModel().setValueAt(cur.getReactionAbbreviation(), curReacCount, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 				curReact.setName(name);
 				curReact.setReversible(reversible);
 				
-				String noteString = "";
+				// write notes
+				
+				curReact.addNamespace("html:p");
 				String gAssoc = "GENE_ASSOCIATION:" + " " + cur.getGeneAssociation();
+				curReact.appendNotes(gAssoc);
 				String pAssoc = "PROTEIN_ASSOCIATION:" + " " + cur.getProteinAssociation();
+				curReact.appendNotes(pAssoc);
 				String subsys = "SUBSYSTEM:" + " " + cur.getSubsystem();
+				curReact.appendNotes(subsys);
 				String pClass = "PROTEIN_CLASS:" + " " + cur.getProteinClass();
-				noteString += gAssoc + "</p><p>" + pAssoc + "</p><p>" + subsys + "</p><p>" + pClass;
-				curReact.setNotes(noteString);
-				
-				//SBase b = new AbstractSBase();
-				//SBase b = new SBase();
-				
-				// this site may be helpful
-				//http://sourceforge.net/mailarchive/forum.php?thread_name=E1TujW6-0000Tp-Vd%40sfp-svn-1.v30.ch3.sourceforge.com&forum_name=jsbml-svn
-				// no clue how to create an sbase
-//				sbase.appendNotes(gAssoc);
-//				sbase.appendNotes(pAssoc);
-//				curReact.setNotes(sbase.getNotes());
-				
-				/*
-				String geneAssoc = cur.getGeneAssociation();
-				String proteinAssoc = cur.getProteinAssociation();
-				String subSystem = cur.getSubsystem();
-				String proteinClass = cur.getProteinClass();
-				
-				XMLNode gAssoc = new XMLNode();
-				XMLNode pAssoc = new XMLNode();
-				XMLAttributes gAssocA = new XMLAttributes();
-				gAssocA.add("GENE_ASSOCIATION:", geneAssoc);
-				//XMLNamespaces nSpace = new XMLNameSpaces();
-				//nSpace.add(uri, prefix)
-				//gAssoc.setNamespaces("html:p");
-				
-				gAssoc.setAttributes(gAssocA);
-				
-				curReact.setNotes(gAssoc);
-								
-				//node.clearAttributes();
-				//gAssoc.addAttr("GENE_ASSOCIATION", geneAssoc);
-				//curReact.setNotes(gAssoc);
-				
-				//pAssoc.addAttr("PROTEIN_ASSOCIATION", proteinAssoc);
-				//curReact.appendNotes(pAssoc);
-				//node.addAttr("SUBSYSTEM",subSystem);
-				//node.addAttr("PROTEIN_CLASS",proteinClass);
-				*/
-				
-				Notes attr = new Notes(cur);
-					
-//				System.out.println(cur.getReactionEqunAbbr());
-//				System.out.println(LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()));
-				
+				curReact.appendNotes(pClass);
+						
 				if (LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()) != null) {
 					for (int r = 0; r < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.size(); r++) {
 						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
@@ -718,20 +650,10 @@ public class JSBMLWriter implements TreeModelListener{
 						int inId = curR.getMetaboliteId();
 						SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
 						String reactAbbrv = curR.getMetaboliteAbbreviation();
-						//String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
-						//System.out.println(reactAbbrv);
-						//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
-//						if (reactAbbrv.contains("[") && reactAbbrv.contains("]")) {
-//							reactAbbrv = reactAbbrv.replace("[","_");
-//							reactAbbrv = reactAbbrv.replace("]","");
-//						}					
-						//reactAbbrv = "m" + reactAbbrv;
+				
 						//Utilities u = new Utilities();
 						String abbr = u.makeValidID(reactAbbrv);
 						reactAbbrv = abbr;
-						
-						//System.out.println(reactAbbrv);
-						//reactAbbrv = makeValidID(reactAbbrv);
 						curSpec.setSpecies(reactAbbrv); 
 						//curSpec.setName(reactAbbrv);
 											
@@ -740,8 +662,6 @@ public class JSBMLWriter implements TreeModelListener{
 						
 						curSpec.setLevel(level);
 						curSpec.setVersion(version);
-						//curReact.setLevel(level);
-						//curReact.setVersion(version);
 						
 						curReact.addReactant(curSpec);
 					}
@@ -752,15 +672,11 @@ public class JSBMLWriter implements TreeModelListener{
 						int inId = curP.getMetaboliteId();
 						SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
 						String reactAbbrv = curP.getMetaboliteAbbreviation();
-						//String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
-						//System.out.println(reactAbbrv);
-						//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
+						
 						//Utilities u = new Utilities();
 						String abbr = u.makeValidID(reactAbbrv);
 						reactAbbrv = abbr;
 						
-						//System.out.println(reactAbbrv);
-						//reactAbbrv = makeValidID(reactAbbrv);
 						curSpec.setSpecies(reactAbbrv); 
 						//curSpec.setName(reactAbbrv);
 											
@@ -769,15 +685,13 @@ public class JSBMLWriter implements TreeModelListener{
 						
 						curSpec.setLevel(level);
 						curSpec.setVersion(version);
-						//curReact.setLevel(level);
-						//curReact.setVersion(version);
 						
 						curReact.addProduct(curSpec);
 					}
 				}
 			
-				//curReact.addNamespace("html:p");
-				//curReact.appendNotes(attr);
+//				curReact.addNamespace("html:p");
+//				curReact.appendNotes(attr);
 				
 				law.setMath(math);
 				curReact.setKineticLaw(law);

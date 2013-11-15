@@ -256,7 +256,6 @@ public class GraphicalInterface extends JFrame {
 	public static boolean openFileChooser;
 	public static boolean showMetaboliteRenameInterface;
 	public boolean addMetabolite;
-	public boolean saveAsSBML;
 	// close
 	public static boolean exit;
 
@@ -2277,7 +2276,6 @@ public class GraphicalInterface extends JFrame {
 	class LoadSBMLAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
-			saveAsSBML = false;
 			if (openFileChooser) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser();
@@ -2339,7 +2337,6 @@ public class GraphicalInterface extends JFrame {
 	class LoadCSVAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
-			saveAsSBML = false;
 			if (openFileChooser) {
 				//setExtension(".csv");	
 				csvLoadInterface.textMetabField.setText("");
@@ -2518,7 +2515,6 @@ public class GraphicalInterface extends JFrame {
 	class LoadExistingItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
-			saveAsSBML = false;
 			if (openFileChooser) {
 				File f = new File("ModelCollection.csv");
 				ModelCollectionTable mcTable = new ModelCollectionTable(f);
@@ -3755,7 +3751,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().reactionsTableChanged = false;
 		LocalConfig.getInstance().metabolitesTableChanged = false;
 		LocalConfig.getInstance().includesReactions = true;
-		saveAsSBML = false;
 	}
 
 	public void clearConfigLists() {
