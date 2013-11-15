@@ -116,6 +116,10 @@ public class JSBMLWriter implements TreeModelListener{
 		}
 	}
 	
+	public File getOutFile() {
+		return outFile;
+	}
+
 	public JSBMLWriter() {
 		metabolitesMap = new HashMap();
 		speciesMap = new HashMap();
@@ -334,6 +338,7 @@ public class JSBMLWriter implements TreeModelListener{
 				String abbr = u.makeValidID(curMeta.getMetaboliteAbbreviation());
 				//System.out.println(abbr);
 				curMeta.setMetaboliteAbbreviation(abbr);
+//				GraphicalInterface.metabolitesTable.getModel().setValueAt(curMeta.getMetaboliteAbbreviation(), i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 //				if (curMeta.getMetaboliteAbbreviation().contains("-")) {
 //					String abbr = curMeta.getMetaboliteAbbreviation();
 //					abbr.replaceAll("-", "_");
@@ -476,7 +481,7 @@ public class JSBMLWriter implements TreeModelListener{
 				//if (curReact.getReactionAbbreviation() != null && curReact.getReactionAbbreviation().length() > 0) {
 				if (curReact.getReactionAbbreviation() == null || curReact.getReactionAbbreviation().trim().length() == 0) {
 					curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "_" + blankReacAbbrCount);
-					GraphicalInterface.reactionsTable.getModel().setValueAt(curReact.getReactionAbbreviation(), i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
+//					GraphicalInterface.reactionsTable.getModel().setValueAt(curReact.getReactionAbbreviation(), i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 					blankReacAbbrCount += 1;
 				}
 								
@@ -612,6 +617,7 @@ public class JSBMLWriter implements TreeModelListener{
 				System.out.println(abbrList);
 				System.out.println("reac id " + validId);
 				Reaction curReact = model.createReaction(validId);
+//				GraphicalInterface.reactionsTable.getModel().setValueAt(cur.getReactionAbbreviation(), curReacCount, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 				curReact.setName(name);
 				curReact.setReversible(reversible);
 				
@@ -666,91 +672,26 @@ public class JSBMLWriter implements TreeModelListener{
 				System.out.println(cur.getReactionEqunAbbr());
 				System.out.println(LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()));
 				
-				for (int r = 0; r < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.size(); r++) {
-					SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
-					SBMLReactant curR = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.get(r);
-					int inId = curR.getMetaboliteId();
-					SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
-					String reactAbbrv = curR.getMetaboliteAbbreviation();
-					//String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
-					//System.out.println(reactAbbrv);
-					//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
-//					if (reactAbbrv.contains("[") && reactAbbrv.contains("]")) {
-//						reactAbbrv = reactAbbrv.replace("[","_");
-//						reactAbbrv = reactAbbrv.replace("]","");
-//					}					
-					//reactAbbrv = "m" + reactAbbrv;
-					//Utilities u = new Utilities();
-					String abbr = u.makeValidID(reactAbbrv);
-					reactAbbrv = abbr;
-					
-					System.out.println(reactAbbrv);
-					//reactAbbrv = makeValidID(reactAbbrv);
-					curSpec.setSpecies(reactAbbrv); 
-					//curSpec.setName(reactAbbrv);
-										
-					//curSpec.setId(reactAbbrv);
-					curSpec.setStoichiometry(curR.getStoic());
-					
-					curSpec.setLevel(level);
-					curSpec.setVersion(version);
-					//curReact.setLevel(level);
-					//curReact.setVersion(version);
-					
-					curReact.addReactant(curSpec);
-				}
-				
-				for (int p = 0; p < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).products.size(); p++) {
-					SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
-					SBMLProduct curP = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).products.get(p);
-					int inId = curP.getMetaboliteId();
-					SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
-					String reactAbbrv = curP.getMetaboliteAbbreviation();
-					//String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
-					//System.out.println(reactAbbrv);
-					//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
-					//Utilities u = new Utilities();
-					String abbr = u.makeValidID(reactAbbrv);
-					reactAbbrv = abbr;
-					
-					System.out.println(reactAbbrv);
-					//reactAbbrv = makeValidID(reactAbbrv);
-					curSpec.setSpecies(reactAbbrv); 
-					//curSpec.setName(reactAbbrv);
-										
-					//curSpec.setId(reactAbbrv);
-					curSpec.setStoichiometry(curP.getStoic());
-					
-					curSpec.setLevel(level);
-					curSpec.setVersion(version);
-					//curReact.setLevel(level);
-					//curReact.setVersion(version);
-					
-					curReact.addProduct(curSpec);
-				}
-				
-				/*
-				ArrayList<SBMLReactant> curReactants = reFactory.getReactantsByReactionId(cur.getId());
-				
-				ArrayList<SBMLProduct> curProducts = prFactory.getProductsByReactionId(cur.getId());
-				
-				for (ModelReactant curReactant : curReactants) {
-					try {
+				if (LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()) != null) {
+					for (int r = 0; r < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.size(); r++) {
 						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
-						SBMLReactant curR = (SBMLReactant) curReactant;
-						
+						SBMLReactant curR = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.get(r);
 						int inId = curR.getMetaboliteId();
 						SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
-						String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
+						String reactAbbrv = curR.getMetaboliteAbbreviation();
+						//String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
 						//System.out.println(reactAbbrv);
 						//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
-						reactAbbrv = reactAbbrv.replace("[","_");
-						reactAbbrv = reactAbbrv.replace("]","");
+//						if (reactAbbrv.contains("[") && reactAbbrv.contains("]")) {
+//							reactAbbrv = reactAbbrv.replace("[","_");
+//							reactAbbrv = reactAbbrv.replace("]","");
+//						}					
 						//reactAbbrv = "m" + reactAbbrv;
-						if (!reactAbbrv.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX)) {
-							reactAbbrv = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + reactAbbrv;
-						}
+						//Utilities u = new Utilities();
+						String abbr = u.makeValidID(reactAbbrv);
+						reactAbbrv = abbr;
 						
+						System.out.println(reactAbbrv);
 						//reactAbbrv = makeValidID(reactAbbrv);
 						curSpec.setSpecies(reactAbbrv); 
 						//curSpec.setName(reactAbbrv);
@@ -765,41 +706,37 @@ public class JSBMLWriter implements TreeModelListener{
 						
 						curReact.addReactant(curSpec);
 					}
-					catch (Exception e) {
-						//System.out.println("Error: " + e.getMessage());
+					
+					for (int p = 0; p < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).products.size(); p++) {
+						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
+						SBMLProduct curP = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).products.get(p);
+						int inId = curP.getMetaboliteId();
+						SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
+						String reactAbbrv = curP.getMetaboliteAbbreviation();
+						//String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
+						//System.out.println(reactAbbrv);
+						//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
+						//Utilities u = new Utilities();
+						String abbr = u.makeValidID(reactAbbrv);
+						reactAbbrv = abbr;
 						
-					}
-				}
-				
-				for (ModelProduct curProduct : curProducts) {
-					try {
-						SpeciesReference curSpec = new SpeciesReference();
-						SBMLProduct curP = (SBMLProduct) curProduct;
-						String mAbbrv = curP.getMetaboliteAbbreviation();
-						//SpeciesReference curSpec = speciesRefMap.get(mAbbrv);
-						mAbbrv = mAbbrv.replace("[","_");
-						mAbbrv = mAbbrv.replace("]","");
-						//mAbbrv = "m" + mAbbrv;
-						if (!mAbbrv.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX)) {
-							mAbbrv = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + mAbbrv;
-						}
-						
-						curSpec.setSpecies(mAbbrv);
-						
-						//curSpec.setName(mAbbrv);
+						System.out.println(reactAbbrv);
+						//reactAbbrv = makeValidID(reactAbbrv);
+						curSpec.setSpecies(reactAbbrv); 
+						//curSpec.setName(reactAbbrv);
+											
+						//curSpec.setId(reactAbbrv);
 						curSpec.setStoichiometry(curP.getStoic());
+						
 						curSpec.setLevel(level);
 						curSpec.setVersion(version);
+						//curReact.setLevel(level);
+						//curReact.setVersion(version);
 						
 						curReact.addProduct(curSpec);
 					}
-					catch (Exception e) {
-						//System.out.println(e.getMessage());
-					
-					}
 				}
-				*/
-				
+			
 				//curReact.addNamespace("html:p");
 				//curReact.appendNotes(attr);
 				

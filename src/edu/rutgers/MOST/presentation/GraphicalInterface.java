@@ -2583,9 +2583,22 @@ public class GraphicalInterface extends JFrame {
 	class SaveSBMLItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			try {
+				timer.start();
+				LocalConfig.getInstance().setProgress(0);
+				progressBar.setVisible(true);
+				progressBar.progress.setIndeterminate(true);
 				JSBMLWriter jWrite = new JSBMLWriter();
 
 				jWrite.formConnect(LocalConfig.getInstance());
+				
+				System.out.println("path " + jWrite.getOutFile().getAbsolutePath());
+				setSBMLFile(jWrite.getOutFile());
+				LocalConfig.getInstance().setModelName(jWrite.getOutFile().getName());				
+
+				//timer.start();
+
+				task = new Task();
+				task.execute();
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
