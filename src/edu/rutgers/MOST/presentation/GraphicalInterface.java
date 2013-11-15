@@ -3708,6 +3708,7 @@ public class GraphicalInterface extends JFrame {
 	public void setUpTables() {
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());		
 		listModel.addElement(LocalConfig.getInstance().getModelName());
+		DynamicTreePanel.treePanel.clear();
 		DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));
 		DynamicTreePanel.treePanel.setNodeSelected(0);
 		enableMenuItems();
@@ -8579,14 +8580,12 @@ public class GraphicalInterface extends JFrame {
 
 					jWrite.formConnect(LocalConfig.getInstance());
 									
-					System.out.println("path " + jWrite.getOutFile().getAbsolutePath());
 					setSBMLFile(jWrite.getOutFile());
 					String modelName = jWrite.getOutFile().getName();
-					System.out.println(modelName);
+					
 					if (modelName.endsWith(".xml")) {
 						modelName = modelName.substring(0, modelName.length() - 4);
 					}
-					System.out.println(modelName);
 					LocalConfig.getInstance().setModelName(modelName);	
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -8881,11 +8880,12 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), SBMLModelReader.getReactionsTableModel());
 				setUpMetabolitesTable(SBMLModelReader.getMetabolitesTableModel());
 				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), SBMLModelReader.getMetabolitesTableModel());	
+				System.out.println("m " + LocalConfig.getInstance().getModelName());
 				setUpTables();
 				modelCollectionOKButtonClicked = false;
-				DynamicTreePanel.treePanel.clear();
-				DynamicTreePanel.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1), GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
-				DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+//				DynamicTreePanel.treePanel.clear();
+//				DynamicTreePanel.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1), GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
+//				DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 				progressBar.setVisible(false);		
 				timer.stop();
 				// This appears redundant, but is the only way to not have an extra progress bar on screen

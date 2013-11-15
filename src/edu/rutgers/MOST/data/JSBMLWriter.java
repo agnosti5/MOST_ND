@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -153,25 +154,54 @@ public class JSBMLWriter implements TreeModelListener{
 		chooser.setFileFilter(new XMLFileFilter());
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		
-		int option = chooser.showOpenDialog(output); 
-		
-		if(option == JFileChooser.APPROVE_OPTION){  
-			if(chooser.getSelectedFile()!=null)	{  
-				String path = chooser.getSelectedFile().getPath();
-				if (!path.endsWith(".xml")) {
-					path = path + ".xml";
-				}
-				File theFileToSave = new File(path);				
-				this.setOutFile(theFileToSave);
+		//int option = chooser.showOpenDialog(output); 
 
-				String rawPathName = chooser.getSelectedFile().getAbsolutePath();
-				//System.out.println(rawPathName);
-				curSettings.add("LastSaveSBML", rawPathName);
-				
-				return true;
+		boolean done = false;
+		boolean cancel = false;
+		while (!done) {
+			//... Open a file dialog.
+			int option = chooser.showOpenDialog(output); 
+			if(option == JFileChooser.CANCEL_OPTION) {
+				done = true;
+				GraphicalInterface.exit = false;
 			}
-			
+			if(option == JFileChooser.APPROVE_OPTION){  
+				if(chooser.getSelectedFile()!=null)	{  
+					String path = chooser.getSelectedFile().getPath();
+					if (!path.endsWith(".xml")) {
+						path = path + ".xml";
+					}
+					File theFileToSave = new File(path);
+					if (theFileToSave.exists()) {
+						int confirmDialog = JOptionPane.showConfirmDialog(chooser, "Replace existing file?");
+						if (confirmDialog == JOptionPane.YES_OPTION) {
+							done = true;
+							this.setOutFile(theFileToSave);
+
+							String rawPathName = chooser.getSelectedFile().getAbsolutePath();
+							//System.out.println(rawPathName);
+							curSettings.add("LastSaveSBML", rawPathName);
+						} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
+							done = false;
+						} else {
+							done = true;
+							cancel = true;
+						}       		    	  
+					} else {
+						done = true;
+						this.setOutFile(theFileToSave);
+
+						String rawPathName = chooser.getSelectedFile().getAbsolutePath();
+						//System.out.println(rawPathName);
+						curSettings.add("LastSaveSBML", rawPathName);
+					}
+				}
+			}
 		}
+		if (done && !cancel) {
+			return true;
+		}
+
 		return false;
 	}
 	
