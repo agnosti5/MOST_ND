@@ -2586,35 +2586,29 @@ public class GraphicalInterface extends JFrame {
 
 	class SaveSBMLItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			saveAsSBML = true;
-			LocalConfig.getInstance().setProgress(0);
-			progressBar.setVisible(true);
+			try {
+				JSBMLWriter jWrite = new JSBMLWriter();
 
-			timer.start();
-			task = new Task();
-			task.execute();
-//			try {
-//				timer.start();
-//				LocalConfig.getInstance().setProgress(0);
-//				progressBar.setVisible(true);
-//				progressBar.progress.setIndeterminate(true);
-//				JSBMLWriter jWrite = new JSBMLWriter();
-//
-//				jWrite.formConnect(LocalConfig.getInstance());
-//				
-//				System.out.println("path " + jWrite.getOutFile().getAbsolutePath());
-//				setSBMLFile(jWrite.getOutFile());
-//				LocalConfig.getInstance().setModelName(jWrite.getOutFile().getName());				
-//
-//				//timer.start();
-//
-//				task = new Task();
-//				task.execute();
-//
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+				jWrite.formConnect(LocalConfig.getInstance());
+				if (jWrite.load) {
+					setSBMLFile(jWrite.getOutFile());
+					String modelName = jWrite.getOutFile().getName();
+					
+					if (modelName.endsWith(".xml")) {
+						modelName = modelName.substring(0, modelName.length() - 4);
+					}
+					LocalConfig.getInstance().setModelName(modelName);
+					LocalConfig.getInstance().setProgress(0);
+					progressBar.setVisible(true);
+
+					timer.start();
+					task = new Task();
+					task.execute();
+				}				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
 		}
 	}
 
@@ -8574,25 +8568,6 @@ public class GraphicalInterface extends JFrame {
 		@Override
 		protected Void doInBackground() throws Exception {
 			int progress = 0;
-			if (saveAsSBML) {
-				try {
-					JSBMLWriter jWrite = new JSBMLWriter();
-
-					jWrite.formConnect(LocalConfig.getInstance());
-									
-					setSBMLFile(jWrite.getOutFile());
-					String modelName = jWrite.getOutFile().getName();
-					
-					if (modelName.endsWith(".xml")) {
-						modelName = modelName.substring(0, modelName.length() - 4);
-					}
-					LocalConfig.getInstance().setModelName(modelName);	
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}				
-			}
-			saveAsSBML = false;
 			SBMLDocument doc = new SBMLDocument();
 			SBMLReader reader = new SBMLReader();
 			try {		  

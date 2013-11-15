@@ -52,6 +52,7 @@ public class JSBMLWriter implements TreeModelListener{
 	public File outFile;
 	public SettingsFactory curSettings;
 	public String optFilePath;
+	public boolean load;
 	
 	public String getOptFilePath() {
 		return optFilePath;
@@ -102,8 +103,11 @@ public class JSBMLWriter implements TreeModelListener{
 		//config.setLoadedDatabase(ConfigConstants.DEFAULT_DATABASE_NAME);
 		//System.out.println(config.getDatabaseName());
 		curSettings = new SettingsFactory();
+		load = false;
 		if (setOutFile()) {
-		
+		    load = true;
+		    System.out.println("load " + load);
+		    
 			curConfig = config;
 			
 			//databaseName = config.getDatabaseName();
@@ -131,7 +135,6 @@ public class JSBMLWriter implements TreeModelListener{
 		
 		
 	}
-	
 	
 	public boolean setOutFile(){
 		JTextArea output = null;
@@ -162,8 +165,12 @@ public class JSBMLWriter implements TreeModelListener{
 			//... Open a file dialog.
 			int option = chooser.showOpenDialog(output); 
 			if(option == JFileChooser.CANCEL_OPTION) {
+				cancel = true;
 				done = true;
-				GraphicalInterface.exit = false;
+				// this should only be false if opt file ?
+//				if (GraphicalInterface.saveOptFile) {
+//					GraphicalInterface.exit = false;
+//				}
 			}
 			if(option == JFileChooser.APPROVE_OPTION){  
 				if(chooser.getSelectedFile()!=null)	{  
@@ -183,9 +190,10 @@ public class JSBMLWriter implements TreeModelListener{
 							curSettings.add("LastSaveSBML", rawPathName);
 						} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
 							done = false;
-						} else {
-							done = true;
+						} else if (confirmDialog == JOptionPane.CANCEL_OPTION) { 
 							cancel = true;
+							System.out.println("cancel " + cancel);
+							done = true;							
 						}       		    	  
 					} else {
 						done = true;
@@ -197,7 +205,9 @@ public class JSBMLWriter implements TreeModelListener{
 					}
 				}
 			}
+			
 		}
+		
 		if (done && !cancel) {
 			return true;
 		}
