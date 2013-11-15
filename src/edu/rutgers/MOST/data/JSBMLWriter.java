@@ -143,10 +143,10 @@ public class JSBMLWriter implements TreeModelListener{
 		chooser.setCurrentDirectory(new File(lastSaveSBML_path));
 		if (GraphicalInterface.saveOptFile) {	
 			String path = getOptFilePath() + ".xml";
-			System.out.println(path);
+			//System.out.println(path);
 			File theFileToSave = new File(path);
 			chooser.setSelectedFile(theFileToSave);
-			System.out.println("ch " + chooser.getSelectedFile());
+			//System.out.println("ch " + chooser.getSelectedFile());
 		} 		
 		chooser.setApproveButtonText("Save");
 		chooser.setDialogTitle("Save to");
@@ -165,8 +165,9 @@ public class JSBMLWriter implements TreeModelListener{
 				this.setOutFile(theFileToSave);
 
 				String rawPathName = chooser.getSelectedFile().getAbsolutePath();
-				System.out.println(rawPathName);
+				//System.out.println(rawPathName);
 				curSettings.add("LastSaveSBML", rawPathName);
+				
 				return true;
 			}
 			
@@ -609,13 +610,11 @@ public class JSBMLWriter implements TreeModelListener{
 				if (!abbrList.contains(validId)) {
 					abbrList.add(validId);
 				} else {
-					System.out.println("contains");
 					validId = validId + u.duplicateSuffix(validId, abbrList);
 					abbrList.add(validId);
-					System.out.println(validId);
 				}
-				System.out.println(abbrList);
-				System.out.println("reac id " + validId);
+//				System.out.println(abbrList);
+//				System.out.println("reac id " + validId);
 				Reaction curReact = model.createReaction(validId);
 //				GraphicalInterface.reactionsTable.getModel().setValueAt(cur.getReactionAbbreviation(), curReacCount, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 				curReact.setName(name);
@@ -669,8 +668,8 @@ public class JSBMLWriter implements TreeModelListener{
 				
 				Notes attr = new Notes(cur);
 					
-				System.out.println(cur.getReactionEqunAbbr());
-				System.out.println(LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()));
+//				System.out.println(cur.getReactionEqunAbbr());
+//				System.out.println(LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()));
 				
 				if (LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()) != null) {
 					for (int r = 0; r < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.size(); r++) {
@@ -691,7 +690,7 @@ public class JSBMLWriter implements TreeModelListener{
 						String abbr = u.makeValidID(reactAbbrv);
 						reactAbbrv = abbr;
 						
-						System.out.println(reactAbbrv);
+						//System.out.println(reactAbbrv);
 						//reactAbbrv = makeValidID(reactAbbrv);
 						curSpec.setSpecies(reactAbbrv); 
 						//curSpec.setName(reactAbbrv);
@@ -720,7 +719,7 @@ public class JSBMLWriter implements TreeModelListener{
 						String abbr = u.makeValidID(reactAbbrv);
 						reactAbbrv = abbr;
 						
-						System.out.println(reactAbbrv);
+						//System.out.println(reactAbbrv);
 						//reactAbbrv = makeValidID(reactAbbrv);
 						curSpec.setSpecies(reactAbbrv); 
 						//curSpec.setName(reactAbbrv);

@@ -256,6 +256,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean openFileChooser;
 	public static boolean showMetaboliteRenameInterface;
 	public boolean addMetabolite;
+	public boolean saveAsSBML;
 	// close
 	public static boolean exit;
 
@@ -2276,6 +2277,7 @@ public class GraphicalInterface extends JFrame {
 	class LoadSBMLAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
+			saveAsSBML = false;
 			if (openFileChooser) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser();
@@ -2337,6 +2339,7 @@ public class GraphicalInterface extends JFrame {
 	class LoadCSVAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
+			saveAsSBML = false;
 			if (openFileChooser) {
 				//setExtension(".csv");	
 				csvLoadInterface.textMetabField.setText("");
@@ -2515,6 +2518,7 @@ public class GraphicalInterface extends JFrame {
 	class LoadExistingItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
+			saveAsSBML = false;
 			if (openFileChooser) {
 				File f = new File("ModelCollection.csv");
 				ModelCollectionTable mcTable = new ModelCollectionTable(f);
@@ -2582,28 +2586,35 @@ public class GraphicalInterface extends JFrame {
 
 	class SaveSBMLItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			try {
-				timer.start();
-				LocalConfig.getInstance().setProgress(0);
-				progressBar.setVisible(true);
-				progressBar.progress.setIndeterminate(true);
-				JSBMLWriter jWrite = new JSBMLWriter();
+			saveAsSBML = true;
+			LocalConfig.getInstance().setProgress(0);
+			progressBar.setVisible(true);
 
-				jWrite.formConnect(LocalConfig.getInstance());
-				
-				System.out.println("path " + jWrite.getOutFile().getAbsolutePath());
-				setSBMLFile(jWrite.getOutFile());
-				LocalConfig.getInstance().setModelName(jWrite.getOutFile().getName());				
-
-				//timer.start();
-
-				task = new Task();
-				task.execute();
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			timer.start();
+			task = new Task();
+			task.execute();
+//			try {
+//				timer.start();
+//				LocalConfig.getInstance().setProgress(0);
+//				progressBar.setVisible(true);
+//				progressBar.progress.setIndeterminate(true);
+//				JSBMLWriter jWrite = new JSBMLWriter();
+//
+//				jWrite.formConnect(LocalConfig.getInstance());
+//				
+//				System.out.println("path " + jWrite.getOutFile().getAbsolutePath());
+//				setSBMLFile(jWrite.getOutFile());
+//				LocalConfig.getInstance().setModelName(jWrite.getOutFile().getName());				
+//
+//				//timer.start();
+//
+//				task = new Task();
+//				task.execute();
+//
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 	}
 
@@ -3749,6 +3760,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().reactionsTableChanged = false;
 		LocalConfig.getInstance().metabolitesTableChanged = false;
 		LocalConfig.getInstance().includesReactions = true;
+		saveAsSBML = false;
 	}
 
 	public void clearConfigLists() {
@@ -8561,6 +8573,27 @@ public class GraphicalInterface extends JFrame {
 		@Override
 		protected Void doInBackground() throws Exception {
 			int progress = 0;
+			if (saveAsSBML) {
+				try {
+					JSBMLWriter jWrite = new JSBMLWriter();
+
+					jWrite.formConnect(LocalConfig.getInstance());
+									
+					System.out.println("path " + jWrite.getOutFile().getAbsolutePath());
+					setSBMLFile(jWrite.getOutFile());
+					String modelName = jWrite.getOutFile().getName();
+					System.out.println(modelName);
+					if (modelName.endsWith(".xml")) {
+						modelName = modelName.substring(0, modelName.length() - 4);
+					}
+					System.out.println(modelName);
+					LocalConfig.getInstance().setModelName(modelName);	
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
+			}
+			saveAsSBML = false;
 			SBMLDocument doc = new SBMLDocument();
 			SBMLReader reader = new SBMLReader();
 			try {		  
