@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.sbml.jsbml.ASTNode;
+import org.sbml.jsbml.AbstractSBase;
 import org.sbml.jsbml.Compartment;
 import org.sbml.jsbml.KineticLaw;
 import org.sbml.jsbml.LocalParameter;
@@ -619,8 +620,11 @@ public class JSBMLWriter implements TreeModelListener{
 				String pAssoc = "PROTEIN_ASSOCIATION:" + " " + cur.getProteinAssociation();
 				String subsys = "SUBSYSTEM:" + " " + cur.getSubsystem();
 				String pClass = "PROTEIN_CLASS:" + " " + cur.getProteinClass();
-//				noteString += gAssoc + "</p><p>" + pAssoc + "</p><p>" + subsys + "</p><p>" + pClass;
-//				curReact.setNotes(noteString);
+				noteString += gAssoc + "</p><p>" + pAssoc + "</p><p>" + subsys + "</p><p>" + pClass;
+				curReact.setNotes(noteString);
+				
+				//SBase b = new AbstractSBase();
+				//SBase b = new SBase();
 				
 				// this site may be helpful
 				//http://sourceforge.net/mailarchive/forum.php?thread_name=E1TujW6-0000Tp-Vd%40sfp-svn-1.v30.ch3.sourceforge.com&forum_name=jsbml-svn
