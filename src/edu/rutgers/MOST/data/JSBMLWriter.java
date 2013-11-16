@@ -449,6 +449,20 @@ public class JSBMLWriter implements TreeModelListener{
 				}
 				//curSpec.setCharge(charge);
 				
+				// write notes
+
+				curSpec.addNamespace("html:p");
+
+				for (int n = 0; n < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); n++) {
+					String value = "";
+					if (cur.getMetaValues().get(n) != null) {
+						value = cur.getMetaValues().get(n);
+					}			
+					String note = LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(n) + ": " + value;
+					System.out.println(note);
+					curSpec.appendNotes(note);
+				}
+				
 				allSpecies.add(curSpec);
 				speciesMap.put(mName, curSpec);
 				//System.out.println(mName);
@@ -643,7 +657,10 @@ public class JSBMLWriter implements TreeModelListener{
 				String pClass = "PROTEIN_CLASS:" + " " + cur.getProteinClass();
 				curReact.appendNotes(pClass);
 				for (int n = 0; n < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); n++) {
-					String value = cur.getMetaValues().get(n);
+					String value = "";
+					if (cur.getMetaValues().get(n) != null) {
+						value = cur.getMetaValues().get(n);
+					}
 					String note = LocalConfig.getInstance().getReactionsMetaColumnNames().get(n) + ": " + value;
 					curReact.appendNotes(note);
 				}

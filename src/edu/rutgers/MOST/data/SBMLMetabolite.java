@@ -1,5 +1,8 @@
 package edu.rutgers.MOST.data;
 
+import java.util.ArrayList;
+
+import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
@@ -11,6 +14,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 	private String compartment;
 	private String charge;	
 	private String boundary;
+	private ArrayList<String> metaValues;
 
 	public Integer getId() {
 		return id;
@@ -60,6 +64,14 @@ public class SBMLMetabolite implements ModelMetabolite {
 		this.boundary = boundary;
 	}
 
+	public ArrayList<String> getMetaValues() {
+		return metaValues;
+	}
+
+	public void setMetaValues(ArrayList<String> metaValues) {
+		this.metaValues = metaValues;
+	}
+
 	public void update() {
 
 	}
@@ -69,12 +81,18 @@ public class SBMLMetabolite implements ModelMetabolite {
 	}
 
 	public void loadByRow(Integer row) {
+		ArrayList<String> meta = new ArrayList<String>();
 		this.setId(Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
 		this.setMetaboliteAbbreviation((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN));
 		this.setMetaboliteName((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN));
 		this.setCharge((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.CHARGE_COLUMN));
 		this.setCompartment((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.COMPARTMENT_COLUMN));
 		this.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
+		for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
+			meta.add((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + i));	
+			System.out.println("meta " + meta.get(i));
+		}
+		this.setMetaValues(meta);
 	}
 	
 	/*
@@ -91,10 +109,10 @@ public class SBMLMetabolite implements ModelMetabolite {
 	@Override
 	public String toString() {
 		return "SBMLMetabolite [id=" + id 
-		//+ ", metaboliteAbbreviation=" + metaboliteAbbreviation
-		//+ ", metaboliteName=" + metaboliteName
-		//+ ", compartment=" + compartment
-		//+ ", charge=" + charge
+		+ ", metaboliteAbbreviation=" + metaboliteAbbreviation
+		+ ", metaboliteName=" + metaboliteName
+		+ ", compartment=" + compartment
+		+ ", charge=" + charge
 		+ ", boundary=" + boundary + "]";
 	}
 
