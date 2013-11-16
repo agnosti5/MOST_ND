@@ -33,6 +33,7 @@ import org.sbml.jsbml.xml.XMLAttributes;
 import org.sbml.jsbml.xml.XMLNode;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.presentation.EntryValidator;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.Utilities;
@@ -426,7 +427,7 @@ public class JSBMLWriter implements TreeModelListener{
 				mAbrv = u.makeValidID(mAbrv);
 				
 				String mName = cur.getMetaboliteName();
-				if (null != cur) { 
+				if (null != cur) {  
 					//int charge = Integer.getInteger(cur.getCharge());
 				}
 				
@@ -435,6 +436,10 @@ public class JSBMLWriter implements TreeModelListener{
 				curSpec.setId(mAbrv);
 				if (null != mName) {
 					curSpec.setName(mName);
+				}
+				EntryValidator e = new EntryValidator();
+				if (e.isInteger(cur.getCharge())) {
+					curSpec.setCharge(Integer.valueOf(cur.getCharge()));
 				}
 				//curSpec.setCharge(charge);
 				if (null != bound) {

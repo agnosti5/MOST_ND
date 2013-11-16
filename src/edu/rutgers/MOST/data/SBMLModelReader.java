@@ -78,8 +78,9 @@ public class SBMLModelReader {
 			metabRow.add(metabolites.get(i).getName());	
 			metaboliteIdNameMap.put(new Integer(i), metabolites.get(i).getName());
 			metaboliteNameIdMap.put(metabolites.get(i).getId(), new Integer(i));
-			charge = Integer.toString(metabolites.get(i).getCharge());
-			//System.out.println("charge " + charge);
+			if (metabolites.get(i).isSetCharge()) {
+				charge = Integer.toString(metabolites.get(i).getCharge());
+			}
 			
 			Map<String, String> metabolitesMetaColumnMap = new HashMap<String, String>();
 			if (metabolites.get(i).isSetNotes()) {
