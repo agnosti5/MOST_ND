@@ -264,11 +264,11 @@ public class GraphicalInterfaceConstants {
     public static final String PARTICIPATING_METAB_PASTE_ERROR_MESSAGE = "Invalid Paste. One or more selected metabolites participate in reactions.";
     
     public static final String PARTICIPATING_METAB_RENAME_TITLE = "Rename Participating Metabolite?";
-    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_PREFIX = "Renaming ";
-    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_SUFFIX = " will result in changing one or more reactions. Are you sure you want to do this?";
+    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_PREFIX = "Renaming '";
+    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_SUFFIX = "' will result in changing one or more reactions. Are you sure you want to do this?";
         
     public static final String METABOLITE_RENAME_ERROR_TITLE = "Rename Error";
-    public static final String METABOLITE_RENAME_ERROR_MESSAGE = "Metabolite Abbreviation or Name Cannot Be Blank";
+    public static final String METABOLITE_RENAME_ERROR_MESSAGE = "Metabolite Abbreviation Cannot Be Blank if it Participates in Reactions";
     
     // duplicate metabolite
     public static final String DUPLICATE_METABOLITE_TITLE = "Duplicate Metabolite";
