@@ -643,7 +643,8 @@ public class JSBMLWriter implements TreeModelListener{
 				String pClass = "PROTEIN_CLASS:" + " " + cur.getProteinClass();
 				curReact.appendNotes(pClass);
 				for (int n = 0; n < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); n++) {
-					String note = LocalConfig.getInstance().getReactionsMetaColumnNames().get(n) + ": " + "test";
+					String value = cur.getMetaValues().get(n);
+					String note = LocalConfig.getInstance().getReactionsMetaColumnNames().get(n) + ": " + value;
 					curReact.appendNotes(note);
 				}
 						
