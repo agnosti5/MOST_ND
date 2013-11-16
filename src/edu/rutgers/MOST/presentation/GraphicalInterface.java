@@ -3383,13 +3383,16 @@ public class GraphicalInterface extends JFrame {
 			model.addRow(createMetabolitesRow(maxMetab));
 		}
 		model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
-			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
-			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));
-		} else {
-			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
-		}
+		//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
+//		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
+//			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
+//			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));
+//		} else {
+//			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
+//		}
 		setUpMetabolitesTable(model);
+		System.out.println("add id " + LocalConfig.getInstance().getMetaboliteNameIdMap());
+		System.out.println("add used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 
 	// updates metabolites table with new value is valid, else reverts to old value
@@ -3444,32 +3447,23 @@ public class GraphicalInterface extends JFrame {
 				// entry is duplicate
 			} else if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(newValue)) {
 				setFindReplaceAlwaysOnTop(false);
-//				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue)) {
-//					JOptionPane.showMessageDialog(null,                
-//							"Duplicate Metabolite.",                
-//							"Duplicate Metabolite",                                
-//							JOptionPane.ERROR_MESSAGE);
-//					metaboliteUpdateValid = false;
-//					metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-//				} else {
-					Object[] options = {"    Yes    ", "    No    ",};
-					int choice = JOptionPane.showOptionDialog(null, 
-							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE + newValue + duplicateSuffix(newValue) + " ?", 
-							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
-							JOptionPane.YES_NO_OPTION, 
-							JOptionPane.QUESTION_MESSAGE, 
-							null, options, options[0]);
-					if (choice == JOptionPane.YES_OPTION) {
-						newValue = newValue + duplicateSuffix(newValue);
-						metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-						LocalConfig.getInstance().getMetaboliteNameIdMap().put(newValue, id);
-						LocalConfig.getInstance().getMetaboliteNameIdMap().remove(oldValue);
-					}
-					if (choice == JOptionPane.NO_OPTION) {
-						metaboliteUpdateValid = false;
-						metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-					}
-				//}				
+				Object[] options = {"    Yes    ", "    No    ",};
+				int choice = JOptionPane.showOptionDialog(null, 
+						GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE + newValue + duplicateSuffix(newValue) + " ?", 
+						GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
+						JOptionPane.YES_NO_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, 
+						null, options, options[0]);
+				if (choice == JOptionPane.YES_OPTION) {
+					newValue = newValue + duplicateSuffix(newValue);
+					metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+					LocalConfig.getInstance().getMetaboliteNameIdMap().put(newValue, id);
+					LocalConfig.getInstance().getMetaboliteNameIdMap().remove(oldValue);
+				}
+				if (choice == JOptionPane.NO_OPTION) {
+					metaboliteUpdateValid = false;
+					metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+				}			
 				setFindReplaceAlwaysOnTop(true);
 			} else {
 				//if a blank is entered remove key/value of old value
@@ -3498,10 +3492,8 @@ public class GraphicalInterface extends JFrame {
 					if (!newValue.equals(oldValue)) {
 					//if (!newValue.equals(oldValue) && oldValue != null && oldValue.trim().length() > 0) {
 						showMetaboliteRenameInterface = false;
-						System.out.println("old " + oldValue);
 						showRenameMessage(oldValue);
 						if (renameMetabolite) {	
-							System.out.println("re");
 							rewriteReactions(id, metabAbbrev, oldValue, newValue, colIndex);
 							updateMetaboliteMaps(id, oldValue, metabName, newValue, colIndex);
 						} else {
@@ -5621,20 +5613,24 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void updateMetaboliteMaps(int id, String metabAbbrev, String metabName, String newName, int columnIndex) {
-		if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
+		if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN ) {
 			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteNameIdMap());
+			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteIdNameMap());
 			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());
-			Object idValue = LocalConfig.getInstance().getMetaboliteNameIdMap().get(metabAbbrev);
+			//Object idValue = LocalConfig.getInstance().getMetaboliteNameIdMap().get(metabAbbrev);
 			LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);	
-			LocalConfig.getInstance().getMetaboliteNameIdMap().put(newName, idValue);
-
+			LocalConfig.getInstance().getMetaboliteNameIdMap().put(newName, id);
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
 				Object value = LocalConfig.getInstance().getMetaboliteUsedMap().get(metabAbbrev);
 				LocalConfig.getInstance().getMetaboliteUsedMap().remove(metabAbbrev);
 				LocalConfig.getInstance().getMetaboliteUsedMap().put(newName, value);
 			}			
 			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteNameIdMap());
+			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteIdNameMap());
 			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
+		} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
+			LocalConfig.getInstance().getMetaboliteIdNameMap().remove(id);	
+			LocalConfig.getInstance().getMetaboliteIdNameMap().put(id, metabName);
 		}
 	}
 
@@ -8374,6 +8370,7 @@ public class GraphicalInterface extends JFrame {
 
 		ArrayList<String> usedList = new ArrayList<String>(LocalConfig.getInstance().getMetaboliteUsedMap().keySet());
 		ArrayList<String> idList = new ArrayList<String>(LocalConfig.getInstance().getMetaboliteNameIdMap().keySet());
+		System.out.println(idList);
 		ArrayList<Integer> unusedList = new ArrayList<Integer>();
 		// removes unused metabolites from idMap and populates list of
 		// unused metabolite id's for deletion from table
