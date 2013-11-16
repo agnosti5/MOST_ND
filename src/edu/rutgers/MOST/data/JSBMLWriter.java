@@ -642,6 +642,10 @@ public class JSBMLWriter implements TreeModelListener{
 				curReact.appendNotes(subsys);
 				String pClass = "PROTEIN_CLASS:" + " " + cur.getProteinClass();
 				curReact.appendNotes(pClass);
+				for (int n = 0; n < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); n++) {
+					String note = LocalConfig.getInstance().getReactionsMetaColumnNames().get(n) + ": " + "test";
+					curReact.appendNotes(note);
+				}
 						
 				if (LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()) != null) {
 					for (int r = 0; r < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.size(); r++) {
@@ -746,71 +750,71 @@ public class JSBMLWriter implements TreeModelListener{
 	}
 	
 	
-	public class Notes {
-		public String geneAssoc;
-		public String proteinAssoc;
-		public String subSystem;
-		public String proteinClass;
-		
-		public Notes(SBMLReaction react) {
-			geneAssoc = react.getGeneAssociation();
-			proteinAssoc = react.getProteinAssociation();
-			subSystem = react.getSubsystem();
-			proteinClass = react.getProteinClass();
-		}
-		
-		public String[] getNotes() {
-			String[] lines = new String[4];
-			
-			String[] keys = this.getKeys();
-			String[] values = this.getValues();
-			
-			for (int i=0 ; i<4; i++) {
-				lines[i] = this.toNode(keys[i],values[i]);
-			} 
-			return lines;
-		}
-		
-		@Override
-		public String toString() {
-			String curStr = "";
-			String[] keys = this.getKeys();
-			String[] values = this.getValues();
-			for (int i=0 ; i<4; i++) {
-				curStr += this.toNode(keys[i],values[i]);
-			}
-			return curStr;
-		}
-		
-		public String[] getKeys() {
-			String[] keys = new String[4];
-			keys[0] = "GENE_ASSOCIATION";
-			keys[1] = "PROTEIN_ASSOCIATION";
-			keys[2] = "SUBSYSTEM";
-			keys[3] = "PROTEIN_CLASS";
-			return keys;
-		}
-		
-		public String[] getValues() {
-			String[] values = new String[4];
-			values[0] = geneAssoc;
-			values[1] = proteinAssoc;
-			values[2] = subSystem;
-			values[3] = proteinClass;
-			return values;
-		}
-		
-		public String toNode(String key, String value) {
-			String curStr = "<html:p>";
-			curStr += key + ": " + value + "</html:p>\n";
-			return curStr;
-			
-		}
-		
-		public void setGeneAssoc(String assoc) {
-			
-		}
-	}
+//	public class Notes {
+//		public String geneAssoc;
+//		public String proteinAssoc;
+//		public String subSystem;
+//		public String proteinClass;
+//		
+//		public Notes(SBMLReaction react) {
+//			geneAssoc = react.getGeneAssociation();
+//			proteinAssoc = react.getProteinAssociation();
+//			subSystem = react.getSubsystem();
+//			proteinClass = react.getProteinClass();
+//		}
+//		
+//		public String[] getNotes() {
+//			String[] lines = new String[4];
+//			
+//			String[] keys = this.getKeys();
+//			String[] values = this.getValues();
+//			
+//			for (int i=0 ; i<4; i++) {
+//				lines[i] = this.toNode(keys[i],values[i]);
+//			} 
+//			return lines;
+//		}
+//		
+//		@Override
+//		public String toString() {
+//			String curStr = "";
+//			String[] keys = this.getKeys();
+//			String[] values = this.getValues();
+//			for (int i=0 ; i<4; i++) {
+//				curStr += this.toNode(keys[i],values[i]);
+//			}
+//			return curStr;
+//		}
+//		
+//		public String[] getKeys() {
+//			String[] keys = new String[4];
+//			keys[0] = "GENE_ASSOCIATION";
+//			keys[1] = "PROTEIN_ASSOCIATION";
+//			keys[2] = "SUBSYSTEM";
+//			keys[3] = "PROTEIN_CLASS";
+//			return keys;
+//		}
+//		
+//		public String[] getValues() {
+//			String[] values = new String[4];
+//			values[0] = geneAssoc;
+//			values[1] = proteinAssoc;
+//			values[2] = subSystem;
+//			values[3] = proteinClass;
+//			return values;
+//		}
+//		
+//		public String toNode(String key, String value) {
+//			String curStr = "<html:p>";
+//			curStr += key + ": " + value + "</html:p>\n";
+//			return curStr;
+//			
+//		}
+//		
+//		public void setGeneAssoc(String assoc) {
+//			
+//		}
+//	}
 	
 	class XMLFileFilter extends javax.swing.filechooser.FileFilter {
 	    public boolean accept(File f) {
