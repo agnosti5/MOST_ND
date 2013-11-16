@@ -427,9 +427,6 @@ public class JSBMLWriter implements TreeModelListener{
 				mAbrv = u.makeValidID(mAbrv);
 				
 				String mName = cur.getMetaboliteName();
-				if (null != cur) {  
-					//int charge = Integer.getInteger(cur.getCharge());
-				}
 				
 				try {
 				Species curSpec = model.createSpecies(mAbrv, compartment);
@@ -437,11 +434,7 @@ public class JSBMLWriter implements TreeModelListener{
 				if (null != mName) {
 					curSpec.setName(mName);
 				}
-				EntryValidator e = new EntryValidator();
-				if (e.isInteger(cur.getCharge())) {
-					curSpec.setCharge(Integer.valueOf(cur.getCharge()));
-				}
-				//curSpec.setCharge(charge);
+				
 				if (null != bound) {
 					boolean b = false;
 					if (bound.equals("true")) {
@@ -452,12 +445,13 @@ public class JSBMLWriter implements TreeModelListener{
 					//curSpec.setBoundaryCondition(Boolean.getBoolean(bound));
 					curSpec.setBoundaryCondition(b);
 				}
-				//curSpec.setCharge(charge);
 				
 				// write notes
 
 				curSpec.addNamespace("html:p");
 
+				String charge = "CHARGE:" + " " + cur.getCharge();
+				curSpec.appendNotes(charge);
 				for (int n = 0; n < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); n++) {
 					String value = "";
 					if (cur.getMetaValues().get(n) != null) {
