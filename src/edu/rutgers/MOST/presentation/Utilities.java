@@ -144,6 +144,9 @@ public class Utilities {
 		if (value.contains("#")) {
 			value = value.replace("#", SBMLConstants.NUMBER_SIGN_REPLACEMENT);
 		}
+		if (value.contains("+")) {
+			value = value.replace("+", SBMLConstants.PLUS_SIGN_REPLACEMENT);
+		}
 		if (value.contains(" ")) {
 			value = value.replace(" ", "_");
 		}

@@ -8562,6 +8562,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected Void doInBackground() throws Exception {
+			loadSetUp();
 			int progress = 0;
 			SBMLDocument doc = new SBMLDocument();
 			SBMLReader reader = new SBMLReader();
