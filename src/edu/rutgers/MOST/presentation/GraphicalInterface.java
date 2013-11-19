@@ -3373,6 +3373,7 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
 			}	
 		}
+		System.out.println("add " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public void addNewMetabolite(int maxMetab, String species) {
@@ -8707,53 +8708,56 @@ public class GraphicalInterface extends JFrame {
 		protected void done() {
 			// System.out.println("GDBB is done!");
 			soln = gdbb.getSolution();
-
+			
 			log.debug("optimization complete");
+			
+			if (soln.isEmpty())
+				return;
 
 			textInput.enableStart();
 			textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			
 			writer = null;
 			//if (optimizeName.contains(ConfigConstants.DEFAULT_DATABASE_NAME)) {
-				setrFactory(new ReactionFactory("SBML"));
-				getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
-				getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
+			setrFactory(new ReactionFactory("SBML"));
+			getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
+			getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
 
-				System.out.println("optimizeName = " + getOptimizeName());
-				writer = null;
-				try {
-					String synObjString = "";
-					for (int i = 0; i < getrFactory().getSyntheticObjectiveVector().size(); i ++) {
-						if (getrFactory().getSyntheticObjectiveVector().get(i) > 0) {
-							synObjString += "Reaction '" + getrFactory().getReactionAbbreviations().get(i) + "' Synthetic Objective = " + getrFactory().getSyntheticObjectiveVector().get(i) + "\n";
-						}
-					}
-					outputText.append("GDBB" + "\n");
-					outputText.append(synObjString);
-					outputText.append("Number of Knockouts = " + model.getC() + "\n");
-					//                                outputText.append(getDatabaseName() + "\n");
-					outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
-					outputText.append("Maximum synthetic objective: "        + gdbb.getMaxObj() + "\n");
-					outputText.append("Knockouts:");
-					outputText.append(kString);
-
-					File file = new File(solutionName + ".log");
-					writer = new BufferedWriter(new FileWriter(file));
-					writer.write(outputText.toString());                     
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					try {
-						if (writer != null) {
-							writer.close();
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
+			System.out.println("optimizeName = " + getOptimizeName());
+			writer = null;
+			try {
+				String synObjString = "";
+				for (int i = 0; i < getrFactory().getSyntheticObjectiveVector().size(); i ++) {
+					if (getrFactory().getSyntheticObjectiveVector().get(i) > 0) {
+						synObjString += "Reaction '" + getrFactory().getReactionAbbreviations().get(i) + "' Synthetic Objective = " + getrFactory().getSyntheticObjectiveVector().get(i) + "\n";
 					}
 				}
-				loadOutputPane(getOptimizeName() + ".log");
+				outputText.append("GDBB" + "\n");
+				outputText.append(synObjString);
+				outputText.append("Number of Knockouts = " + model.getC() + "\n");
+				//                                outputText.append(getDatabaseName() + "\n");
+				outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
+				outputText.append("Maximum synthetic objective: "        + gdbb.getMaxObj() + "\n");
+				outputText.append("Knockouts:");
+				outputText.append(kString);
+
+				File file = new File(solutionName + ".log");
+				writer = new BufferedWriter(new FileWriter(file));
+				writer.write(outputText.toString());                     
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (writer != null) {
+						writer.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			loadOutputPane(getOptimizeName() + ".log");
 			//}
 			//                loadOutputPane(getOptimizePath() + ".log");
 			if (getPopout() != null) {

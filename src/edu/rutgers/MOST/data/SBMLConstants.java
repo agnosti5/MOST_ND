@@ -31,6 +31,7 @@ public class SBMLConstants {
 	public static final String COLON_CHARACTER_REPLACEMENT = "_colon_";
 	public static final String APOSTROPHE_REPLACEMENT = "_apos_";
 	public static final String NUMBER_SIGN_REPLACEMENT = "_num_";
+	public static final String AMPERSAND_REPLACEMENT = "_and_";
 	public static final String PLUS_SIGN_REPLACEMENT = "_plus_";
 	
 }

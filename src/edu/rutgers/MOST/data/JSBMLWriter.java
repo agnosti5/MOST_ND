@@ -652,6 +652,8 @@ public class JSBMLWriter implements TreeModelListener{
 				String pAssoc = "PROTEIN_ASSOCIATION:" + " " + cur.getProteinAssociation();
 				curReact.appendNotes(pAssoc);
 				String subsys = "SUBSYSTEM:" + " " + cur.getSubsystem();
+				subsys = u.replaceInvalidSBMLCharacters(subsys);
+				System.out.println(subsys);
 				curReact.appendNotes(subsys);
 				String pClass = "PROTEIN_CLASS:" + " " + cur.getProteinClass();
 				curReact.appendNotes(pClass);

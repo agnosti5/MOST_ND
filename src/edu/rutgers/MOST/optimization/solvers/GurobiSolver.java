@@ -35,14 +35,13 @@ public class GurobiSolver extends Solver {
 	
 	//static Logger log = Logger.getLogger(GurobiSolver.class);
 	
-	private URLClassLoader classLoader;
-	private Class<?> grbClass;
-		
+	private static URLClassLoader classLoader = null;
+	private static String gurobiPath = "";
+	private Class<?> grbClass;		
 	private Class<?> envClass;
 	private Class<?> modelClass;
-	private Object env;
-	
-	private Object model;
+	private Object env = null;
+	private Object model = null;
 
 	private ArrayList<Object> vars = new ArrayList<Object>();
 
@@ -58,9 +57,12 @@ public class GurobiSolver extends Solver {
 	public GurobiSolver() {
 	//public GurobiSolver(String logName) {
 		try {
-			File gurobiJARFile = new File(GraphicalInterface.getGurobiPath());
 			//File gurobiJARFile = new File("C:\\gurobi500\\win64\\lib\\gurobi.jar");
-			classLoader = URLClassLoader.newInstance(new URL[]{ gurobiJARFile.toURI().toURL() });
+			if (classLoader == null || !gurobiPath.equals(GraphicalInterface.getGurobiPath())) {
+				gurobiPath = GraphicalInterface.getGurobiPath();
+				File gurobiJARFile = new File(gurobiPath);
+				classLoader = URLClassLoader.newInstance(new URL[]{ gurobiJARFile.toURI().toURL() });
+			}
 			grbClass = classLoader.loadClass("gurobi.GRB");
 			
 			//log.debug("creating Gurobi environment");
@@ -112,37 +114,28 @@ public class GurobiSolver extends Solver {
 		} catch (InvocationTargetException e) {
 			try {
 				Class<?> grbExceptionClass = classLoader.loadClass("gurobi.GRBException");
-				Method grbExceptionGetErrorCodeMethod = grbExceptionClass.getMethod("getErrorCode", null);
-				int errorCode = (int) grbExceptionGetErrorCodeMethod.invoke(e, null);
-				
-				if (errorCode == grbClass.getDeclaredField("ERROR_NO_LICENSE").getInt(null)) {
-//					GraphicalInterface.getTextInput().setVisible(false);
-					LocalConfig.getInstance().hasValidGurobiKey = false;
-					GraphicalInterface.outputTextArea.setText("ERROR: No validation file - run 'grbgetkey' to refresh it.");
-					Object[] options = {"    OK    "};
-					int choice = JOptionPane.showOptionDialog(null, 
-							"ERROR: No validation file - run 'grbgetkey' to refresh it.", 
-							GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE, 
-							JOptionPane.YES_NO_OPTION, 
-							JOptionPane.QUESTION_MESSAGE, 
-							null, options, options[0]);
-//					if (choice == JOptionPane.YES_OPTION) {
-//						try{
-//							//Process p;
-//							//p = Runtime.getRuntime().exec("cmd /c start cmd");
-//
-//						}catch(Exception e2){}
-//
-//					}
-					/*
-					if (choice == JOptionPane.NO_OPTION) {
+				if (grbExceptionClass.isInstance(e.getCause())) {
+					Method grbExceptionGetErrorCodeMethod = grbExceptionClass.getMethod("getErrorCode", null);
+					int errorCode = (int) grbExceptionGetErrorCodeMethod.invoke(e.getCause(), null);
 
+					if (errorCode == grbClass.getDeclaredField("ERROR_NO_LICENSE").getInt(null)) {
+						//					GraphicalInterface.getTextInput().setVisible(false);
+						LocalConfig.getInstance().hasValidGurobiKey = false;
+						GraphicalInterface.outputTextArea.setText("Error: No validation file - run 'grbgetkey' to refresh it.");
+						Object[] options = {"    OK    "};
+						int choice = JOptionPane.showOptionDialog(null, 
+								"Error: No validation file - run 'grbgetkey' to refresh it.", 
+								GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE, 
+								JOptionPane.YES_NO_OPTION, 
+								JOptionPane.QUESTION_MESSAGE, 
+								null, options, options[0]);
 					}
-					 */
+					else {
+						handleGurobiException();
+					}
 				}
-				else {
-					handleGurobiException();
-				}
+				else
+					e.printStackTrace();
 
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | HeadlessException | NoSuchFieldException e1) {
 				// TODO Auto-generated catch block
@@ -158,6 +151,9 @@ public class GurobiSolver extends Solver {
 	@Override
 	public void addConstraint(Map<Integer, Double> map, ConType con,
 			double value) {
+		if (modelClass == null)
+			return;
+		
 		try {
 			Class<?> grbLinExprClass = classLoader.loadClass("gurobi.GRBLinExpr");
 			Class<?> grbVarClass = classLoader.loadClass("gurobi.GRBVar");
@@ -191,11 +187,15 @@ public class GurobiSolver extends Solver {
 	public void finalize() {
 		// Not guaranteed to be invoked
 		try {
-			Method modelDisposeMethod = modelClass.getMethod("dispose", null);
-			modelDisposeMethod.invoke(model, null);
+			if (model != null) {
+				Method modelDisposeMethod = modelClass.getMethod("dispose", null);
+				modelDisposeMethod.invoke(model, null);
+			}
 
-			Method envDisposeMethod = envClass.getMethod("dispose", null);
-			envDisposeMethod.invoke(model, null);
+			if (env != null) {
+				Method envDisposeMethod = envClass.getMethod("dispose", null);
+				envDisposeMethod.invoke(model, null);
+			}
 		} catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -296,6 +296,9 @@ public class GurobiSolver extends Solver {
 
 	@Override
 	public double optimize() {
+		if (model == null)
+			return Double.NaN;
+		
 		try {
 //			Callback logic
 			Method modelGetVarsMethod = modelClass.getMethod("getVars", null);
@@ -398,6 +401,9 @@ public class GurobiSolver extends Solver {
 	}
 
 	public void setEnv(double timeLimit, int numThreads) {
+		if (env == null)
+			return;
+		
 		try {
 			//log.debug("setting Gurobi parameters");
 			
@@ -442,6 +448,9 @@ public class GurobiSolver extends Solver {
 	
 	@Override
 	public void setObj(Map<Integer, Double> map) {
+		if (model == null)
+			return;
+		
 		try {
 			Class<?> grbLinExprClass = classLoader.loadClass("gurobi.GRBLinExpr");
 			Class<?> grbVarClass = classLoader.loadClass("gurobi.GRBVar");
@@ -480,7 +489,10 @@ public class GurobiSolver extends Solver {
 	}
 	
 	@Override
-	public void setVar(String varName, VarType types, double lb, double ub) {		
+	public void setVar(String varName, VarType types, double lb, double ub) {
+		if (model == null)
+			return;
+		
 		try {
 			if (varName != null && types != null) {
 				Method modelAddVarMethod = modelClass.getMethod("addVar", 
