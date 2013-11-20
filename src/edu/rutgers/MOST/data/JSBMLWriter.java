@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.sbml.jsbml.ASTNode;
-import org.sbml.jsbml.AbstractSBase;
 import org.sbml.jsbml.Compartment;
 import org.sbml.jsbml.KineticLaw;
 import org.sbml.jsbml.LocalParameter;
@@ -23,20 +22,13 @@ import org.sbml.jsbml.Model;
 import org.sbml.jsbml.Reaction;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLWriter;
-import org.sbml.jsbml.SBase;
 import org.sbml.jsbml.Species;
 import org.sbml.jsbml.SpeciesReference;
 import org.sbml.jsbml.Unit;
 import org.sbml.jsbml.Unit.Kind;
 import org.sbml.jsbml.UnitDefinition;
-import org.sbml.jsbml.xml.XMLAttributes;
-import org.sbml.jsbml.xml.XMLNode;
-
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.presentation.EntryValidator;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
-import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
-import edu.rutgers.MOST.presentation.Utilities;
 
 public class JSBMLWriter implements TreeModelListener{
 	public String sourceType;
@@ -363,10 +355,10 @@ public class JSBMLWriter implements TreeModelListener{
 					curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
 					blankMetabAbbrCount += 1;
 				}
-				Utilities u = new Utilities();
-				String abbr = u.makeValidID(curMeta.getMetaboliteAbbreviation());
+				JSBMLValidator validator = new JSBMLValidator();
+				String abbr = validator.makeValidID(curMeta.getMetaboliteAbbreviation());
 				curMeta.setMetaboliteAbbreviation(abbr);
-				String comp = curMeta.getCompartment();
+				String comp = validator.replaceInvalidSBMLCharacters(curMeta.getCompartment());
 				String compTrim = comp.trim();
 				if (!compartments.containsKey(compTrim)) {
 					Compartment temp = model.createCompartment(compTrim);
@@ -393,22 +385,6 @@ public class JSBMLWriter implements TreeModelListener{
 			return match;	
 		}
 		
-		public boolean isNoNumberAtBeginning(String s){
-		    return s.matches("^[^\\d].*");
-		  }
-		
-		public boolean isValidID(String mAbrv) {
-			if (!isNoNumberAtBeginning(mAbrv)) {
-			    return false; //prints /{item}/
-			} 
-			
-			if (mAbrv.startsWith("[")) {
-				return false;
-			}
-			
-			return true;
-		}
-		
 		public void devModel() {
 			Vector<Species> curSpecies;
 			
@@ -423,10 +399,10 @@ public class JSBMLWriter implements TreeModelListener{
 				String bound = cur.getBoundary();
 				String mAbrv = cur.getMetaboliteAbbreviation();
 				
-				Utilities u = new Utilities();
-				mAbrv = u.makeValidID(mAbrv);
+				JSBMLValidator validator = new JSBMLValidator();
+				mAbrv = validator.makeValidID(mAbrv);
 				
-				String mName = cur.getMetaboliteName();
+				String mName = validator.replaceInvalidSBMLCharacters(cur.getMetaboliteName());
 				
 				try {
 				Species curSpec = model.createSpecies(mAbrv, compartment);
@@ -455,10 +431,10 @@ public class JSBMLWriter implements TreeModelListener{
 				for (int n = 0; n < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); n++) {
 					String value = "";
 					if (cur.getMetaValues().get(n) != null) {
-						value = cur.getMetaValues().get(n);
+						value = validator.replaceInvalidSBMLCharacters(cur.getMetaValues().get(n));
 					}			
 					String note = LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(n) + ": " + value;
-					System.out.println(note);
+					//System.out.println(note);
 					curSpec.appendNotes(note);
 				}
 				
@@ -592,10 +568,11 @@ public class JSBMLWriter implements TreeModelListener{
 			//math.setName("FLUX_VALUE");
 			int curReacCount = 0;
 			ArrayList<String> abbrList = new ArrayList<String>();
+			JSBMLValidator validator = new JSBMLValidator();
 			for (SBMLReaction cur : allReactions) {
 				
 				String id = cur.getReactionAbbreviation();
-				String name = cur.getReactionName();
+				String name = validator.replaceInvalidSBMLCharacters(cur.getReactionName());
 				//ArrayList<SBMLReactant> curReactants = cur.getReactantsList();
 								
 				//System.out.println("Reactants [Size]: " + String.valueOf(cur.getReactantsList().size()));
@@ -632,12 +609,11 @@ public class JSBMLWriter implements TreeModelListener{
 						
 				//law.addDeclaredNamespace("FLUX_VALUE", "http://www.w3.org/1998/Math/MathML");
 				
-				Utilities u = new Utilities();
-				String validId = u.makeValidReactionID(id);
+				String validId = validator.makeValidReactionID(id);
 				if (!abbrList.contains(validId)) {
 					abbrList.add(validId);
 				} else {
-					validId = validId + u.duplicateSuffix(validId, abbrList);
+					validId = validId + validator.duplicateSuffix(validId, abbrList);
 					abbrList.add(validId);
 				}
 				Reaction curReact = model.createReaction(validId);
@@ -647,20 +623,27 @@ public class JSBMLWriter implements TreeModelListener{
 				// write notes
 				
 				curReact.addNamespace("html:p");
-				String gAssoc = "GENE_ASSOCIATION:" + " " + cur.getGeneAssociation();
+				String ga = validator.replaceInvalidSBMLCharacters(cur.getGeneAssociation());
+				String gAssoc = "GENE_ASSOCIATION:" + " " + ga;
 				curReact.appendNotes(gAssoc);
-				String pAssoc = "PROTEIN_ASSOCIATION:" + " " + cur.getProteinAssociation();
+				
+				String pa = validator.replaceInvalidSBMLCharacters(cur.getProteinAssociation());
+				String pAssoc = "PROTEIN_ASSOCIATION:" + " " + pa;
 				curReact.appendNotes(pAssoc);
-				String subsys = "SUBSYSTEM:" + " " + cur.getSubsystem();
-				subsys = u.replaceInvalidSBMLCharacters(subsys);
-				System.out.println(subsys);
+				
+				System.out.println(cur.getSubsystem());
+				String sb = validator.replaceInvalidSBMLCharacters(cur.getSubsystem());
+				String subsys = "SUBSYSTEM:" + " " + sb;
 				curReact.appendNotes(subsys);
-				String pClass = "PROTEIN_CLASS:" + " " + cur.getProteinClass();
+				
+				String pc = validator.replaceInvalidSBMLCharacters(cur.getProteinClass());
+				String pClass = "PROTEIN_CLASS:" + " " + pc;
 				curReact.appendNotes(pClass);
+				
 				for (int n = 0; n < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); n++) {
 					String value = "";
 					if (cur.getMetaValues().get(n) != null) {
-						value = cur.getMetaValues().get(n);
+						value = validator.replaceInvalidSBMLCharacters(cur.getMetaValues().get(n));
 					}
 					String note = LocalConfig.getInstance().getReactionsMetaColumnNames().get(n) + ": " + value;
 					curReact.appendNotes(note);
@@ -675,7 +658,7 @@ public class JSBMLWriter implements TreeModelListener{
 						String reactAbbrv = curR.getMetaboliteAbbreviation();
 				
 						//Utilities u = new Utilities();
-						String abbr = u.makeValidID(reactAbbrv);
+						String abbr = validator.makeValidID(reactAbbrv);
 						reactAbbrv = abbr;
 						curSpec.setSpecies(reactAbbrv); 
 						//curSpec.setName(reactAbbrv);
@@ -697,7 +680,7 @@ public class JSBMLWriter implements TreeModelListener{
 						String reactAbbrv = curP.getMetaboliteAbbreviation();
 						
 						//Utilities u = new Utilities();
-						String abbr = u.makeValidID(reactAbbrv);
+						String abbr = validator.makeValidID(reactAbbrv);
 						reactAbbrv = abbr;
 						
 						curSpec.setSpecies(reactAbbrv); 

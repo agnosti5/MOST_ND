@@ -25,13 +25,20 @@ public class SBMLConstants {
 	public static final String REACTION_ABBREVIATION_PREFIX = "R_";
 	
 	// Illegal characters
-	// asteric or star
-	public static final String ASTERIC_REPLACEMENT = "_star_";
-	public static final String PARENTHESIS_REPLACEMENT = "_par_";
-	public static final String COLON_CHARACTER_REPLACEMENT = "_colon_";
-	public static final String APOSTROPHE_REPLACEMENT = "_apos_";
-	public static final String NUMBER_SIGN_REPLACEMENT = "_num_";
-	public static final String AMPERSAND_REPLACEMENT = "_and_";
-	public static final String PLUS_SIGN_REPLACEMENT = "_plus_";
+//	public static final String ASTERIC_REPLACEMENT = "_star_";
+//	public static final String PARENTHESIS_REPLACEMENT = "_par_";
+//	public static final String COLON_CHARACTER_REPLACEMENT = "_colon_";
+//	public static final String APOSTROPHE_REPLACEMENT = "_apos_";
+//	public static final String NUMBER_SIGN_REPLACEMENT = "_num_";
+//	public static final String AMPERSAND_REPLACEMENT = "_and_";
+//	public static final String PLUS_SIGN_REPLACEMENT = "_plus_";
+	
+	public static final String ASTERIC_REPLACEMENT = "_";
+	public static final String PARENTHESIS_REPLACEMENT = "_";
+	public static final String COLON_CHARACTER_REPLACEMENT = "_";
+	public static final String APOSTROPHE_REPLACEMENT = "_";
+	public static final String NUMBER_SIGN_REPLACEMENT = "_";
+	public static final String AMPERSAND_REPLACEMENT = "_";
+	public static final String PLUS_SIGN_REPLACEMENT = "_";
 	
 }

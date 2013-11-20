@@ -90,7 +90,6 @@ public class SBMLMetabolite implements ModelMetabolite {
 		this.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
 		for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
 			meta.add((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + i));	
-			System.out.println("meta " + meta.get(i));
 		}
 		this.setMetaValues(meta);
 	}
