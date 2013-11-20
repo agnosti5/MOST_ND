@@ -434,7 +434,7 @@ public class JSBMLWriter implements TreeModelListener{
 						value = validator.replaceInvalidSBMLCharacters(cur.getMetaValues().get(n));
 					}			
 					String note = LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(n) + ": " + value;
-					//System.out.println(note);
+					System.out.println(note);
 					curSpec.appendNotes(note);
 				}
 				
@@ -817,6 +817,7 @@ public class JSBMLWriter implements TreeModelListener{
 //			
 //		}
 //	}
+	
 	
 	class XMLFileFilter extends javax.swing.filechooser.FileFilter {
 	    public boolean accept(File f) {
