@@ -9033,7 +9033,7 @@ public class GraphicalInterface extends JFrame {
 		
 		// selected row default at first
 		statusBar.setText("Row 1");
-	
+		
 	}
 }
 
