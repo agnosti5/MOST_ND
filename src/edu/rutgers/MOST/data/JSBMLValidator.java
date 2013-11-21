@@ -95,9 +95,9 @@ public class JSBMLValidator {
 		if (value.contains("'")) {
 			value = value.replace("'", SBMLConstants.APOSTROPHE_REPLACEMENT);
 		}
-		if (value.contains("#")) {
-			value = value.replace("#", SBMLConstants.NUMBER_SIGN_REPLACEMENT);
-		}
+//		if (value.contains("#")) {
+//			value = value.replace("#", SBMLConstants.NUMBER_SIGN_REPLACEMENT);
+//		}
 		if (value.contains("&")) {
 			value = value.replace("&", SBMLConstants.AMPERSAND_REPLACEMENT);
 		}

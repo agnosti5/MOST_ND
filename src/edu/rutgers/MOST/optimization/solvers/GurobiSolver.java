@@ -121,6 +121,7 @@ public class GurobiSolver extends Solver {
 					if (errorCode == grbClass.getDeclaredField("ERROR_NO_LICENSE").getInt(null)) {
 						//					GraphicalInterface.getTextInput().setVisible(false);
 						LocalConfig.getInstance().hasValidGurobiKey = false;
+						GraphicalInterface.getTextInput().setVisible(false);
 						GraphicalInterface.outputTextArea.setText("Error: No validation file - run 'grbgetkey' to refresh it.");
 						Object[] options = {"    OK    "};
 						int choice = JOptionPane.showOptionDialog(null, 
@@ -129,6 +130,7 @@ public class GurobiSolver extends Solver {
 								JOptionPane.YES_NO_OPTION, 
 								JOptionPane.QUESTION_MESSAGE, 
 								null, options, options[0]);
+						LocalConfig.getInstance().getOptimizationFilesList().clear();
 					}
 					else {
 						handleGurobiException();
