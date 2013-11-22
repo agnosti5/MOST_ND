@@ -15,9 +15,20 @@ public class JSBMLValidator {
 			mAbrv = mAbrv.replace("+", SBMLConstants.PLUS_SIGN_REPLACEMENT);
 		}
 		
-		if (!mAbrv.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX)) {
+		boolean valid = false;
+		for (int i = 0; i < SBMLConstants.METABOLITE_ABBREVIATION_PREFIXES.length; i++) {
+			if (mAbrv.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIXES[i])) {
+				valid = true;
+				break;
+			}
+		}
+		if (!valid) {
 			mAbrv = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + mAbrv;
 		}
+		
+//		if (!mAbrv.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX)) {
+//			mAbrv = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + mAbrv;
+//		}
 				
 		return mAbrv;
 
@@ -30,9 +41,20 @@ public class JSBMLValidator {
 			rAbrv = rAbrv.replace("]","");
 		}
 		
-		if (!rAbrv.startsWith(SBMLConstants.REACTION_ABBREVIATION_PREFIX)) {
+		boolean valid = false;
+		for (int i = 0; i < SBMLConstants.REACTION_ABBREVIATION_PREFIXES.length; i++) {
+			if (rAbrv.startsWith(SBMLConstants.REACTION_ABBREVIATION_PREFIXES[i])) {
+				valid = true;
+				break;
+			}
+		}
+		if (!valid) {
 			rAbrv = SBMLConstants.REACTION_ABBREVIATION_PREFIX + rAbrv;
 		}
+		
+//		if (!rAbrv.startsWith(SBMLConstants.REACTION_ABBREVIATION_PREFIX)) {
+//			rAbrv = SBMLConstants.REACTION_ABBREVIATION_PREFIX + rAbrv;
+//		}
 						
 		return rAbrv;
 
@@ -47,10 +69,10 @@ public class JSBMLValidator {
 //			}					
 //		}
 		// http://stackoverflow.com/questions/1805518/replacing-all-non-alphanumeric-characters-with-empty-strings/1805527#1805527
-		value = value.replaceAll("[^A-Za-z0-9 ]", "_");
-		if (value.contains(" ")) {
-			value = value.replace(" ", "_");
-		}
+		value = value.replaceAll("[^A-Za-z0-9_]", "_");
+//		if (value.contains(" ")) {
+//			value = value.replace(" ", "_");
+//		}
 		// for some reason all of these make it through the above code
 //		if (value.contains("-")) {
 //			value = value.replaceAll("-", "_");
@@ -84,8 +106,6 @@ public class JSBMLValidator {
 //		}
 //		value = replaceInvalidSBMLCharacters(value);
 		// http://stackoverflow.com/questions/10574289/remove-non-ascii-characters-from-string-in-java
-		String fixed = value.replaceAll("[^\\x20-\\x7e]", "");
-		value = fixed;
 
 		return value;
 		

@@ -23,6 +23,12 @@ public class SBMLConstants {
 	
 	public static final String METABOLITE_ABBREVIATION_PREFIX = "M_";
 	public static final String REACTION_ABBREVIATION_PREFIX = "R_";
+	public static final String[] METABOLITE_ABBREVIATION_PREFIXES =
+		{"M_", "m_", "S_", "s_"
+		};
+	public static final String[] REACTION_ABBREVIATION_PREFIXES =
+		{"R_", "r_"
+		};
 	
 	// Illegal characters
 //	public static final String ASTERIC_REPLACEMENT = "_star_";

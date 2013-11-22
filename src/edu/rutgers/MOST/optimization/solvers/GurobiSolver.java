@@ -122,7 +122,6 @@ public class GurobiSolver extends Solver {
 						//					GraphicalInterface.getTextInput().setVisible(false);
 						LocalConfig.getInstance().hasValidGurobiKey = false;
 						GraphicalInterface.getTextInput().setVisible(false);
-						GraphicalInterface.outputTextArea.setText("Error: No validation file - run 'grbgetkey' to refresh it.");
 						Object[] options = {"    OK    "};
 						int choice = JOptionPane.showOptionDialog(null, 
 								"Error: No validation file - run 'grbgetkey' to refresh it.", 
