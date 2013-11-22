@@ -256,6 +256,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean openFileChooser;
 	public static boolean showMetaboliteRenameInterface;
 	public boolean addMetabolite;
+	public boolean saveFile;
 	// close
 	public static boolean exit;
 
@@ -2272,6 +2273,7 @@ public class GraphicalInterface extends JFrame {
 	class LoadSBMLAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
+			saveFile = false;
 			if (openFileChooser) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser();
@@ -2333,6 +2335,7 @@ public class GraphicalInterface extends JFrame {
 	class LoadCSVAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
+			saveFile = false;
 			if (openFileChooser) {
 				//setExtension(".csv");	
 				csvLoadInterface.textMetabField.setText("");
@@ -2511,6 +2514,7 @@ public class GraphicalInterface extends JFrame {
 	class LoadExistingItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
+			saveFile = false;
 			if (openFileChooser) {
 				File f = new File("ModelCollection.csv");
 				ModelCollectionTable mcTable = new ModelCollectionTable(f);
@@ -2578,6 +2582,7 @@ public class GraphicalInterface extends JFrame {
 
 	class SaveSBMLItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
+			saveFile = true;
 			try {
 				JSBMLWriter jWrite = new JSBMLWriter();
 
@@ -2606,6 +2611,7 @@ public class GraphicalInterface extends JFrame {
 
 	class SaveCSVMetabolitesItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
+			saveFile = true;
 			saveMetabolitesTextFileChooser();
 		}
 	}
@@ -2621,21 +2627,19 @@ public class GraphicalInterface extends JFrame {
 			String suffix = listModel.get(i).substring(listModel.get(i).length() - 14);
 			suffixList.add(suffix);
 		}
-		listModel.clear();
-		listModel.addElement(filename);
-		/*
-		DatabaseCopier copier = new DatabaseCopier();
-		//copies files and assigns new names based on name of saved file to
-		//refresh tree with new names
-		for (int i = 0; i < suffixList.size(); i++) {
-			listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
-			DynamicTreePanel.treePanel.addObject(new Solution(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i)));
-			copier.copyDatabase(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
-			copier.copyLogFile(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
-		}
-		 */
+		//listModel.clear();
+		//listModel.addElement(filename);
+		listModel.setElementAt(filename, 0);
+		System.out.println(listModel);
+		LocalConfig.getInstance().setModelName(filename);
+		
+		DefaultTableModel metabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+		DefaultTableModel reactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+		LocalConfig.getInstance().getReactionsTableModelMap().put(filename, reactionsModel);
+		LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
 
-		clearOutputPane();
+		//clearOutputPane();
+		setUpTables();
 	}
 
 	public void saveMetabolitesTextFileChooser() {
@@ -2701,6 +2705,7 @@ public class GraphicalInterface extends JFrame {
 
 	class SaveCSVReactionsItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
+			saveFile = true;
 			// Message box displayed if model contains invalid reactions
 			if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
 				Object[] options = {"    Yes    ", "    No    ",};
@@ -2735,19 +2740,19 @@ public class GraphicalInterface extends JFrame {
 				String suffix = listModel.get(i).substring(listModel.get(i).length() - 14);
 				suffixList.add(suffix);
 			}
-			listModel.clear();
-			listModel.addElement(filename);
-			/*
-			DatabaseCopier copier = new DatabaseCopier();
-			for (int i = 0; i < suffixList.size(); i++) {
-				listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
-				copier.copyDatabase(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
-				copier.copyLogFile(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
-			}
-
-			DynamicTreePanel.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
-			 */
-			clearOutputPane();
+//			listModel.clear();
+//			listModel.addElement(filename);
+			listModel.setElementAt(filename, 0);
+			System.out.println(listModel);
+			LocalConfig.getInstance().setModelName(filename);
+			
+			DefaultTableModel metabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+			DefaultTableModel reactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+			LocalConfig.getInstance().getReactionsTableModelMap().put(filename, reactionsModel);
+			LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
+			
+			//clearOutputPane();
+			setUpTables();
 		}	
 		saveOptFile = false;
 	}
@@ -3690,11 +3695,19 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void setUpTables() {
-		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());		
-		listModel.addElement(LocalConfig.getInstance().getModelName());
+		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());				
 		DynamicTreePanel.treePanel.clear();
-		DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));
+		if (saveFile) {
+			for (int i = 0; i < listModel.size(); i++) {
+				System.out.println(listModel.get(i));
+				DynamicTreePanel.treePanel.addObject(new Solution(listModel.get(i), listModel.get(i)));
+			}
+		} else {
+			listModel.addElement(LocalConfig.getInstance().getModelName());
+			DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));
+		}
 		DynamicTreePanel.treePanel.setNodeSelected(0);
+		saveFile = false;
 		enableMenuItems();
 		setSortDefault();
 		setUpCellSelectionMode();
@@ -3745,6 +3758,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().reactionsTableChanged = false;
 		LocalConfig.getInstance().metabolitesTableChanged = false;
 		LocalConfig.getInstance().includesReactions = true;
+		saveFile = false;
 	}
 
 	public void clearConfigLists() {
@@ -8701,7 +8715,7 @@ public class GraphicalInterface extends JFrame {
 			GraphicalInterface.outputTextArea.append("\n\n" + model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n" + "Maximum synthetic objective: " + objectiveValue + "\nKnockouts:" + kString);
 			//DynamicTreePanel.treePanel.setNodeSelected(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1);
 			DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-			System.out.println("lm " + listModel);
+			//System.out.println("lm " + listModel);
 		}
 
 		@Override
@@ -8765,7 +8779,6 @@ public class GraphicalInterface extends JFrame {
 			}                                
 
 			textInput.setVisible(false);
-			System.out.println(reactionsTable.getModel().getValueAt(5, 2));
 			//DynamicTreePanel.treePanel.getTree().setSelectionPath(DynamicTreePanel.treePanel.getTree().getPathForRow(DynamicTreePanel.treePanel.getTree().getRowCount() - 1));
 			// set table model to be loaded when folder GDBB clicked
 			// this will result in the last solution being loaded when folder clicked
@@ -8844,12 +8857,8 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), SBMLModelReader.getReactionsTableModel());
 				setUpMetabolitesTable(SBMLModelReader.getMetabolitesTableModel());
 				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), SBMLModelReader.getMetabolitesTableModel());	
-				System.out.println("m " + LocalConfig.getInstance().getModelName());
 				setUpTables();
 				modelCollectionOKButtonClicked = false;
-//				DynamicTreePanel.treePanel.clear();
-//				DynamicTreePanel.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1), GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
-//				DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 				progressBar.setVisible(false);		
 				timer.stop();
 				// This appears redundant, but is the only way to not have an extra progress bar on screen

@@ -175,7 +175,6 @@ public class JSBMLWriter implements TreeModelListener{
 							done = false;
 						} else if (confirmDialog == JOptionPane.CANCEL_OPTION) { 
 							cancel = true;
-							System.out.println("cancel " + cancel);
 							done = true;							
 						}       		    	  
 					} else {
@@ -434,7 +433,6 @@ public class JSBMLWriter implements TreeModelListener{
 						value = validator.replaceInvalidSBMLCharacters(cur.getMetaValues().get(n));
 					}			
 					String note = LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(n) + ": " + value;
-					System.out.println(note);
 					curSpec.appendNotes(note);
 				}
 				
@@ -631,7 +629,7 @@ public class JSBMLWriter implements TreeModelListener{
 				String pAssoc = "PROTEIN_ASSOCIATION:" + " " + pa;
 				curReact.appendNotes(pAssoc);
 				
-				System.out.println(cur.getSubsystem());
+				//System.out.println(cur.getSubsystem());
 				String sb = validator.replaceInvalidSBMLCharacters(cur.getSubsystem());
 				String subsys = "SUBSYSTEM:" + " " + sb;
 				curReact.appendNotes(subsys);
