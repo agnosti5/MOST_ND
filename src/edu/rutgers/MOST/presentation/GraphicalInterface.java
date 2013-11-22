@@ -8984,11 +8984,12 @@ public class GraphicalInterface extends JFrame {
 
 		if (gurobiPathFound) {
 			gurobiPath = gurobiPath + "\\lib\\gurobi.jar";
-			//File f = new File(gurobiPath);
+			File f = new File(gurobiPath);
 			// uncomment to test Gurobi not found
-			File f = new File("none");
+			//File f = new File("none");
 			if (f.exists()) {
 				gurobiPathFound = true;
+				getGurobiPathInterface().topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
 			} else {
 				gurobiPathFound = false;
 			}
