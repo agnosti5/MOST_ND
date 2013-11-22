@@ -257,6 +257,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean showMetaboliteRenameInterface;
 	public boolean addMetabolite;
 	public boolean saveFile;
+	public boolean saveSBML;
 	// close
 	public static boolean exit;
 
@@ -2583,6 +2584,7 @@ public class GraphicalInterface extends JFrame {
 	class SaveSBMLItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			saveFile = true;
+			saveSBML = true;
 			try {
 				JSBMLWriter jWrite = new JSBMLWriter();
 
@@ -3634,9 +3636,9 @@ public class GraphicalInterface extends JFrame {
 		clearOutputPane();
 		if (getPopout() != null) {
 			popout.dispose();
-		}
+		}		
 		setBooleanDefaults();
-		clearConfigLists();
+		clearConfigLists();	
 		undoSplitButton.setToolTipText("Can't Undo (Ctrl+Z)");
 		redoSplitButton.setToolTipText("Can't Redo (Ctrl+Y)");
 		disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
@@ -3646,7 +3648,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setNumReactionTablesCopied(0);
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(0);
 		showPrompt = true;
-		//LocalConfig.getInstance().hasMetabolitesFile = false;
 		highlightUnusedMetabolites = false;
 		highlightUnusedMetabolitesItem.setState(false);
 		setReactionsSortColumnIndex(0);
@@ -3699,15 +3700,14 @@ public class GraphicalInterface extends JFrame {
 		DynamicTreePanel.treePanel.clear();
 		if (saveFile) {
 			for (int i = 0; i < listModel.size(); i++) {
-				System.out.println(listModel.get(i));
+				System.out.println("save file " + listModel.get(i));
 				DynamicTreePanel.treePanel.addObject(new Solution(listModel.get(i), listModel.get(i)));
 			}
 		} else {
 			listModel.addElement(LocalConfig.getInstance().getModelName());
-			DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));
+			DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));			
 		}
 		DynamicTreePanel.treePanel.setNodeSelected(0);
-		saveFile = false;
 		enableMenuItems();
 		setSortDefault();
 		setUpCellSelectionMode();
@@ -8864,7 +8864,18 @@ public class GraphicalInterface extends JFrame {
 				// This appears redundant, but is the only way to not have an extra progress bar on screen
 				progressBar.setVisible(false);
 				progressBar.progress.setIndeterminate(true);
-
+				if (saveSBML) {
+					// model name added to listModel in set up tables, needs to be removed
+					// this fix while not the best, is better than a total rewrite
+					listModel.remove(listModel.size() - 1);
+					listModel.setElementAt(LocalConfig.getInstance().getModelName(), 0);
+					System.out.println(listModel);
+					for (int i = 1; i < listModel.size(); i++) {
+						System.out.println("save file " + listModel.get(i));
+						DynamicTreePanel.treePanel.addObject(new Solution(listModel.get(i), listModel.get(i)));
+					}
+				}
+				saveSBML = false;
 			}
 		}
 	}
