@@ -191,10 +191,9 @@ public class CSVLoadInterface  extends JDialog {
 				fileChooser.setFileFilter(new CSVFileFilter());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
-				if (lastCSV_path == null) {
-					lastCSV_path = System.getenv("USERPROFILE") ;
-				}
-				fileChooser.setCurrentDirectory(new File(lastCSV_path));
+				Utilities u = new Utilities();
+				// if path is null or does not exist, default used, else last path used		
+				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
@@ -232,10 +231,9 @@ public class CSVLoadInterface  extends JDialog {
 				fileChooser.setFileFilter(new CSVFileFilter());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
-				if (lastCSV_path == null) {
-					lastCSV_path = System.getenv("USERPROFILE") ;
-				}
-				fileChooser.setCurrentDirectory(new File(lastCSV_path));
+				Utilities u = new Utilities();
+				// if path is null or does not exist, default used, else last path used		
+				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);

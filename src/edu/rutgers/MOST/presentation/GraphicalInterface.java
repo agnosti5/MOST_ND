@@ -2288,21 +2288,7 @@ public class GraphicalInterface extends JFrame {
 				String lastSBML_path = curSettings.get("LastSBML");
 				Utilities u = new Utilities();
 				// if path is null or does not exist, default used, else last path used
-				fileChooser.setCurrentDirectory(new File(u.lastPath(lastSBML_path, fileChooser)));
-				// based on http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
-				// works for Windows XP and Windows 7
-//				FileSystemView fsv = fileChooser.getFileSystemView();
-//				String defaultPath = fsv.getDefaultDirectory().getPath();
-//				if (lastSBML_path == null) {
-//					fileChooser.setCurrentDirectory(new File(defaultPath));
-//				} else {
-//					File f = new File(lastSBML_path);
-//					if (f.exists()) {
-//						fileChooser.setCurrentDirectory(new File(lastSBML_path));
-//					} else {
-//						fileChooser.setCurrentDirectory(new File(defaultPath));
-//					}
-//				}						
+				fileChooser.setCurrentDirectory(new File(u.lastPath(lastSBML_path, fileChooser)));					
  
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
@@ -2632,17 +2618,11 @@ public class GraphicalInterface extends JFrame {
 
 	public void saveMetabolitesTextFile(String path, String filename) {
 		TextMetabolitesWriter writer = new TextMetabolitesWriter();
-		writer.write(path);				    		
-		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);
-		//list holds dateTime stamps from items in old tree
-		ArrayList<String> suffixList = new ArrayList<String>();
-		for (int i = 1; i < listModel.size(); i++) {
-			//length of dateTime stamp is 14
-			String suffix = listModel.get(i).substring(listModel.get(i).length() - 14);
-			suffixList.add(suffix);
+		writer.write(path);	
+		if (filename.endsWith(".csv")) {
+			filename = filename.substring(0, filename.length() - 4);
 		}
-		//listModel.clear();
-		//listModel.addElement(filename);
+		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);
 		listModel.setElementAt(filename, 0);
 		System.out.println(listModel);
 		LocalConfig.getInstance().setModelName(filename);
@@ -2664,10 +2644,9 @@ public class GraphicalInterface extends JFrame {
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
 		String lastCSV_path = curSettings.get("LastCSV");
-		if (lastCSV_path == null) {
-			lastCSV_path = System.getenv("USERPROFILE") ;	
-		}
-		fileChooser.setCurrentDirectory(new File(lastCSV_path));
+		Utilities u = new Utilities();
+		// if path is null or does not exist, default used, else last path used		
+		fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));					
 
 		boolean done = false;
 		while (!done) {
@@ -2680,7 +2659,10 @@ public class GraphicalInterface extends JFrame {
 			if (retval == JFileChooser.APPROVE_OPTION) {
 				//... The user selected a file, get it, use it.
 				String rawPathName = fileChooser.getSelectedFile().getAbsolutePath();
-				//curSettings.add("LastCSV", rawPathName);
+				if (!rawPathName.endsWith(".csv")) {
+					rawPathName = rawPathName + ".csv";
+				}
+				curSettings.add("LastCSV", rawPathName);
 
 				LocalConfig.getInstance().hasMetabolitesFile = true;
 
@@ -2742,20 +2724,13 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void saveReactionsTextFile(String path, String filename) {
-		//String oldName = getDatabaseName();
 		TextReactionsWriter writer = new TextReactionsWriter();
-		writer.write(path);				    
+		writer.write(path);		
+		if (filename.endsWith(".csv")) {
+			filename = filename.substring(0, filename.length() - 4);
+		}
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);	
 		if (!saveOptFile) {
-			//list holds dateTime stamps from items in old tree
-			ArrayList<String> suffixList = new ArrayList<String>();
-			for (int i = 1; i < listModel.size(); i++) {
-				//length of dateTime stamp is 14
-				String suffix = listModel.get(i).substring(listModel.get(i).length() - 14);
-				suffixList.add(suffix);
-			}
-//			listModel.clear();
-//			listModel.addElement(filename);
 			listModel.setElementAt(filename, 0);
 			System.out.println(listModel);
 			LocalConfig.getInstance().setModelName(filename);
@@ -2779,10 +2754,9 @@ public class GraphicalInterface extends JFrame {
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
 		String lastCSV_path = curSettings.get("LastCSV");
-		if (lastCSV_path == null) {
-			lastCSV_path = System.getenv("USERPROFILE") ;	
-		}
-		fileChooser.setCurrentDirectory(new File(lastCSV_path));
+		Utilities u = new Utilities();
+		// if path is null or does not exist, default used, else last path used		
+		fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 
 		boolean done = false;
 		while (!done) {
@@ -2800,7 +2774,10 @@ public class GraphicalInterface extends JFrame {
 			if (retval == JFileChooser.APPROVE_OPTION) {            	  
 				//... The user selected a file, get it, use it.
 				String rawPathName = fileChooser.getSelectedFile().getAbsolutePath();
-				//curSettings.add("LastCSV", rawPathName);
+				if (!rawPathName.endsWith(".csv")) {
+					rawPathName = rawPathName + ".csv";
+				}
+				curSettings.add("LastCSV", rawPathName);
 
 				LocalConfig.getInstance().hasReactionsFile = true;
 

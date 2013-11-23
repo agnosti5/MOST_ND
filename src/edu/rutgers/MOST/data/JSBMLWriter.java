@@ -27,8 +27,10 @@ import org.sbml.jsbml.SpeciesReference;
 import org.sbml.jsbml.Unit;
 import org.sbml.jsbml.Unit.Kind;
 import org.sbml.jsbml.UnitDefinition;
+
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class JSBMLWriter implements TreeModelListener{
 	public String sourceType;
@@ -127,11 +129,16 @@ public class JSBMLWriter implements TreeModelListener{
 		JTextArea output = null;
 		String lastSaveSBML_path = curSettings.get("LastSaveSBML");
 		
-		if (lastSaveSBML_path == null) {
-			lastSaveSBML_path = System.getenv("USERPROFILE") ;
-		}
+		Utilities u = new Utilities();
 		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new File(lastSaveSBML_path));
+		// if path is null or does not exist, default used, else last path used
+		chooser.setCurrentDirectory(new File(u.lastPath(lastSaveSBML_path, chooser)));					
+		
+//		if (lastSaveSBML_path == null) {
+//			lastSaveSBML_path = System.getenv("USERPROFILE") ;
+//		}
+//		JFileChooser chooser = new JFileChooser();
+//		chooser.setCurrentDirectory(new File(lastSaveSBML_path));
 		if (GraphicalInterface.saveOptFile) {	
 			String path = getOptFilePath() + ".xml";
 			File theFileToSave = new File(path);
@@ -170,6 +177,9 @@ public class JSBMLWriter implements TreeModelListener{
 							this.setOutFile(theFileToSave);
 
 							String rawPathName = chooser.getSelectedFile().getAbsolutePath();
+							if (!rawPathName.endsWith(".xml")) {
+								rawPathName = rawPathName + ".xml";
+							}
 							curSettings.add("LastSaveSBML", rawPathName);
 						} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
 							done = false;
@@ -182,11 +192,13 @@ public class JSBMLWriter implements TreeModelListener{
 						this.setOutFile(theFileToSave);
 
 						String rawPathName = chooser.getSelectedFile().getAbsolutePath();
+						if (!rawPathName.endsWith(".xml")) {
+							rawPathName = rawPathName + ".xml";
+						}
 						curSettings.add("LastSaveSBML", rawPathName);
 					}
 				}
-			}
-			
+			}			
 		}
 		
 		if (done && !cancel) {
@@ -195,7 +207,6 @@ public class JSBMLWriter implements TreeModelListener{
 
 		return false;
 	}
-	
 	
 	public void setOutFile(File toFile) {
 		outFile = toFile;
