@@ -9,6 +9,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
@@ -2285,16 +2286,21 @@ public class GraphicalInterface extends JFrame {
 				//TODO: test the possibility of a global FileChooser
 
 				String lastSBML_path = curSettings.get("LastSBML");
+				// based on http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
+				// works for Windows XP and Windows 7
+				FileSystemView fsv = fileChooser.getFileSystemView();
+				String defaultPath = fsv.getDefaultDirectory().getPath();
 				if (lastSBML_path == null) {
-					lastSBML_path = System.getenv("USERPROFILE");
-					// This code below works on Windows 7
-					//lastSBML_path = System.getenv("USERPROFILE") + "\\Documents\\";
-					//lastSBML_path = ".";
-				}
-				fileChooser.setCurrentDirectory(new File(lastSBML_path));
-
-				//SBMLDocument doc = new SBMLDocument();
-				//SBMLReader reader = new SBMLReader();  
+					fileChooser.setCurrentDirectory(new File(defaultPath));
+				} else {
+					File f = new File(lastSBML_path);
+					if (f.exists()) {
+						fileChooser.setCurrentDirectory(new File(lastSBML_path));
+					} else {
+						fileChooser.setCurrentDirectory(new File(defaultPath));
+					}
+				}						
+ 
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
 				if (retval == JFileChooser.APPROVE_OPTION) {

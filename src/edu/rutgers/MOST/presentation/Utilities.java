@@ -84,16 +84,8 @@ public class Utilities {
         }
     }
 	
-//	public String duplicateSuffix(String value, ArrayList<String> list) {
-//		String duplicateSuffix = "_1";
-//		if (list.contains(value + duplicateSuffix)) {
-//			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length()));
-//			while (list.contains(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
-//				duplicateCount += 1;
-//			}
-//			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
-//		}
-//		return duplicateSuffix;
-//	}
+	public void setDefaultPath() {
+		
+	}
 	
 }
