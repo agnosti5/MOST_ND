@@ -459,7 +459,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem saveSBMLItem = new JMenuItem("Save As SBML");
 	public final JMenuItem saveCSVMetabolitesItem = new JMenuItem("Save As CSV Metabolites");
 	public final JMenuItem saveCSVReactionsItem = new JMenuItem("Save As CSV Reactions");
-	public final JMenuItem saveSQLiteItem = new JMenuItem("Save As SQLite");
+	//public final JMenuItem saveSQLiteItem = new JMenuItem("Save As SQLite");
 	public final JMenuItem clearItem = new JMenuItem("Clear Tables");
 	public final static JMenuItem fbaItem = new JMenuItem("FBA");
 	public final static JMenuItem gdbbItem = new JMenuItem("GDBB");
@@ -996,6 +996,7 @@ public class GraphicalInterface extends JFrame {
 		ArrayList<Integer> addedMetabolites = new ArrayList<Integer>();
 		LocalConfig.getInstance().setAddedMetabolites(addedMetabolites);
 
+		/*
 		DynamicTreePanel.treePanel.saveAsCSVItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				saveOptFile = true;	
@@ -1008,6 +1009,7 @@ public class GraphicalInterface extends JFrame {
 				// Add action here when save SBML works	
 			}
 		});
+		*/
 
 		DynamicTreePanel.treePanel.deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
@@ -8430,10 +8432,10 @@ public class GraphicalInterface extends JFrame {
 
 	// enables menu items when main file is selected in analysis pane
 	public void enableMenuItems() {
-		saveSBMLItem.setEnabled(true);
-		saveCSVMetabolitesItem.setEnabled(true);
-		saveCSVReactionsItem.setEnabled(true);
-		saveSQLiteItem.setEnabled(true);
+//		saveSBMLItem.setEnabled(true);
+//		saveCSVMetabolitesItem.setEnabled(true);
+//		saveCSVReactionsItem.setEnabled(true);
+//		saveSQLiteItem.setEnabled(true);
 		clearItem.setEnabled(true);
 		if (LocalConfig.getInstance().getUnusedList().size() > 0) {
 			highlightUnusedMetabolitesItem.setEnabled(true);
@@ -8495,11 +8497,11 @@ public class GraphicalInterface extends JFrame {
 	
 	// disables menu items when optimization is selected in analysis pane (tree)
 	public void disableMenuItems() {
-		saveSBMLItem.setEnabled(false);
-		saveCSVMetabolitesItem.setEnabled(false);
-		saveCSVReactionsItem.setEnabled(false);
+//		saveSBMLItem.setEnabled(false);
+//		saveCSVMetabolitesItem.setEnabled(false);
+//		saveCSVReactionsItem.setEnabled(false);		
+//		saveSQLiteItem.setEnabled(false);
 		clearItem.setEnabled(false);
-		saveSQLiteItem.setEnabled(false);
 		highlightUnusedMetabolitesItem.setEnabled(false);
 		deleteUnusedItem.setEnabled(false);
 		findSuspiciousItem.setEnabled(false);

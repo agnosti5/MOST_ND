@@ -88,10 +88,10 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 	}
 
 	public JPopupMenu jPopupMenu = new JPopupMenu();
-	public JMenuItem saveItem = new JMenuItem("Save As SQLite");         
-	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV Reactions");    
-	public JMenuItem saveAsSBMLItem = new JMenuItem("Save As SBML");
-	//public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");
+//	public JMenuItem saveItem = new JMenuItem("Save As SQLite");         
+//	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV Reactions");    
+//	public JMenuItem saveAsSBMLItem = new JMenuItem("Save As SBML");
+//	public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");
 	public JMenuItem deleteItem = new JMenuItem("Delete");
 	public JMenuItem clearItem = new JMenuItem("Delete All Optimizations");
 	
@@ -148,10 +148,10 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     		        	// http://www.javadocexamples.com/java_source/org/gui4j/core/listener/Gui4jMouseListenerTree.java.html
     		        	tree.setSelectionPath(selPath);
     		        	
-    		        	saveItem.setEnabled(true);
-        				saveAsCSVItem.setEnabled(true);
-    					//saveAsSBMLItem.setEnabled(true); // will enable when SBML save works
-    					//saveAllItem.setEnabled(true);
+//    		        	saveItem.setEnabled(true);
+//        				saveAsCSVItem.setEnabled(true);
+//    					saveAsSBMLItem.setEnabled(true); // will enable when SBML save works
+//    					saveAllItem.setEnabled(true);
     					deleteItem.setEnabled(true);
     					clearItem.setEnabled(true);
         				jPopupMenu.show((JTree) e.getSource(), e.getX(), e.getY()); //and show the menu
@@ -160,6 +160,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     		}
     	});
         
+        /*
         jPopupMenu.add(saveItem);
         saveItem.setEnabled(false);
         saveItem.addActionListener(new ActionListener() {
@@ -197,6 +198,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		});
 		
 		jPopupMenu.addSeparator();
+		*/
 		
 		jPopupMenu.add(deleteItem);
 		deleteItem.setEnabled(false);
