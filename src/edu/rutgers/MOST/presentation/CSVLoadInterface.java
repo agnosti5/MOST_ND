@@ -192,7 +192,7 @@ public class CSVLoadInterface  extends JDialog {
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
 				if (lastCSV_path == null) {
-					lastCSV_path = ".";
+					lastCSV_path = System.getenv("USERPROFILE") ;
 				}
 				fileChooser.setCurrentDirectory(new File(lastCSV_path));
 				
@@ -233,7 +233,7 @@ public class CSVLoadInterface  extends JDialog {
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
 				if (lastCSV_path == null) {
-					lastCSV_path = ".";
+					lastCSV_path = System.getenv("USERPROFILE") ;
 				}
 				fileChooser.setCurrentDirectory(new File(lastCSV_path));
 				

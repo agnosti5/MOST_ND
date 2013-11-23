@@ -128,7 +128,7 @@ public class JSBMLWriter implements TreeModelListener{
 		String lastSaveSBML_path = curSettings.get("LastSaveSBML");
 		
 		if (lastSaveSBML_path == null) {
-			lastSaveSBML_path = ".";
+			lastSaveSBML_path = System.getenv("USERPROFILE") ;
 		}
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new File(lastSaveSBML_path));

@@ -2286,7 +2286,10 @@ public class GraphicalInterface extends JFrame {
 
 				String lastSBML_path = curSettings.get("LastSBML");
 				if (lastSBML_path == null) {
-					lastSBML_path = ".";
+					lastSBML_path = System.getenv("USERPROFILE");
+					// This code below works on Windows 7
+					//lastSBML_path = System.getenv("USERPROFILE") + "\\Documents\\";
+					//lastSBML_path = ".";
 				}
 				fileChooser.setCurrentDirectory(new File(lastSBML_path));
 
@@ -2653,7 +2656,7 @@ public class GraphicalInterface extends JFrame {
 
 		String lastCSV_path = curSettings.get("LastCSV");
 		if (lastCSV_path == null) {
-			lastCSV_path = ".";	
+			lastCSV_path = System.getenv("USERPROFILE") ;	
 		}
 		fileChooser.setCurrentDirectory(new File(lastCSV_path));
 
@@ -2768,7 +2771,7 @@ public class GraphicalInterface extends JFrame {
 
 		String lastCSV_path = curSettings.get("LastCSV");
 		if (lastCSV_path == null) {
-			lastCSV_path = ".";	
+			lastCSV_path = System.getenv("USERPROFILE") ;	
 		}
 		fileChooser.setCurrentDirectory(new File(lastCSV_path));
 
