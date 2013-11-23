@@ -2286,20 +2286,23 @@ public class GraphicalInterface extends JFrame {
 				//TODO: test the possibility of a global FileChooser
 
 				String lastSBML_path = curSettings.get("LastSBML");
+				Utilities u = new Utilities();
+				// if path is null or does not exist, default used, else last path used
+				fileChooser.setCurrentDirectory(new File(u.lastPath(lastSBML_path, fileChooser)));
 				// based on http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
 				// works for Windows XP and Windows 7
-				FileSystemView fsv = fileChooser.getFileSystemView();
-				String defaultPath = fsv.getDefaultDirectory().getPath();
-				if (lastSBML_path == null) {
-					fileChooser.setCurrentDirectory(new File(defaultPath));
-				} else {
-					File f = new File(lastSBML_path);
-					if (f.exists()) {
-						fileChooser.setCurrentDirectory(new File(lastSBML_path));
-					} else {
-						fileChooser.setCurrentDirectory(new File(defaultPath));
-					}
-				}						
+//				FileSystemView fsv = fileChooser.getFileSystemView();
+//				String defaultPath = fsv.getDefaultDirectory().getPath();
+//				if (lastSBML_path == null) {
+//					fileChooser.setCurrentDirectory(new File(defaultPath));
+//				} else {
+//					File f = new File(lastSBML_path);
+//					if (f.exists()) {
+//						fileChooser.setCurrentDirectory(new File(lastSBML_path));
+//					} else {
+//						fileChooser.setCurrentDirectory(new File(defaultPath));
+//					}
+//				}						
  
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);

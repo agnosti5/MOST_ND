@@ -3,11 +3,10 @@ package edu.rutgers.MOST.presentation;
 import java.io.File;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
-import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.data.SBMLConstants;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileSystemView;
 
 public class Utilities {
 
@@ -84,8 +83,23 @@ public class Utilities {
         }
     }
 	
-	public void setDefaultPath() {
-		
+	public String lastPath(String path, JFileChooser fileChooser) {
+		// based on http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
+		// works for Windows XP and Windows 7
+		FileSystemView fsv = fileChooser.getFileSystemView();
+		String defaultPath = fsv.getDefaultDirectory().getPath();
+		// if username is preferable this works
+		//String defaultPath = System.getenv("USERPROFILE") ;
+		if (path == null) {
+			return defaultPath;
+		} else {
+			File f = new File(path);
+			if (f.exists()) {
+				return path;
+			} else {
+				return defaultPath;
+			}
+		}
 	}
 	
 }
