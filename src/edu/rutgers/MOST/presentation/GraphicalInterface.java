@@ -998,6 +998,7 @@ public class GraphicalInterface extends JFrame {
 		DynamicTreePanel.treePanel.deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				deleteItemFromDynamicTree();
+				
 			}
 		});
 
@@ -8381,7 +8382,9 @@ public class GraphicalInterface extends JFrame {
 				JOptionPane.YES_NO_OPTION, 
 				JOptionPane.QUESTION_MESSAGE, 
 				null, options, options[0]);
-		if (choice == JOptionPane.YES_OPTION) {//here
+		listModel.remove(listModel.indexOf(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1)));
+		System.out.println("del " + listModel);
+		if (choice == JOptionPane.YES_OPTION) {
 			File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
 			if (f.exists()) {
 				u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
@@ -8608,13 +8611,6 @@ public class GraphicalInterface extends JFrame {
 
 			while (gdbb.isAlive() || GDBB.intermediateSolution.size() > 0) {
 				if (GDBB.intermediateSolution.size() > 0) {
-//					dateTimeStamp = formatter.format(new Date());
-//					optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
-//					setOptimizeName(optimizeName);
-//					listModel.addElement(optimizeName);                                
-//					LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
-//					setOptimizeName(optimizeName);
-
 					// need to lock if process is busy
 					solution = GDBB.intermediateSolution.poll();
 					System.out.println("obj" + solution.getObjectiveValue());
