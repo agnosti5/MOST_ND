@@ -63,6 +63,11 @@ public class CSVLoadInterface  extends JDialog {
 		Box hbReac = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 
+		metabFileButton.setMnemonic(KeyEvent.VK_M);
+		reacFileButton.setMnemonic(KeyEvent.VK_R);
+		clearMetabButton.setMnemonic(KeyEvent.VK_E);
+		clearReacButton.setMnemonic(KeyEvent.VK_A);
+		
 		JLabel topLabel = new JLabel();
 		topLabel.setText("File Name");
 		topLabel.setSize(new Dimension(150, 10));
@@ -274,6 +279,9 @@ public class CSVLoadInterface  extends JDialog {
 				textMetabField.setText("");	
 				LocalConfig.getInstance().hasMetabolitesFile = false;
 				LocalConfig.getInstance().setMetabolitesCSVFile(null); 
+				if (textReacField.getText().trim().length() == 0) {
+					okButton.setEnabled(false);
+				}
 			}
 		}; 
 		
@@ -282,6 +290,9 @@ public class CSVLoadInterface  extends JDialog {
 				textReacField.setText("");
 				LocalConfig.getInstance().hasReactionsFile = false;
 				LocalConfig.getInstance().setReactionsCSVFile(null);
+				if (textMetabField.getText().trim().length() == 0) {
+					okButton.setEnabled(false);
+				}
 			}
 		};
 		

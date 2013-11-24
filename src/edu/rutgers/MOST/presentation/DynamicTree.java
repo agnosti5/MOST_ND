@@ -148,10 +148,6 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     		        	// http://www.javadocexamples.com/java_source/org/gui4j/core/listener/Gui4jMouseListenerTree.java.html
     		        	tree.setSelectionPath(selPath);
     		        	
-//    		        	saveItem.setEnabled(true);
-//        				saveAsCSVItem.setEnabled(true);
-//    					saveAsSBMLItem.setEnabled(true); // will enable when SBML save works
-//    					saveAllItem.setEnabled(true);
     					deleteItem.setEnabled(true);
     					clearItem.setEnabled(true);
         				jPopupMenu.show((JTree) e.getSource(), e.getX(), e.getY()); //and show the menu
@@ -159,56 +155,12 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     			}
     		}
     	});
-        
-        /*
-        jPopupMenu.add(saveItem);
-        saveItem.setEnabled(false);
-        saveItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 
-				if (getRow() > 0) {
-					String item = GraphicalInterface.listModel.getElementAt(getRow());
-					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
-					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
-				}				
-			}
-		});
-        
-        jPopupMenu.add(saveAsCSVItem);
-		saveAsCSVItem.setEnabled(false);
-		saveAsCSVItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 
-				if (getRow() > 0) {
-					String item = GraphicalInterface.listModel.getElementAt(getRow());
-					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
-					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
-				}				
-			}
-		});
-		
-		jPopupMenu.add(saveAsSBMLItem);
-		saveAsSBMLItem.setEnabled(false);
-		saveAsSBMLItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 
-				if (getRow() > 0) {
-					String item = GraphicalInterface.listModel.getElementAt(getRow());
-					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
-					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
-				}				
-			}
-		});
-		
-		jPopupMenu.addSeparator();
-		*/
 		
 		jPopupMenu.add(deleteItem);
 		deleteItem.setEnabled(false);
 		deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				if (getRow() > 0) {
-//					String item = GraphicalInterface.listModel.getElementAt(getRow());
-//					LocalConfig.getInstance().getOptimizationFilesList().remove(item);
-//					GraphicalInterface.listModel.remove(getRow());
-//					removeCurrentNode();
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 							tree.getLastSelectedPathComponent();
 					treeModel.removeNodeFromParent(node);

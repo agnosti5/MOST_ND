@@ -459,7 +459,6 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem saveSBMLItem = new JMenuItem("Save As SBML");
 	public final JMenuItem saveCSVMetabolitesItem = new JMenuItem("Save As CSV Metabolites");
 	public final JMenuItem saveCSVReactionsItem = new JMenuItem("Save As CSV Reactions");
-	//public final JMenuItem saveSQLiteItem = new JMenuItem("Save As SQLite");
 	public final JMenuItem clearItem = new JMenuItem("Clear Tables");
 	public final static JMenuItem fbaItem = new JMenuItem("FBA");
 	public final static JMenuItem gdbbItem = new JMenuItem("GDBB");
@@ -996,21 +995,6 @@ public class GraphicalInterface extends JFrame {
 		ArrayList<Integer> addedMetabolites = new ArrayList<Integer>();
 		LocalConfig.getInstance().setAddedMetabolites(addedMetabolites);
 
-		/*
-		DynamicTreePanel.treePanel.saveAsCSVItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 
-				saveOptFile = true;	
-				saveReactionsTextFileChooser();
-			}
-		});
-
-		DynamicTreePanel.treePanel.saveAsSBMLItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 
-				// Add action here when save SBML works	
-			}
-		});
-		*/
-
 		DynamicTreePanel.treePanel.deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				deleteItemFromDynamicTree();
@@ -1111,12 +1095,11 @@ public class GraphicalInterface extends JFrame {
 
 		JMenuItem loadCSVItem = new JMenuItem("Load CSV");
 		modelMenu.add(loadCSVItem);
-		// does not work
-		//loadCSVItem.setMnemonic(KeyEvent.VK_C);
+		loadCSVItem.setMnemonic(KeyEvent.VK_V);
 		loadCSVItem.addActionListener(new LoadCSVAction());
 
 		modelMenu.add(loadExistingItem);
-		//loadExistingItem.setMnemonic(KeyEvent.VK_Q);
+		loadExistingItem.setMnemonic(KeyEvent.VK_D);
 		loadExistingItem.addActionListener(new LoadExistingItemAction());
 
 		modelMenu.addSeparator();
@@ -8403,11 +8386,6 @@ public class GraphicalInterface extends JFrame {
 			if (f.exists()) {
 				u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
 			}
-			// TODO: Determine why MIP Files do not usually delete. (???)
-			File f1 = new File(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1).substring(4) + "_MIP.log");						
-			if (f1.exists()) {
-				u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1).substring(4) + "_MIP.log");						
-			}
 		}
 		if (choice == JOptionPane.NO_OPTION) {
 
@@ -8432,10 +8410,6 @@ public class GraphicalInterface extends JFrame {
 
 	// enables menu items when main file is selected in analysis pane
 	public void enableMenuItems() {
-//		saveSBMLItem.setEnabled(true);
-//		saveCSVMetabolitesItem.setEnabled(true);
-//		saveCSVReactionsItem.setEnabled(true);
-//		saveSQLiteItem.setEnabled(true);
 		clearItem.setEnabled(true);
 		if (LocalConfig.getInstance().getUnusedList().size() > 0) {
 			highlightUnusedMetabolitesItem.setEnabled(true);
@@ -8497,10 +8471,6 @@ public class GraphicalInterface extends JFrame {
 	
 	// disables menu items when optimization is selected in analysis pane (tree)
 	public void disableMenuItems() {
-//		saveSBMLItem.setEnabled(false);
-//		saveCSVMetabolitesItem.setEnabled(false);
-//		saveCSVReactionsItem.setEnabled(false);		
-//		saveSQLiteItem.setEnabled(false);
 		clearItem.setEnabled(false);
 		highlightUnusedMetabolitesItem.setEnabled(false);
 		deleteUnusedItem.setEnabled(false);
