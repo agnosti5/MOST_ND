@@ -2400,26 +2400,32 @@ public class GraphicalInterface extends JFrame {
 	ActionListener okButtonCSVMetabLoadActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			getMetaboliteColumnNameInterface().getColumnIndices();
-			getMetaboliteColumnNameInterface().setVisible(false);
-			getMetaboliteColumnNameInterface().dispose();
+//			getMetaboliteColumnNameInterface().setVisible(false);
+//			getMetaboliteColumnNameInterface().dispose();
 
-			DynamicTreePanel.treePanel.clear();
-			listModel.clear();
+//			DynamicTreePanel.treePanel.clear();
+//			listModel.clear();
 			setFileType("csv");
 
 			TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
-			reader.load(LocalConfig.getInstance().getMetabolitesCSVFile());	
-			setUpMetabolitesTable(reader.getMetabolitesTableModel());
-			LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getMetabolitesTableModel());
-			//System.out.println(LocalConfig.getInstance().getMetabolitesTableModelMap());
-			if (LocalConfig.getInstance().hasReactionsFile) {
-				loadReactionColumnNameInterface();
-			} else {
-				DefaultTableModel blankReacModel = createBlankReactionsTableModel();
-				setUpReactionsTable(blankReacModel);
-				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), blankReacModel);
-				setUpTables();
-			}			
+			if (getMetaboliteColumnNameInterface().validColumns) {
+//				getMetaboliteColumnNameInterface().getColumnIndices();
+				getMetaboliteColumnNameInterface().setVisible(false);
+				getMetaboliteColumnNameInterface().dispose();
+				
+				reader.load(LocalConfig.getInstance().getMetabolitesCSVFile());	
+				setUpMetabolitesTable(reader.getMetabolitesTableModel());
+				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getMetabolitesTableModel());
+				//System.out.println(LocalConfig.getInstance().getMetabolitesTableModelMap());
+				if (LocalConfig.getInstance().hasReactionsFile) {
+					loadReactionColumnNameInterface();
+				} else {
+					DefaultTableModel blankReacModel = createBlankReactionsTableModel();
+					setUpReactionsTable(blankReacModel);
+					LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), blankReacModel);
+					setUpTables();
+				}	
+			}					
 		}
 	};
 
