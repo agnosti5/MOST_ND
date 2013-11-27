@@ -197,7 +197,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
         rootNode.removeAllChildren();
         treeModel.reload();
     }
-
+    
     /** Remove the currently selected node. */
     public void removeCurrentNode() {
         TreePath currentSelection = tree.getSelectionPath();
@@ -303,6 +303,27 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		javax.swing.tree.TreePath path = this.tree.getPathForRow(id);//pass the selected id here  
 		tree.setSelectionPath(path);  
 		tree.scrollPathToVisible(path);
+	}
+	
+	public void print(DefaultTreeModel treeModel) {
+		tree.setModel(treeModel);
+		StringBuffer rowElement = new StringBuffer();  
+		for (int i = 0; i < tree.getRowCount(); i++) {  
+			TreePath path = tree.getPathForRow(i);  
+			int level = path.getPathCount();  
+			//rowElement.delete(0, rowElement.length());  
+			for (int j = 0; j < level; j++) {  
+				rowElement.append("    ");  
+			}  
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) path  
+					.getLastPathComponent();  
+			if (!node.isLeaf()) {  
+				rowElement.append(tree.isCollapsed(i) ? "+ " : "- ");  
+			}  
+			rowElement.append(node.toString());  
+
+		} 
+		System.out.println("tree " + rowElement);
 	}
 	
 }

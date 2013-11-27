@@ -15,6 +15,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
@@ -3675,12 +3676,11 @@ public class GraphicalInterface extends JFrame {
 			DynamicTreePanel.treePanel.setNodeSelected(0);
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 					DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
-
 			Solution nodeInfo = (Solution)node.getUserObject();
 			String solutionName = nodeInfo.getSolutionName();
-
-			nodeInfo.setSolutionName(LocalConfig.getInstance().getModelName());
-			nodeInfo.setDatabaseName(LocalConfig.getInstance().getModelName());
+			node.setUserObject((new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName())));			
+			DefaultTreeModel treeModel = (DefaultTreeModel) DynamicTreePanel.treePanel.tree.getModel();
+			DynamicTreePanel.treePanel.print(treeModel);
 		} else {
 			DynamicTreePanel.treePanel.clear();
 			listModel.addElement(LocalConfig.getInstance().getModelName());
@@ -8534,7 +8534,9 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			loadSetUp();
+			if (!saveSBML) {
+				loadSetUp();
+			}			
 			int progress = 0;
 			SBMLDocument doc = new SBMLDocument();
 			SBMLReader reader = new SBMLReader();
