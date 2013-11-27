@@ -763,7 +763,6 @@ public class GraphicalInterface extends JFrame {
 				Solution nodeInfo = (Solution)node.getUserObject();
 				String solutionName = nodeInfo.getSolutionName();
 				if (node.isLeaf()) {
-					//String solutionName = nodeInfo.getSolutionName();
 					if (solutionName != null) {
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
 							isRoot = true;
@@ -777,7 +776,7 @@ public class GraphicalInterface extends JFrame {
 							enableMenuItems();
 						} else {							
 							if (node.getUserObject().toString() != null) {
-								//System.out.println("node " + node.getUserObject().toString());
+								System.out.println("node " + node.getUserObject().toString());
 								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 								//System.out.println(solutionName + ".log");
@@ -787,14 +786,17 @@ public class GraphicalInterface extends JFrame {
 								}										
 								isRoot = false;	
 								disableMenuItems();
-								setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
-												
+								if (nodeInfo.getIndex() > -1) {
+									setTitle(GraphicalInterfaceConstants.TITLE + " - " + nodeInfo.getDatabaseName() + "_[" + nodeInfo.getIndex() + "]");
+								} else {
+									setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
+								}																				
 							}
 						}		
 					}								
 				} else {
 					if (node.getUserObject().toString() != null) {
-						//System.out.println("else " + node.getUserObject().toString());
+						System.out.println("else " + node.getUserObject().toString());
 						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 						if (solutionName.endsWith(node.getUserObject().toString())) {
@@ -8603,6 +8605,7 @@ public class GraphicalInterface extends JFrame {
 //			formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
 			Solution solution;
 
+			int index = 1;
 			while (gdbb.isAlive() || GDBB.intermediateSolution.size() > 0) {
 				if (GDBB.intermediateSolution.size() > 0) {
 					// need to lock if process is busy
@@ -8612,6 +8615,8 @@ public class GraphicalInterface extends JFrame {
 					listModel.addElement(solutionName);
 					solution.setSolutionName(solutionName);					
 					solution.setDatabaseName(optimizeName);
+					solution.setIndex(index);
+					index += 1;
 					publish(solution);
 					
 					// copy models, run optimization on these model
