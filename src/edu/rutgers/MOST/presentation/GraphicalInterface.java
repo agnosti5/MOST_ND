@@ -764,7 +764,6 @@ public class GraphicalInterface extends JFrame {
 				if (node.isLeaf()) {
 					//String solutionName = nodeInfo.getSolutionName();
 					if (solutionName != null) {
-						//System.out.println("node " + node.getUserObject().toString());
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
 							isRoot = true;
 							clearOutputPane();
@@ -2400,23 +2399,16 @@ public class GraphicalInterface extends JFrame {
 	ActionListener okButtonCSVMetabLoadActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			getMetaboliteColumnNameInterface().getColumnIndices();
-//			getMetaboliteColumnNameInterface().setVisible(false);
-//			getMetaboliteColumnNameInterface().dispose();
-
-//			DynamicTreePanel.treePanel.clear();
-//			listModel.clear();
 			setFileType("csv");
 
 			TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
 			if (getMetaboliteColumnNameInterface().validColumns) {
-//				getMetaboliteColumnNameInterface().getColumnIndices();
 				getMetaboliteColumnNameInterface().setVisible(false);
 				getMetaboliteColumnNameInterface().dispose();
 				
 				reader.load(LocalConfig.getInstance().getMetabolitesCSVFile());	
 				setUpMetabolitesTable(reader.getMetabolitesTableModel());
 				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getMetabolitesTableModel());
-				//System.out.println(LocalConfig.getInstance().getMetabolitesTableModelMap());
 				if (LocalConfig.getInstance().hasReactionsFile) {
 					loadReactionColumnNameInterface();
 				} else {
@@ -3678,13 +3670,19 @@ public class GraphicalInterface extends JFrame {
 
 	public void setUpTables() {
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());				
-		DynamicTreePanel.treePanel.clear();
+		System.out.println(saveFile);
 		if (saveFile) {
-			for (int i = 0; i < listModel.size(); i++) {
-				System.out.println("save file " + listModel.get(i));
-				DynamicTreePanel.treePanel.addObject(new Solution(listModel.get(i), listModel.get(i)));
-			}
+			DynamicTreePanel.treePanel.setNodeSelected(0);
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+					DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
+
+			Solution nodeInfo = (Solution)node.getUserObject();
+			String solutionName = nodeInfo.getSolutionName();
+
+			nodeInfo.setSolutionName(LocalConfig.getInstance().getModelName());
+			nodeInfo.setDatabaseName(LocalConfig.getInstance().getModelName());
 		} else {
+			DynamicTreePanel.treePanel.clear();
 			listModel.addElement(LocalConfig.getInstance().getModelName());
 			DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));			
 		}
@@ -8827,18 +8825,18 @@ public class GraphicalInterface extends JFrame {
 				// This appears redundant, but is the only way to not have an extra progress bar on screen
 				progressBar.setVisible(false);
 				progressBar.progress.setIndeterminate(true);
-				if (saveSBML) {
-					// model name added to listModel in set up tables, needs to be removed
-					// this fix while not the best, is better than a total rewrite
-					listModel.remove(listModel.size() - 1);
-					listModel.setElementAt(LocalConfig.getInstance().getModelName(), 0);
-					System.out.println(listModel);
-					for (int i = 1; i < listModel.size(); i++) {
-						System.out.println("save file " + listModel.get(i));
-						DynamicTreePanel.treePanel.addObject(new Solution(listModel.get(i), listModel.get(i)));
-					}
-				}
-				saveSBML = false;
+//				if (saveSBML) {
+//					// model name added to listModel in set up tables, needs to be removed
+//					// this fix while not the best, is better than a total rewrite
+//					listModel.remove(listModel.size() - 1);
+//					listModel.setElementAt(LocalConfig.getInstance().getModelName(), 0);
+//					System.out.println(listModel);
+//					for (int i = 1; i < listModel.size(); i++) {
+//						System.out.println("save file " + listModel.get(i));
+//						DynamicTreePanel.treePanel.addObject(new Solution(listModel.get(i), listModel.get(i)));
+//					}
+//				}
+//				saveSBML = false;
 			}
 		}
 	}
