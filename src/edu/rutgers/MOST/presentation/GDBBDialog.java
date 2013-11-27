@@ -87,14 +87,14 @@ public class GDBBDialog extends JDialog
 			JTextField tf = (JTextField) input;
 			try {
 				Integer.parseInt(tf.getText());
-				System.out.println("It is an integer");
-				exception.setText("");
+				//System.out.println("It is an integer");
+				//exception.setText("");
 				startButton.setEnabled(true);
 			}
 			catch(NumberFormatException nfe) {
-				System.out.println("It is not an integer");
+				//System.out.println("It is not an integer");
 				isInteger = false;
-				exception.setText("Not an integer!");
+				//exception.setText("Not an integer!");
 				setAlwaysOnTop(false);
 				JOptionPane.showMessageDialog(null,                
 						GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                

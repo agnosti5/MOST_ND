@@ -2351,8 +2351,6 @@ public class GraphicalInterface extends JFrame {
 	};
 
 	public void loadCSV() {	
-		//DynamicTreePanel.treePanel.clear();
-		//listModel.clear();
 		LocalConfig.getInstance().setMetabolitesNextRowCorrection(0);
 
 		if (LocalConfig.getInstance().hasMetabolitesFile && LocalConfig.getInstance().getMetabolitesCSVFile() != null) {
@@ -2382,19 +2380,9 @@ public class GraphicalInterface extends JFrame {
 	public void metaboliteColumnNameCloseAction() {
 		getMetaboliteColumnNameInterface().setVisible(false);
 		getMetaboliteColumnNameInterface().dispose();
-		/*
-		DynamicTreePanel.treePanel.clear();
-		listModel.clear();
-		DefaultTableModel blankMetabModel = createBlankMetabolitesTableModel();
-		setUpMetabolitesTable(blankMetabModel);
-		LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), blankMetabModel);
-		 */
 		if (LocalConfig.getInstance().hasReactionsFile) {
 			loadReactionColumnNameInterface();
-		} else {
-			//LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
-			//clearTables();
-		}
+		} 
 	}
 
 	ActionListener okButtonCSVMetabLoadActionListener = new ActionListener() {
@@ -8827,18 +8815,7 @@ public class GraphicalInterface extends JFrame {
 				// This appears redundant, but is the only way to not have an extra progress bar on screen
 				progressBar.setVisible(false);
 				progressBar.progress.setIndeterminate(true);
-//				if (saveSBML) {
-//					// model name added to listModel in set up tables, needs to be removed
-//					// this fix while not the best, is better than a total rewrite
-//					listModel.remove(listModel.size() - 1);
-//					listModel.setElementAt(LocalConfig.getInstance().getModelName(), 0);
-//					System.out.println(listModel);
-//					for (int i = 1; i < listModel.size(); i++) {
-//						System.out.println("save file " + listModel.get(i));
-//						DynamicTreePanel.treePanel.addObject(new Solution(listModel.get(i), listModel.get(i)));
-//					}
-//				}
-//				saveSBML = false;
+				saveSBML = false;
 			}
 		}
 	}
