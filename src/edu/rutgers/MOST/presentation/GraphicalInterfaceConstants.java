@@ -233,6 +233,8 @@ public class GraphicalInterfaceConstants {
     // general 
     public static final String NUMERIC_VALUE_ERROR_TITLE = "Invalid numeric entry.";
     public static final String NUMERIC_VALUE_ERROR_MESSAGE = "Number Format Error";
+    public static final String INTEGER_VALUE_ERROR_TITLE = "Value not an Integer.";
+    public static final String INTEGER_VALUE_ERROR_MESSAGE = "Number Format Error";
     
     public static final String[] BOOLEAN_VALUES = {"false", "true"};
     public static final String[] VALID_FALSE_VALUES = {"f"};
@@ -262,11 +264,11 @@ public class GraphicalInterfaceConstants {
     public static final String PARTICIPATING_METAB_PASTE_ERROR_MESSAGE = "Invalid Paste. One or more selected metabolites participate in reactions.";
     
     public static final String PARTICIPATING_METAB_RENAME_TITLE = "Rename Participating Metabolite?";
-    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_PREFIX = "Renaming ";
-    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_SUFFIX = " will result in changing one or more reactions. Are you sure you want to do this?";
+    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_PREFIX = "Renaming '";
+    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_SUFFIX = "' will result in changing one or more reactions. Are you sure you want to do this?";
         
     public static final String METABOLITE_RENAME_ERROR_TITLE = "Rename Error";
-    public static final String METABOLITE_RENAME_ERROR_MESSAGE = "Metabolite Abbreviation or Name Cannot Be Blank";
+    public static final String METABOLITE_RENAME_ERROR_MESSAGE = "Metabolite Abbreviation Cannot Be Blank if it Participates in Reactions";
     
     // duplicate metabolite
     public static final String DUPLICATE_METABOLITE_TITLE = "Duplicate Metabolite";
@@ -308,11 +310,11 @@ public class GraphicalInterfaceConstants {
     
     public static final String CSV_FILE_LOAD_INTERFACE_TITLE = "CSV File Load";    
     public static final String CSV_FILE_LOAD_METAB_BUTTON = "Load Metabolites File";
-    public static final String CSV_FILE_LOAD_REAC_BUTTON = " Load Reactions File "; 
+    public static final String CSV_FILE_LOAD_REAC_BUTTON = " Load Reactions File  "; 
     
     // delete optimize database and log files
     public static final String DELETE_ASSOCIATED_FILES_TITLE = "Delete Associated Files?";
-    public static final String DELETE_ASSOCIATED_FILES = "Delete Associated database and log Files?";
+    public static final String DELETE_ASSOCIATED_FILES = "Delete Associated log Files?";
     
     // tab names
     public static final String DEFAULT_METABOLITE_TABLE_TAB_NAME = "Metabolites";
@@ -375,6 +377,9 @@ public class GraphicalInterfaceConstants {
     public static final Color FIND_ALL_COLOR = new Color(140,160,200);
     //public static final Color FIND_ALL_COLOR = new Color(190,205,225);
     public static final Color SELECTED_AREA_COLOR = new Color(190,205,225);
+    
+    public static final String EDIT_OPT_TABLE_ERROR = "Results Tables Are Not Editable";
+    public static final String EDIT_OPT_TABLE_ERROR_TITLE = "Read-Only Table";
     
     public static final String GUROBI_JAR_PATH_INTERFACE_TITLE = "Gurobi Jar Path Locator";
     public static final String GUROBI_JAR_PATH_NOT_FOUND_LABEL = "Gurobi Jar Path Not Found. Click Load Gurobi Jar Path to Browse For Path";

@@ -10,6 +10,7 @@ public class GDBBModel extends FBAModel {
 	protected Vector<Double> syntheticObjective;
 	protected Vector<String> geneAssociations;
 	protected Vector<String> distinctGeneAssociations;
+	protected Vector<String> reactionAbbreviations;
 	protected ArrayList<Map<Integer, Double>> gprMatrix;
 	private double D;
 	private double C;
@@ -41,6 +42,7 @@ public class GDBBModel extends FBAModel {
 		this.geneAssociations = rFactory.getGeneAssociations();
 		this.distinctGeneAssociations = rFactory.getUniqueGeneAssociations();		
 		this.syntheticObjectiveVector = rFactory.getSyntheticObjectiveVector();
+		this.reactionAbbreviations = rFactory.getReactionAbbreviations();
 //		this.syntheticObjective = rFactory.getSyntheticObjectiveVector();
 		
 		//	GPR Matrix

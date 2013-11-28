@@ -63,6 +63,11 @@ public class CSVLoadInterface  extends JDialog {
 		Box hbReac = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 
+		metabFileButton.setMnemonic(KeyEvent.VK_M);
+		reacFileButton.setMnemonic(KeyEvent.VK_R);
+		clearMetabButton.setMnemonic(KeyEvent.VK_E);
+		clearReacButton.setMnemonic(KeyEvent.VK_A);
+		
 		JLabel topLabel = new JLabel();
 		topLabel.setText("File Name");
 		topLabel.setSize(new Dimension(150, 10));
@@ -191,10 +196,9 @@ public class CSVLoadInterface  extends JDialog {
 				fileChooser.setFileFilter(new CSVFileFilter());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
-				if (lastCSV_path == null) {
-					lastCSV_path = ".";
-				}
-				fileChooser.setCurrentDirectory(new File(lastCSV_path));
+				Utilities u = new Utilities();
+				// if path is null or does not exist, default used, else last path used		
+				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
@@ -232,10 +236,9 @@ public class CSVLoadInterface  extends JDialog {
 				fileChooser.setFileFilter(new CSVFileFilter());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
-				if (lastCSV_path == null) {
-					lastCSV_path = ".";
-				}
-				fileChooser.setCurrentDirectory(new File(lastCSV_path));
+				Utilities u = new Utilities();
+				// if path is null or does not exist, default used, else last path used		
+				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
@@ -276,6 +279,9 @@ public class CSVLoadInterface  extends JDialog {
 				textMetabField.setText("");	
 				LocalConfig.getInstance().hasMetabolitesFile = false;
 				LocalConfig.getInstance().setMetabolitesCSVFile(null); 
+				if (textReacField.getText().trim().length() == 0) {
+					okButton.setEnabled(false);
+				}
 			}
 		}; 
 		
@@ -284,6 +290,9 @@ public class CSVLoadInterface  extends JDialog {
 				textReacField.setText("");
 				LocalConfig.getInstance().hasReactionsFile = false;
 				LocalConfig.getInstance().setReactionsCSVFile(null);
+				if (textMetabField.getText().trim().length() == 0) {
+					okButton.setEnabled(false);
+				}
 			}
 		};
 		
