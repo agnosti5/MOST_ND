@@ -9,7 +9,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
@@ -257,7 +256,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean gurobiPathFound;
 	public static boolean openFileChooser;
 	public static boolean showMetaboliteRenameInterface;
-	public boolean addMetabolite;
+	public static boolean addMetabolite;
 	public boolean saveFile;
 	public boolean saveSBML;
 	// close
@@ -776,10 +775,9 @@ public class GraphicalInterface extends JFrame {
 							enableMenuItems();
 						} else {							
 							if (node.getUserObject().toString() != null) {
-								System.out.println("node " + node.getUserObject().toString());
+								//System.out.println("node " + node.getUserObject().toString());
 								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
-								//System.out.println(solutionName + ".log");
 								loadOutputPane(solutionName + ".log");
 								if (getPopout() != null) {
 									getPopout().load(solutionName + ".log");
@@ -796,7 +794,7 @@ public class GraphicalInterface extends JFrame {
 					}								
 				} else {
 					if (node.getUserObject().toString() != null) {
-						System.out.println("else " + node.getUserObject().toString());
+						//System.out.println("else " + node.getUserObject().toString());
 						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 						if (solutionName.endsWith(node.getUserObject().toString())) {
@@ -2014,7 +2012,6 @@ public class GraphicalInterface extends JFrame {
 						String newValue = "";                        
 						if (reactionsTable.getModel().getValueAt(viewRow, getCurrentReactionsColumn()) != null) {
 							newValue = (String) reactionsTable.getModel().getValueAt(viewRow, getCurrentReactionsColumn());
-							//System.out.println(newValue);
 						} 						
 						//ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, getCurrentRow(), getCurrentColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 						updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, getCurrentReactionsColumn());
@@ -2040,7 +2037,6 @@ public class GraphicalInterface extends JFrame {
 						String newValue = "";                        
 						if (metabolitesTable.getModel().getValueAt(viewRow, getCurrentMetabolitesColumn()) != null) {
 							newValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getCurrentMetabolitesColumn());
-							//System.out.println(newValue);
 						}
 						//MetaboliteUndoItem undoItem = createMetaboliteUndoItem(getTableCellOldValue(), newValue, getCurrentRow(), getCurrentColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 						//setUndoOldCollections(undoItem);
@@ -2599,7 +2595,6 @@ public class GraphicalInterface extends JFrame {
 		}
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);
 		listModel.setElementAt(filename, 0);
-		System.out.println(listModel);
 		LocalConfig.getInstance().setModelName(filename);
 		
 		DefaultTableModel metabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
@@ -2607,7 +2602,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getReactionsTableModelMap().put(filename, reactionsModel);
 		LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
 
-		//clearOutputPane();
 		setUpTables();
 	}
 
@@ -2707,7 +2701,6 @@ public class GraphicalInterface extends JFrame {
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);	
 		if (!saveOptFile) {
 			listModel.setElementAt(filename, 0);
-			System.out.println(listModel);
 			LocalConfig.getInstance().setModelName(filename);
 			
 			DefaultTableModel metabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
@@ -2715,7 +2708,6 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getReactionsTableModelMap().put(filename, reactionsModel);
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
 			
-			//clearOutputPane();
 			setUpTables();
 		}	
 		saveOptFile = false;
@@ -3005,7 +2997,7 @@ public class GraphicalInterface extends JFrame {
 		public void actionPerformed(ActionEvent e)
 		{   	  
 			TableCellListener mtcl = (TableCellListener)e.getSource();
-
+		
 			if (mtcl.getOldValue() != mtcl.getNewValue()) {				
 				LocalConfig.getInstance().metabolitesTableChanged = true;
 				int id = Integer.parseInt((String) (metabolitesTable.getModel().getValueAt(mtcl.getRow(), 0)));
@@ -3018,7 +3010,7 @@ public class GraphicalInterface extends JFrame {
 					}
 					setUndoNewCollections(undoItem);
 					setUpMetabolitesUndo(undoItem);
-				}
+				}			
 			}			
 		}
 	};
@@ -3213,6 +3205,7 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void updateReactionEquation(String newValue, int id, int rowIndex, SBMLReactionEquation equation) {
+		LocalConfig.getInstance().getAddedMetabolites().clear();
 		SBMLReactionEquation equn = new SBMLReactionEquation();	
 		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
 		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
@@ -3293,7 +3286,6 @@ public class GraphicalInterface extends JFrame {
 				{
 					LocalConfig.getInstance().addMetaboliteOption = true;
 					LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-					//LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
 					addNewMetabolite(maxMetab, species);
 					maxMetab += 1;
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
@@ -3306,7 +3298,6 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().addMetaboliteOption = true;
 					GraphicalInterface.showPrompt = false;
 					LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-					//LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
 					addNewMetabolite(maxMetab, species);
 					maxMetab += 1;
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
@@ -3328,7 +3319,6 @@ public class GraphicalInterface extends JFrame {
 				}	
 			} else {
 				LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-				//LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
 				addNewMetabolite(maxMetab, species);
 				maxMetab += 1;
 				LocalConfig.getInstance().setMaxMetabolite(maxMetab);
@@ -3355,6 +3345,7 @@ public class GraphicalInterface extends JFrame {
 			model.addRow(createMetabolitesRow(maxMetab));
 		}
 		model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+		LocalConfig.getInstance().getAddedMetabolites().add((maxMetab));
 		//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
 //		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
 //			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
@@ -3661,7 +3652,6 @@ public class GraphicalInterface extends JFrame {
 
 	public void setUpTables() {
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());				
-		System.out.println(saveFile);
 		if (saveFile) {
 			DynamicTreePanel.treePanel.setNodeSelected(0);
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -3740,7 +3730,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
 		LocalConfig.getInstance().getUnusedList().clear();
 		LocalConfig.getInstance().getOptimizationFilesList().clear();
-		//LocalConfig.getInstance().getAddedMetabolites().clear();
+		LocalConfig.getInstance().getAddedMetabolites().clear();
 		LocalConfig.getInstance().getReactionEquationMap().clear();
 		LocalConfig.getInstance().getUndoItemMap().clear();
 		LocalConfig.getInstance().getUndoItemMap().clear();
@@ -4582,7 +4572,7 @@ public class GraphicalInterface extends JFrame {
 		return row;
 	}
 
-	public Vector<String> createMetabolitesRow(int id)
+	public static Vector<String> createMetabolitesRow(int id)
 	{
 		Vector<String> row = new Vector<String>();
 		row.addElement(Integer.toString(id));
@@ -5601,7 +5591,6 @@ public class GraphicalInterface extends JFrame {
 			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteNameIdMap());
 			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteIdNameMap());
 			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());
-			//Object idValue = LocalConfig.getInstance().getMetaboliteNameIdMap().get(metabAbbrev);
 			LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);	
 			LocalConfig.getInstance().getMetaboliteNameIdMap().put(newName, id);
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
@@ -5666,9 +5655,7 @@ public class GraphicalInterface extends JFrame {
 
 		final int viewRow = metabolitesTable.convertRowIndexToModel(rowIndex);
 		final int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));		
-		final String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-		System.out.println(metabAbbrev);
-		System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());		
+		final String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);	
 		final String metabName = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN);
 
 		JMenuItem renameMenu = new JMenuItem("Rename");
@@ -5957,8 +5944,6 @@ public class GraphicalInterface extends JFrame {
 										if (LocalConfig.getInstance().getBlankMetabIds().contains(id)) {
 											LocalConfig.getInstance().getBlankMetabIds().remove(LocalConfig.getInstance().getBlankMetabIds().indexOf(id));
 										}
-										//System.out.println("blk" + LocalConfig.getInstance().getBlankMetabIds());
-										//System.out.println("del" + LocalConfig.getInstance().getMetaboliteNameIdMap());
 									}									
 								}
 								undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
@@ -6227,13 +6212,11 @@ public class GraphicalInterface extends JFrame {
 							LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
 						}
 						LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
-						System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 						showDuplicatePrompt = false;
 					}
 					if (choice == JOptionPane.NO_OPTION) {
 						showDuplicatePrompt = false;
 						duplicateMetabOK = false;
-						//validPaste = false;
 					}
 				} else {
 					value = value + duplicateSuffix(value);
@@ -6242,7 +6225,6 @@ public class GraphicalInterface extends JFrame {
 						LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
 					}
 					LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
-					System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 				}
 			} else {
 				metabolitesTable.setValueAt(value, row, col);
@@ -7209,14 +7191,14 @@ public class GraphicalInterface extends JFrame {
     	int numCopied = LocalConfig.getInstance().getNumReactionTablesCopied();
 		LocalConfig.getInstance().setNumReactionTablesCopied(numCopied + 1);
 		LocalConfig.getInstance().getReactionsUndoTableModelMap().put(Integer.toString(LocalConfig.getInstance().getNumReactionTablesCopied()), model);
-		System.out.println(LocalConfig.getInstance().getReactionsUndoTableModelMap());
+		//System.out.println(LocalConfig.getInstance().getReactionsUndoTableModelMap());
     }
     
     public void copyMetabolitesTableModels(DefaultTableModel model) {
     	int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied + 1);
 		LocalConfig.getInstance().getMetabolitesUndoTableModelMap().put(Integer.toString(LocalConfig.getInstance().getNumMetabolitesTableCopied()), model);
-		System.out.println(LocalConfig.getInstance().getMetabolitesUndoTableModelMap());
+		//System.out.println(LocalConfig.getInstance().getMetabolitesUndoTableModelMap());
     }    
     
     // any changes in table clears redo button
@@ -7791,8 +7773,6 @@ public class GraphicalInterface extends JFrame {
 								GraphicalInterfaceConstants.REPLACE_ALL_ERROR_TITLE,                                
 								JOptionPane.ERROR_MESSAGE);
 						setFindReplaceAlwaysOnTop(true);
-						//reactionsFindAll = false;
-						//reactionsTable.repaint();
 					}
 					// restore old model if invalid replace
 					setUpReactionsTable(oldReactionsModel);
@@ -8339,7 +8319,7 @@ public class GraphicalInterface extends JFrame {
 		if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
 			for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
 				// TODO: determine where and how to display these messages, and actually delete these files
-				//System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be deleted.");
+				System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be deleted.");
 				File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log");
 				if (f.exists()) {
 					u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log");
@@ -8354,7 +8334,6 @@ public class GraphicalInterface extends JFrame {
 
 		ArrayList<String> usedList = new ArrayList<String>(LocalConfig.getInstance().getMetaboliteUsedMap().keySet());
 		ArrayList<String> idList = new ArrayList<String>(LocalConfig.getInstance().getMetaboliteNameIdMap().keySet());
-		System.out.println(idList);
 		ArrayList<Integer> unusedList = new ArrayList<Integer>();
 		// removes unused metabolites from idMap and populates list of
 		// unused metabolite id's for deletion from table
@@ -8377,7 +8356,6 @@ public class GraphicalInterface extends JFrame {
 				JOptionPane.QUESTION_MESSAGE, 
 				null, options, options[0]);
 		listModel.remove(listModel.indexOf(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1)));
-		System.out.println("del " + listModel);
 		if (choice == JOptionPane.YES_OPTION) {
 			File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
 			if (f.exists()) {
@@ -8610,7 +8588,7 @@ public class GraphicalInterface extends JFrame {
 				if (GDBB.intermediateSolution.size() > 0) {
 					// need to lock if process is busy
 					solution = GDBB.intermediateSolution.poll();
-					System.out.println("obj" + solution.getObjectiveValue());
+					//System.out.println("obj" + solution.getObjectiveValue());
 					solutionName = optimizeName + "_" + Double.toString(solution.getObjectiveValue());
 					listModel.addElement(solutionName);
 					solution.setSolutionName(solutionName);					
@@ -8628,8 +8606,8 @@ public class GraphicalInterface extends JFrame {
 					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
 					LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
 					
-					System.out.println("opt " + LocalConfig.getInstance().getOptimizationFilesList());
-					System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
+//					System.out.println("opt " + LocalConfig.getInstance().getOptimizationFilesList());
+//					System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
 				}
 			}
 			return null;
@@ -8693,7 +8671,7 @@ public class GraphicalInterface extends JFrame {
 			getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 			getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
 
-			System.out.println("optimizeName = " + getOptimizeName());
+			//System.out.println("optimizeName = " + getOptimizeName());
 			writer = null;
 			try {
 				String synObjString = "";
@@ -8740,14 +8718,13 @@ public class GraphicalInterface extends JFrame {
 			// this will result in the last solution being loaded when folder clicked
 			LocalConfig.getInstance().getMetabolitesTableModelMap().remove(getOptimizeName());
 			LocalConfig.getInstance().getReactionsTableModelMap().remove(getOptimizeName());
-			System.out.println(getOptimizeName());
-			System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
+//			System.out.println(getOptimizeName());
+//			System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
 				
 			DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
 			DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
 			DefaultTableModel metabolitesOptModelCopy = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
 			DefaultTableModel reactionsOptModelCopy = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-			//DefaultTableModel reactionsOptModelCopy = copyReactionsTableModel((DefaultTableModel) LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));				
 			LocalConfig.getInstance().getReactionsTableModelMap().put(solutionName, reactionsOptModel);
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(solutionName, metabolitesOptModel);
 			LocalConfig.getInstance().getReactionsTableModelMap().put(getOptimizeName(), reactionsOptModelCopy);
