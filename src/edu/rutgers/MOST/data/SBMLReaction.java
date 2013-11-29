@@ -1,5 +1,8 @@
 package edu.rutgers.MOST.data;
 
+import java.util.ArrayList;
+
+import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
@@ -21,6 +24,7 @@ public class SBMLReaction implements ModelReaction {
 	private String proteinAssociation;
 	private String subsystem;
 	private String proteinClass;
+	private ArrayList<String> metaValues;
 	
 	public int getId() {
 		return id;
@@ -150,6 +154,14 @@ public class SBMLReaction implements ModelReaction {
 		return proteinClass;
 	}
 	
+	public ArrayList<String> getMetaValues() {
+		return metaValues;
+	}
+
+	public void setMetaValues(ArrayList<String> metaValues) {
+		this.metaValues = metaValues;
+	}
+
 	public void update() {
 
 		
@@ -161,6 +173,7 @@ public class SBMLReaction implements ModelReaction {
 	}
 
 	public void loadByRow(Integer row) {
+		ArrayList<String> meta = new ArrayList<String>();
 		this.setId(Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 		this.setKnockout((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.KO_COLUMN));
 		this.setFluxValue(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN)));
@@ -176,6 +189,10 @@ public class SBMLReaction implements ModelReaction {
 		this.setProteinAssociation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.PROTEIN_ASSOCIATION_COLUMN));
 		this.setSubsystem((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.SUBSYSTEM_COLUMN));
 		this.setProteinClass((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.PROTEIN_CLASS_COLUMN));
+		for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
+			meta.add((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + i));			
+		}
+		this.setMetaValues(meta);
 	}
 	
 	/*

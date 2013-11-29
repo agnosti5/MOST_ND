@@ -62,4 +62,5 @@ public class DynamicTreePanel extends JPanel {
         treePanel.setPreferredSize(new Dimension(300, 150));
         add(treePanel, BorderLayout.CENTER);
     }
+	
 }

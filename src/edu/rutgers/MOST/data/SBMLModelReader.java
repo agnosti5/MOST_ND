@@ -78,8 +78,9 @@ public class SBMLModelReader {
 			metabRow.add(metabolites.get(i).getName());	
 			metaboliteIdNameMap.put(new Integer(i), metabolites.get(i).getName());
 			metaboliteNameIdMap.put(metabolites.get(i).getId(), new Integer(i));
-			charge = Integer.toString(metabolites.get(i).getCharge());
-			//System.out.println("charge " + charge);
+			if (metabolites.get(i).isSetCharge()) {
+				charge = Integer.toString(metabolites.get(i).getCharge());
+			}
 			
 			Map<String, String> metabolitesMetaColumnMap = new HashMap<String, String>();
 			if (metabolites.get(i).isSetNotes()) {
@@ -409,6 +410,7 @@ public class SBMLModelReader {
 						String noteItem = "";
 						//removes xmlns (xml namespace tags)
 						if (noteString.contains("xmlns")) {
+							//System.out.println(noteString);
 							if (!noteString.endsWith("/>")) {
 								noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
 								String endtag = noteString.substring(noteString.lastIndexOf("<"));
@@ -417,7 +419,7 @@ public class SBMLModelReader {
 									noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
 									noteItemList.add(noteItem);										
 								}
-							}
+							} 
 						} else {
 							if ((noteString.indexOf(">") + 1) < noteString.lastIndexOf("<")) {
 								//for "<>", "</>" types of nodes, tags are removed
@@ -606,7 +608,7 @@ public class SBMLModelReader {
 		LocalConfig.getInstance().setReactionsMetaColumnNames(reactionsMetaColumnNames);
 		LocalConfig.getInstance().setMetaboliteNameIdMap(metaboliteNameIdMap);
 		//System.out.println(metaboliteNameIdMap);
-		//LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
 		//System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 		LocalConfig.getInstance().setReactionEquationMap(reactionEquationMap);
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());

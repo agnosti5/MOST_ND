@@ -459,12 +459,12 @@ public class TextReactionsModelReader {
 		model.addRow(createMetabolitesRow(maxMetabId));
 		model.setValueAt(species, maxMetabId, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 		LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
-		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
-			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
-			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));
-		} else {
+//		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
+//			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
+//			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));
+//		} else {
 			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
-		}
+//		}
 		setMetabolitesTableModel(model);
 	}
 	

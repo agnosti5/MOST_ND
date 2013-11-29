@@ -42,6 +42,8 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 	public JLabel rowLabel = new JLabel();
 	
 	private static ArrayList<String> columnNamesFromFile;
+	
+	public boolean validColumns;
 
 	public static ArrayList<String> getColumnNamesFromFile() {
 		return columnNamesFromFile;
@@ -71,6 +73,8 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 		LocalConfig.getInstance().setMetabolitesNextRowCorrection(0);
 
+		validColumns = true;
+		
 		cbMetaboliteAbbreviation.setEditable(true);	
 		cbMetaboliteName.setEditable(true);
 		cbCharge.setEditable(true);	
@@ -430,6 +434,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 					ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_MESSAGE,
 					ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_TITLE,                                
 					JOptionPane.ERROR_MESSAGE);
+			validColumns = false;
 		} else if (cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[0]) ||
 				cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[1]) ||
 				cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[2])) {
@@ -437,7 +442,9 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 					"Invalid name for Metabolite Abbreviation column.",
 					"Column Name Error",                                
 					JOptionPane.ERROR_MESSAGE);
+			validColumns = false;
 		} else {
+			validColumns = true;
 			ArrayList<String> metaColumnNames = new ArrayList<String>();
 			ArrayList<Integer> usedIndices = new ArrayList<Integer>();
 			ArrayList<Integer> metaColumnIndexList = new ArrayList<Integer>();

@@ -132,7 +132,8 @@ public class FindReplaceDialog extends JDialog {
 			}
 		});
 		findCopyItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 	
+			public void actionPerformed(ActionEvent a) { 
+				setClipboardContents("");
 				setClipboardContents(findField.getSelectedText());
 			}
 		});
