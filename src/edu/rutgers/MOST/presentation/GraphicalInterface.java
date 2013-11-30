@@ -1329,8 +1329,11 @@ public class GraphicalInterface extends JFrame {
 					setUpMetabolitesUndo(undoItem);	
 					maybeDisplaySuspiciousMetabMessage(statusBarRow());
 					int numMetabRows = metabolitesTable.getRowCount();
-					LocalConfig.getInstance().setMaxMetabolite(numMetabRows - 1);
-					LocalConfig.getInstance().setMaxMetaboliteId(numMetabRows - 1);
+					System.out.println("rows" + numMetabRows);
+					int maxId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(numMetabRows - 1, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+					System.out.println("max id" + maxId);
+					LocalConfig.getInstance().setMaxMetabolite(numMetabRows);
+					LocalConfig.getInstance().setMaxMetaboliteId(maxId + 1);
 				} catch (Exception e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
@@ -3296,8 +3299,7 @@ public class GraphicalInterface extends JFrame {
 				if (choice == JOptionPane.YES_OPTION)
 				{
 					LocalConfig.getInstance().addMetaboliteOption = true;
-					//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-					addNewMetabolite(maxMetab, species);
+					addNewMetabolite(maxMetab, maxMetabId, species);
 					maxMetab += 1;
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
 					maxMetabId += 1;
@@ -3308,8 +3310,7 @@ public class GraphicalInterface extends JFrame {
 				{
 					LocalConfig.getInstance().addMetaboliteOption = true;
 					GraphicalInterface.showPrompt = false;
-					//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-					addNewMetabolite(maxMetab, species);
+					addNewMetabolite(maxMetab, maxMetabId, species);
 					maxMetab += 1;
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
 					maxMetabId += 1;
@@ -3329,8 +3330,7 @@ public class GraphicalInterface extends JFrame {
 					} 					
 				}	
 			} else {
-				//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-				addNewMetabolite(maxMetab, species);
+				addNewMetabolite(maxMetab, maxMetabId, species);
 				maxMetab += 1;
 				LocalConfig.getInstance().setMaxMetabolite(maxMetab);
 				maxMetabId += 1;
@@ -3348,16 +3348,16 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
-	public void addNewMetabolite(int maxMetab, String species) {
+	public void addNewMetabolite(int maxMetab, int maxMetabId, String species) {
 		LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
 		DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();		
-		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
-		
-		} else {
-			model.addRow(createMetabolitesRow(maxMetab));
-		}
+//		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
+//		
+//		} else {
+			model.addRow(createMetabolitesRow(maxMetabId));
+//		}
 		model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-		LocalConfig.getInstance().getAddedMetabolites().add((maxMetab));
+		LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
 		//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
 //		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
 //			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
@@ -3365,7 +3365,11 @@ public class GraphicalInterface extends JFrame {
 //		} else {
 //			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
 //		}
-		
+		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
+			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
+		} else {
+			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+		}		
 		LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
 		setUpMetabolitesTable(model);
 		System.out.println("add id " + LocalConfig.getInstance().getMetaboliteNameIdMap());
