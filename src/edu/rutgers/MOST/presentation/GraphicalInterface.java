@@ -3040,13 +3040,15 @@ public class GraphicalInterface extends JFrame {
 				setFindReplaceAlwaysOnTop(true);
 				LocalConfig.getInstance().getInvalidReactions().add(newValue.trim());
 			} else {
+				ReactionEquationUpdater updater = new ReactionEquationUpdater();
+				updater.updateReactionEquations(id, oldValue, newValue);
 				//  if reaction is changed unhighlight unused metabolites since
 				//  used status may change, same with participating reactions
 				highlightUnusedMetabolites = false;
 				highlightUnusedMetabolitesItem.setState(false);
+				parser.reactionList(newValue.trim());
 				// if reaction is reversible, no need to check lower bound
-				if (newValue.contains("<") || (newValue.contains("=") && !newValue.contains(">"))) {					
-					parser.reactionList(newValue.trim());
+				if (newValue.contains("<") || (newValue.contains("=") && !newValue.contains(">"))) {										
 					updateReactionEquation(newValue, id, rowIndex, oldEquation, parser.getEquation());
 					// check if lower bound is >= 0 if reversible = false
 				} else if (newValue.contains("-->") || newValue.contains("->") || newValue.contains("=>")) {
@@ -3271,11 +3273,12 @@ public class GraphicalInterface extends JFrame {
 		if (oldEquation != null) {
 			System.out.println(oldEquation.equationAbbreviations);
 			ReactionEquationUpdater updater = new ReactionEquationUpdater();
-			updater.updateReactionEquations(id, oldEquation, oldEquation);
+			//updater.updateReactionEquations(id, oldEquation, oldEquation);
 		}
 	}
 	
 	public void maybeAddSpecies(String species, SBMLReactionEquation equation, String type, int index) {
+		System.out.println("add sp " + species);
 		addMetabolite = true;
 		int maxMetab = LocalConfig.getInstance().getMaxMetabolite();
 		int maxMetabId = LocalConfig.getInstance().getMaxMetaboliteId();
@@ -3304,6 +3307,7 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
 					maxMetabId += 1;
 					LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
+					System.out.println("yes" + LocalConfig.getInstance().getMetaboliteNameIdMap());
 				}
 				//No option actually corresponds to "Yes to All" button
 				if (choice == JOptionPane.NO_OPTION)
@@ -3349,7 +3353,11 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void addNewMetabolite(int maxMetab, int maxMetabId, String species) {
-		LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
+		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
+			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+		} else {
+			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+		}
 		DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();		
 //		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
 //		
@@ -3365,11 +3373,7 @@ public class GraphicalInterface extends JFrame {
 //		} else {
 //			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
 //		}
-		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
-			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-		} else {
-			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
-		}		
+				
 		LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
 		setUpMetabolitesTable(model);
 		System.out.println("add id " + LocalConfig.getInstance().getMetaboliteNameIdMap());
@@ -5978,7 +5982,13 @@ public class GraphicalInterface extends JFrame {
 										GraphicalInterfaceConstants.PARTICIPATING_METAB_ERROR_TITLE,                                
 										JOptionPane.ERROR_MESSAGE);
 								errorShown = true;
-							}							
+							}
+							int numMetabRows = metabolitesTable.getRowCount();
+							System.out.println("rows" + numMetabRows);
+							int maxId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(numMetabRows - 1, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+							System.out.println("max id" + maxId);
+							LocalConfig.getInstance().setMaxMetabolite(numMetabRows);
+							LocalConfig.getInstance().setMaxMetaboliteId(maxId + 1);
 						}
 					});
 				} else {
