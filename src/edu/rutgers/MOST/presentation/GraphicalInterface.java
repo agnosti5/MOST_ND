@@ -33,6 +33,7 @@ import edu.rutgers.MOST.data.MetaboliteFactory;
 import edu.rutgers.MOST.data.MetaboliteUndoItem;
 import edu.rutgers.MOST.data.ModelReactionEquation;
 import edu.rutgers.MOST.data.ObjectCloner;
+import edu.rutgers.MOST.data.ReactionEquationUpdater;
 import edu.rutgers.MOST.data.ReactionFactory;
 import edu.rutgers.MOST.data.ReactionUndoItem;
 import edu.rutgers.MOST.data.SBMLModelReader;
@@ -3078,6 +3079,7 @@ public class GraphicalInterface extends JFrame {
 					}
 				} 
 				maybeDisplaySuspiciousMetabMessage(statusBarRow());
+				System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.KO_COLUMN) {
 			if (validator.validTrueEntry(newValue)) {
@@ -3260,6 +3262,11 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 		reactionsTable.getModel().setValueAt(equn.getReversible(), rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 		GraphicalInterface.showPrompt = true;
+		if (oldEquation != null) {
+			System.out.println(oldEquation.equationAbbreviations);
+			ReactionEquationUpdater updater = new ReactionEquationUpdater();
+			updater.updateReactionEquations(id, oldEquation, oldEquation);
+		}
 	}
 	
 	public void maybeAddSpecies(String species, SBMLReactionEquation equation, String type, int index) {

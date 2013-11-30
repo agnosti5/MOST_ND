@@ -328,6 +328,7 @@ public class TextReactionsModelReader {
 		LocalConfig.getInstance().hasMetabolitesFile = false;
 		setReactionsTableModel(reacTableModel);
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+		System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public void updateReactionEquation(String reactionEqun, int id, SBMLReactionEquation equation, Vector<String> reacRow) {

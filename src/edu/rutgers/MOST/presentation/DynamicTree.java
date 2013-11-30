@@ -323,7 +323,6 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 			rowElement.append(node.toString());  
 
 		} 
-		System.out.println("tree " + rowElement);
 	}
 	
 }
