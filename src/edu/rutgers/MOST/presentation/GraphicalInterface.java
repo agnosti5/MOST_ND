@@ -740,8 +740,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {
 		// make this true only when troubleshooting, false for actual use
-		//showIdColumn = true;
-		showIdColumn = false;
+		showIdColumn = true;
+		//showIdColumn = false;
 
 		gi = this;
 
@@ -1328,6 +1328,9 @@ public class GraphicalInterface extends JFrame {
 					setUndoNewCollections(undoItem);
 					setUpMetabolitesUndo(undoItem);	
 					maybeDisplaySuspiciousMetabMessage(statusBarRow());
+					int numMetabRows = metabolitesTable.getRowCount();
+					LocalConfig.getInstance().setMaxMetabolite(numMetabRows - 1);
+					LocalConfig.getInstance().setMaxMetaboliteId(numMetabRows - 1);
 				} catch (Exception e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
@@ -3293,7 +3296,7 @@ public class GraphicalInterface extends JFrame {
 				if (choice == JOptionPane.YES_OPTION)
 				{
 					LocalConfig.getInstance().addMetaboliteOption = true;
-					LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
+					//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
 					addNewMetabolite(maxMetab, species);
 					maxMetab += 1;
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
@@ -3305,7 +3308,7 @@ public class GraphicalInterface extends JFrame {
 				{
 					LocalConfig.getInstance().addMetaboliteOption = true;
 					GraphicalInterface.showPrompt = false;
-					LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
+					//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
 					addNewMetabolite(maxMetab, species);
 					maxMetab += 1;
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
@@ -3326,7 +3329,7 @@ public class GraphicalInterface extends JFrame {
 					} 					
 				}	
 			} else {
-				LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
+				//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
 				addNewMetabolite(maxMetab, species);
 				maxMetab += 1;
 				LocalConfig.getInstance().setMaxMetabolite(maxMetab);
@@ -3346,6 +3349,7 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void addNewMetabolite(int maxMetab, String species) {
+		LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
 		DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();		
 		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
 		
@@ -3361,6 +3365,7 @@ public class GraphicalInterface extends JFrame {
 //		} else {
 //			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
 //		}
+		
 		LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
 		setUpMetabolitesTable(model);
 		System.out.println("add id " + LocalConfig.getInstance().getMetaboliteNameIdMap());
@@ -3676,9 +3681,11 @@ public class GraphicalInterface extends JFrame {
 			DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));			
 		}
 		DynamicTreePanel.treePanel.setNodeSelected(0);
+		// enables or disables menu items depending on if there are unused items present
+		createUnusedMetabolitesList();
 		enableMenuItems();
 		setSortDefault();
-		setUpCellSelectionMode();
+		setUpCellSelectionMode();		
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());
 	}
 
@@ -8353,6 +8360,7 @@ public class GraphicalInterface extends JFrame {
 			}
 		}
 		LocalConfig.getInstance().setUnusedList(unusedList);
+		System.out.println("unused" + unusedList);
 	}
 
 	public void deleteItemFromDynamicTree() {

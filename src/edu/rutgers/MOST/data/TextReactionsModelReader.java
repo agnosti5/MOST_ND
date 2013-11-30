@@ -329,6 +329,7 @@ public class TextReactionsModelReader {
 		setReactionsTableModel(reacTableModel);
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
+		System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 	}
 	
 	public void updateReactionEquation(String reactionEqun, int id, SBMLReactionEquation equation, Vector<String> reacRow) {
@@ -380,6 +381,7 @@ public class TextReactionsModelReader {
 		reacRow.add(equn.equationNames);
 		reacRow.add(equn.getReversible());
 		LocalConfig.getInstance().getReactionEquationMap().put(id, equn);
+		
 	}
 	
 	public void maybeAddSpecies(String species, SBMLReactionEquation equation, String type, int index) {
@@ -445,7 +447,8 @@ public class TextReactionsModelReader {
 			//}
 			LocalConfig.getInstance().setMaxMetabolite(maxMetabId);
 		}
-		if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
+		if (!newMetabolite) {
+		//if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
 				int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
 				LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));									
@@ -460,6 +463,7 @@ public class TextReactionsModelReader {
 		model.addRow(createMetabolitesRow(maxMetabId));
 		model.setValueAt(species, maxMetabId, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 		LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+		LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
 //		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
 //			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
 //			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));
