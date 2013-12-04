@@ -55,20 +55,24 @@ public class MetaboliteFactory {
 				ReactantFactory reactantFactory = new ReactantFactory("SBML");
 				ArrayList<SBMLReactant> reactantList = reactantFactory.getAllReactants();
 				for (int i = 0; i < reactantList.size(); i++) {
-					if (reactantList.get(i).getMetaboliteAbbreviation().equals(metaboliteAbbreviation)) {
-						if (!participatingReactions.contains(reactantList.get(i).getReactionId())) {
-							participatingReactions.add(reactantList.get(i).getReactionId());
+					if (reactantList.get(i).getMetaboliteAbbreviation() != null) {
+						if (reactantList.get(i).getMetaboliteAbbreviation().equals(metaboliteAbbreviation)) {
+							if (!participatingReactions.contains(reactantList.get(i).getReactionId())) {
+								participatingReactions.add(reactantList.get(i).getReactionId());
+							}
 						}
-					}
+					}					
 				}
 				ProductFactory productFactory = new ProductFactory("SBML");
 				ArrayList<SBMLProduct> productList = productFactory.getAllProducts();
 				for (int j = 0; j < productList.size(); j++) {
-					if (productList.get(j).getMetaboliteAbbreviation().equals(metaboliteAbbreviation)) {
-						if (!participatingReactions.contains(productList.get(j).getReactionId())) {
-							participatingReactions.add(productList.get(j).getReactionId());
+					if (productList.get(j).getMetaboliteAbbreviation() != null) {
+						if (productList.get(j).getMetaboliteAbbreviation().equals(metaboliteAbbreviation)) {
+							if (!participatingReactions.contains(productList.get(j).getReactionId())) {
+								participatingReactions.add(productList.get(j).getReactionId());
+							}
 						}
-					}
+					}					
 				}
 			}
 		}

@@ -57,14 +57,10 @@ public class ReactionEquationUpdater {
 			for (int i = 0; i < oldEqun.getReactants().size(); i++){
 				String reactant = oldEqun.getReactants().get(i).getMetaboliteAbbreviation();
 				oldReactantsList.add(reactant);
-				//LocalConfig.getInstance().getMetaboliteNameIdMap().remove(reactant);
-				//updateMetaboliteUsedMap(reactant, "old");
 			}
 			for (int i = 0; i < oldEqun.getProducts().size(); i++){
 				String product = oldEqun.getProducts().get(i).getMetaboliteAbbreviation();
 				oldProductsList.add(product);
-				//LocalConfig.getInstance().getMetaboliteNameIdMap().remove(product);
-				//updateMetaboliteUsedMap(product, "old");
 			}
 		}
 		if (newEquation != null) {
@@ -74,14 +70,10 @@ public class ReactionEquationUpdater {
 			for (int i = 0; i < newEqun.getReactants().size(); i++){
 				String reactant = newEqun.getReactants().get(i).getMetaboliteAbbreviation();
 				newReactantsList.add(reactant);
-				//LocalConfig.getInstance().getMetaboliteNameIdMap().remove(reactant);
-				//updateMetaboliteUsedMap(reactant, "new");
 			}
 			for (int i = 0; i < newEqun.getProducts().size(); i++){
 				String product = newEqun.getProducts().get(i).getMetaboliteAbbreviation();
 				newProductsList.add(product);
-				//LocalConfig.getInstance().getMetaboliteNameIdMap().remove(product);
-				//updateMetaboliteUsedMap(product, "new");
 			}
 		}
 		// contains species in old reaction equation not present in new reaction equation
@@ -89,7 +81,7 @@ public class ReactionEquationUpdater {
 		ArrayList<String> removeReactantsList = removeList(oldReactantsList, newReactantsList);
 		ArrayList<String> removeProductsList = removeList(oldProductsList, newProductsList);
 		setRemoveReactantsList(removeReactantsList);
-		setRemoveReactantsList(removeProductsList);
+		setRemoveProductsList(removeProductsList);
 		
 		// contains species in new reaction equation not present in old reaction equation,
 		// added if user does not click "No" button
@@ -148,7 +140,6 @@ public class ReactionEquationUpdater {
 				} else {
 					LocalConfig.getInstance().getMetaboliteUsedMap().remove(species);
 				}
-				//System.out.println("old sp " + usedCount);
 			}			
 		} else if (type.equals("new")) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {

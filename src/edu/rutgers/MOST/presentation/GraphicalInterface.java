@@ -1313,6 +1313,10 @@ public class GraphicalInterface extends JFrame {
 					//System.out.println(unusedList);
 					for (int i = 0; i < unusedList.size(); i++) {
 						deleteMetabolitesRowById(unusedList.get(i));
+						if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(unusedList.get(i))) {
+							LocalConfig.getInstance().getSuspiciousMetabolites().remove(LocalConfig.getInstance().getSuspiciousMetabolites().indexOf(unusedList.get(i)));
+							System.out.println("susp " + LocalConfig.getInstance().getSuspiciousMetabolites());
+						}
 					}	
 					for (int j = 0; j < LocalConfig.getInstance().getBlankMetabIds().size(); j++) {			
 						deleteMetabolitesRowById(LocalConfig.getInstance().getBlankMetabIds().get(j));						
@@ -2212,7 +2216,7 @@ public class GraphicalInterface extends JFrame {
 
 	public void updateReactionsCell() {
 		//if (!updated) {
-			System.out.println("update");
+			//System.out.println("update");
 			if (formulaBar.getText() != null) {
 				LocalConfig.getInstance().reactionsTableChanged = true;
 			}						
@@ -3053,7 +3057,7 @@ public class GraphicalInterface extends JFrame {
 				parser.reactionList(newValue.trim());
 				// if reaction is reversible, no need to check lower bound
 				if (newValue.contains("<") || (newValue.contains("=") && !newValue.contains(">"))) {										
-					updateReactionEquation(id, oldValue, newValue);
+					updateReactionEquation(rowIndex, id, oldValue, newValue);
 					//updateReactionEquation(newValue, id, rowIndex, oldEquation, parser.getEquation());
 					// check if lower bound is >= 0 if reversible = false
 				} else if (newValue.contains("-->") || newValue.contains("->") || newValue.contains("=>")) {
@@ -3073,7 +3077,7 @@ public class GraphicalInterface extends JFrame {
 							if (choice == JOptionPane.YES_OPTION) {
 								reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 								reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-								updateReactionEquation(id, oldValue, newValue);
+								updateReactionEquation(rowIndex, id, oldValue, newValue);
 								//updateReactionEquation(newValue, id, rowIndex, oldEquation, parser.getEquation());
 							}
 							// set old equation
@@ -3085,12 +3089,12 @@ public class GraphicalInterface extends JFrame {
 						} else {
 							reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 							reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-							updateReactionEquation(id, oldValue, newValue);
+							updateReactionEquation(rowIndex, id, oldValue, newValue);
 							//updateReactionEquation(newValue, id, rowIndex, oldEquation, parser.getEquation());
 						}
 					} else {
 						// lower bound >= 0, set new equation
-						updateReactionEquation(id, oldValue, newValue);
+						updateReactionEquation(rowIndex, id, oldValue, newValue);
 						//updateReactionEquation(newValue, id, rowIndex, oldEquation, parser.getEquation());
 					}
 				} 
@@ -3223,19 +3227,142 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
-	public void updateReactionEquation(int reactionId, String oldEquation, String newEquation) {
+	public void updateReactionEquation(int rowIndex, int reactionId, String oldEquation, String newEquation) {
+		LocalConfig.getInstance().getAddedMetabolites().clear();
+		SBMLReactionEquation equation = new SBMLReactionEquation();	
 		ReactionEquationUpdater updater = new ReactionEquationUpdater();
 		updater.createLists(oldEquation, newEquation);
+		System.out.println("rem reac list " + updater.getRemoveReactantsList());
+		System.out.println("rem prod list " + updater.getRemoveProductsList());
 		updater.removeOldItems(updater.getRemoveReactantsList(), updater.getRemoveProductsList());
+		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
+		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
+		ReactionParser parser = new ReactionParser();
 		for (int i = 0; i < updater.getMaybeAddReactants().size(); i++) {
 			maybeAddMetabolite(updater.getMaybeAddReactants().get(i));
+			if (addMetabolite) {
+				SBMLReactant reac = new SBMLReactant();
+				reac.setReactionId(reactionId);
+				Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(updater.getMaybeAddReactants().get(i));				
+				reac.setMetaboliteId(metabId);
+				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
+					reac.setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
+				}				
+				reactants.add(reac);
+				if (parser.isSuspicious(updater.getMaybeAddReactants().get(i))) {
+					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
+						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
+					}							
+				}
+				//updater.updateMetaboliteUsedMap(updater.getMaybeAddReactants().get(i), "new");
+			} else {
+				updater.getMaybeAddReactants().remove(updater.getMaybeAddReactants().get(i));
+			}
 		}
 		for (int i = 0; i < updater.getMaybeAddProducts().size(); i++) {
-			System.out.println("update " + updater.getMaybeAddProducts().get(i));
 			maybeAddMetabolite(updater.getMaybeAddProducts().get(i));	
+			if (addMetabolite) {
+				SBMLProduct prod = new SBMLProduct();
+				prod.setReactionId(reactionId);
+				Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(updater.getMaybeAddProducts().get(i));				
+				prod.setMetaboliteId(metabId);
+				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
+					prod.setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
+				}				
+				products.add(prod);
+				if (parser.isSuspicious(updater.getMaybeAddProducts().get(i))) {
+					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
+						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
+					}							
+				}
+				//updater.updateMetaboliteUsedMap(updater.getMaybeAddProducts().get(i), "new");
+			} else {
+				updater.getMaybeAddProducts().remove(updater.getMaybeAddProducts().get(i));
+			}
 		}
+		equation.setReactants(reactants);
+		equation.setProducts(products);
+		if (newEquation.contains("<") || (newEquation.contains("=") && !newEquation.contains(">"))) {										
+			equation.setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
+		} else if (newEquation.contains("-->") || newEquation.contains("->") || newEquation.contains("=>")) {
+			equation.setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
+		}		
+//		equation.setReversibleArrow(equation.getReversibleArrow());
+//		equation.setIrreversibleArrow(equation.getIrreversibleArrow());
+		equation.writeReactionEquation();
+		LocalConfig.getInstance().getReactionEquationMap().put(reactionId, equation);
+		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+		if (LocalConfig.getInstance().noButtonClicked) {			
+			reactionsTable.getModel().setValueAt(equation.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+		}
+		reactionsTable.getModel().setValueAt(equation.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+		reactionsTable.getModel().setValueAt(equation.getReversible(), rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+		GraphicalInterface.showPrompt = true;
 		createUnusedMetabolitesList();
+		
 	}
+	
+//	public void updateReactionEquation(String newValue, int id, int rowIndex, SBMLReactionEquation oldEquation, SBMLReactionEquation equation) {
+//	LocalConfig.getInstance().getAddedMetabolites().clear();
+//	SBMLReactionEquation equn = new SBMLReactionEquation();	
+//	ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
+//	ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
+//	ReactionParser parser = new ReactionParser();
+//	reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+//	LocalConfig.getInstance().getReactionEquationMap().put(id, equation);	
+//	for (int i = 0; i < equation.getReactants().size(); i++){
+//		maybeAddSpecies(equation.getReactants().get(i).getMetaboliteAbbreviation(), equation, "reactant", i);
+//		if (addMetabolite) {
+//			equation.getReactants().get(i).setReactionId(id);
+//			Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(equation.getReactants().get(i).getMetaboliteAbbreviation());				
+//			equation.getReactants().get(i).setMetaboliteId(metabId);
+//			if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
+//				equation.getReactants().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
+//			}				
+//			reactants.add(equation.getReactants().get(i));
+//			if (parser.isSuspicious(equation.getReactants().get(i).getMetaboliteAbbreviation())) {
+//				if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
+//					LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
+//				}							
+//			}
+//		}	
+//	}	
+//	for (int i = 0; i < equation.getProducts().size(); i++){
+//		maybeAddSpecies(equation.getProducts().get(i).getMetaboliteAbbreviation(), equation, "product", i);
+//		if (addMetabolite) {
+//			equation.getProducts().get(i).setReactionId(id);
+//			Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(equation.getProducts().get(i).getMetaboliteAbbreviation());				
+//			equation.getProducts().get(i).setMetaboliteId(metabId);
+//			if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
+//				equation.getProducts().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
+//			}				
+//			products.add(equation.getProducts().get(i));
+//			if (parser.isSuspicious(equation.getProducts().get(i).getMetaboliteAbbreviation())) {
+//				if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
+//					LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
+//				}							
+//			}
+//		}	
+//	}
+//	equn.setReactants(reactants);
+//	equn.setProducts(products);
+//	equn.setReversible(equation.getReversible());
+//	equn.setReversibleArrow(equation.getReversibleArrow());
+//	equn.setIrreversibleArrow(equation.getIrreversibleArrow());
+//	equn.writeReactionEquation();
+//	LocalConfig.getInstance().getReactionEquationMap().put(id, equn);
+//	if (LocalConfig.getInstance().noButtonClicked) {			
+//		reactionsTable.getModel().setValueAt(equn.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+//	}
+//	reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+//	reactionsTable.getModel().setValueAt(equn.getReversible(), rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+//	GraphicalInterface.showPrompt = true;
+//	if (oldEquation != null) {
+//		System.out.println(oldEquation.equationAbbreviations);
+//		ReactionEquationUpdater updater = new ReactionEquationUpdater();
+//		//updater.updateReactionEquations(id, oldEquation, oldEquation);
+//	}
+//}
 	
 	public void maybeAddMetabolite(String species) {
 		addMetabolite = true;		
@@ -3266,7 +3393,6 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
 					maxMetabId += 1;
 					LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-					System.out.println("yes" + LocalConfig.getInstance().getMetaboliteNameIdMap());
 				}
 				//No option actually corresponds to "Yes to All" button
 				if (choice == JOptionPane.NO_OPTION)
@@ -3295,68 +3421,6 @@ public class GraphicalInterface extends JFrame {
 			}
 		}
 	}
-	
-//	public void updateReactionEquation(String newValue, int id, int rowIndex, SBMLReactionEquation oldEquation, SBMLReactionEquation equation) {
-//		LocalConfig.getInstance().getAddedMetabolites().clear();
-//		SBMLReactionEquation equn = new SBMLReactionEquation();	
-//		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
-//		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
-//		ReactionParser parser = new ReactionParser();
-//		reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-//		LocalConfig.getInstance().getReactionEquationMap().put(id, equation);	
-//		for (int i = 0; i < equation.getReactants().size(); i++){
-//			maybeAddSpecies(equation.getReactants().get(i).getMetaboliteAbbreviation(), equation, "reactant", i);
-//			if (addMetabolite) {
-//				equation.getReactants().get(i).setReactionId(id);
-//				Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(equation.getReactants().get(i).getMetaboliteAbbreviation());				
-//				equation.getReactants().get(i).setMetaboliteId(metabId);
-//				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
-//					equation.getReactants().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
-//				}				
-//				reactants.add(equation.getReactants().get(i));
-//				if (parser.isSuspicious(equation.getReactants().get(i).getMetaboliteAbbreviation())) {
-//					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
-//						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
-//					}							
-//				}
-//			}	
-//		}	
-//		for (int i = 0; i < equation.getProducts().size(); i++){
-//			maybeAddSpecies(equation.getProducts().get(i).getMetaboliteAbbreviation(), equation, "product", i);
-//			if (addMetabolite) {
-//				equation.getProducts().get(i).setReactionId(id);
-//				Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(equation.getProducts().get(i).getMetaboliteAbbreviation());				
-//				equation.getProducts().get(i).setMetaboliteId(metabId);
-//				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
-//					equation.getProducts().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
-//				}				
-//				products.add(equation.getProducts().get(i));
-//				if (parser.isSuspicious(equation.getProducts().get(i).getMetaboliteAbbreviation())) {
-//					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
-//						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
-//					}							
-//				}
-//			}	
-//		}
-//		equn.setReactants(reactants);
-//		equn.setProducts(products);
-//		equn.setReversible(equation.getReversible());
-//		equn.setReversibleArrow(equation.getReversibleArrow());
-//		equn.setIrreversibleArrow(equation.getIrreversibleArrow());
-//		equn.writeReactionEquation();
-//		LocalConfig.getInstance().getReactionEquationMap().put(id, equn);
-//		if (LocalConfig.getInstance().noButtonClicked) {			
-//			reactionsTable.getModel().setValueAt(equn.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-//		}
-//		reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
-//		reactionsTable.getModel().setValueAt(equn.getReversible(), rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-//		GraphicalInterface.showPrompt = true;
-//		if (oldEquation != null) {
-//			System.out.println(oldEquation.equationAbbreviations);
-//			ReactionEquationUpdater updater = new ReactionEquationUpdater();
-//			//updater.updateReactionEquations(id, oldEquation, oldEquation);
-//		}
-//	}
 	
 	public void maybeAddSpecies(String species, SBMLReactionEquation equation, String type, int index) {
 		addMetabolite = true;
@@ -3387,7 +3451,6 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
 					maxMetabId += 1;
 					LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-					System.out.println("yes" + LocalConfig.getInstance().getMetaboliteNameIdMap());
 				}
 				//No option actually corresponds to "Yes to All" button
 				if (choice == JOptionPane.NO_OPTION)
@@ -6037,6 +6100,10 @@ public class GraphicalInterface extends JFrame {
 								for (int r = rowIndexEnd; r >= startRow; r--) {
 									int viewRow = metabolitesTable.convertRowIndexToModel(r);
 									int id = (Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
+									if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(id)) {
+										LocalConfig.getInstance().getSuspiciousMetabolites().remove(LocalConfig.getInstance().getSuspiciousMetabolites().indexOf(id));
+										System.out.println("susp " + LocalConfig.getInstance().getSuspiciousMetabolites());
+									}
 									String key = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 									// TODO: need to check if id is used	
 									if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(key)) {
