@@ -3229,6 +3229,8 @@ public class GraphicalInterface extends JFrame {
 		for (int i = 0; i < updater.getMaybeAddProducts().size(); i++) {
 			maybeAddMetabolite(updater.getMaybeAddProducts().get(i));
 		}
+		System.out.println("un");
+		createUnusedMetabolitesList();
 	}
 	
 	public void maybeAddMetabolite(String species) {

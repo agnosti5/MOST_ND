@@ -127,78 +127,15 @@ public class ReactionEquationUpdater {
 		if (removeReactantsList != null) {
 			for (int i = 0; i < removeReactantsList.size(); i++) {
 				updateMetaboliteUsedMap(removeReactantsList.get(i), "old");
-				LocalConfig.getInstance().getMetaboliteIdNameMap().remove(removeReactantsList.get(i));
 			}
 		}		
 		if (removeProductsList != null) {
 			for (int i = 0; i < removeProductsList.size(); i++) {
 				updateMetaboliteUsedMap(removeProductsList.get(i), "old");
-				LocalConfig.getInstance().getMetaboliteIdNameMap().remove(removeProductsList.get(i));
 			}
 		}		
 		System.out.println("rem" + LocalConfig.getInstance().getMetaboliteUsedMap());
-		System.out.println("rem" + LocalConfig.getInstance().getMetaboliteIdNameMap());
 	}
-
-	// no good - need to account for reactants and products separately
-	/*
-	public void updateReactionEquations(int reactionId, String oldEquation, String newEquation) {
-		ReactionParser parser = new ReactionParser();
-		// contains species in old reaction equation not present in new reaction equation
-		// to be removed or adjusted in maps
-		ArrayList<String> removeList = new ArrayList<String>();
-		// contains species in new reaction equation not present in old reaction equation,
-		// added if user does not click "No" button
-		ArrayList<String> maybeAddList = new ArrayList<String>();
-		ArrayList<String> oldSpeciesList = new ArrayList<String>();
-		ArrayList<String> newSpeciesList = new ArrayList<String>();
-		if (oldEquation != null) {
-			parser.reactionList(oldEquation);
-			SBMLReactionEquation oldEqun = parser.getEquation();
-			//System.out.println("old " + oldEquation.equationAbbreviations);
-			// update for old equation
-			for (int i = 0; i < oldEqun.getReactants().size(); i++){
-				String reactant = oldEqun.getReactants().get(i).getMetaboliteAbbreviation();
-				oldSpeciesList.add(reactant);
-				//LocalConfig.getInstance().getMetaboliteNameIdMap().remove(reactant);
-				//updateMetaboliteUsedMap(reactant, "old");
-			}
-			for (int i = 0; i < oldEqun.getProducts().size(); i++){
-				String product = oldEqun.getProducts().get(i).getMetaboliteAbbreviation();
-				oldSpeciesList.add(product);
-				//LocalConfig.getInstance().getMetaboliteNameIdMap().remove(product);
-				//updateMetaboliteUsedMap(product, "old");
-			}
-		}
-		if (newEquation != null) {
-			parser.reactionList(newEquation);
-			SBMLReactionEquation newEqun = parser.getEquation();
-//			// update for new equation
-			for (int i = 0; i < newEqun.getReactants().size(); i++){
-				//int metabId = newEqun.getReactants().get(i).getMetaboliteId();
-				String reactant = newEqun.getReactants().get(i).getMetaboliteAbbreviation();
-				newSpeciesList.add(reactant);
-//				LocalConfig.getInstance().getMetaboliteNameIdMap().put(reactant, metabId);
-//				//updateMetaboliteUsedMap(reactant, "new");
-			}
-			for (int i = 0; i < newEqun.getProducts().size(); i++){
-				//int metabId = newEqun.getProducts().get(i).getMetaboliteId();
-				String product = newEqun.getProducts().get(i).getMetaboliteAbbreviation();
-				newSpeciesList.add(product);
-//				LocalConfig.getInstance().getMetaboliteNameIdMap().put(product, metabId);
-//				//updateMetaboliteUsedMap(product, "new");
-			}
-//			updateReactionEquationMap(reactionId, newEquation);
-		}
-		System.out.println("old sp " + oldSpeciesList);
-		System.out.println("new sp " + newSpeciesList);
-//		System.out.println("old id " + LocalConfig.getInstance().getMetaboliteNameIdMap());
-//		System.out.println("old used " + LocalConfig.getInstance().getMetaboliteUsedMap());
-		
-		
-		
-	}
-	*/
 	
 	public void updateMetaboliteUsedMap(String species, String type) {
 		if (type.equals("old")) {
