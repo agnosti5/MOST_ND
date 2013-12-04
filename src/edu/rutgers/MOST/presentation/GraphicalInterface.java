@@ -260,6 +260,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean addMetabolite;
 	public boolean saveFile;
 	public boolean saveSBML;
+	public boolean updated; // used to fix bug where formula bar sometimes updates reaction equations twice
 	// close
 	public static boolean exit;
 
@@ -2210,26 +2211,29 @@ public class GraphicalInterface extends JFrame {
 	/*******************************************************************************/ 
 
 	public void updateReactionsCell() {
-		if (formulaBar.getText() != null) {
-			LocalConfig.getInstance().reactionsTableChanged = true;
-		}						
-		int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
-		String newValue = formulaBar.getText();
-		ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-		updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, reactionsTable.getSelectedColumn());
-		if (reactionUpdateValid) {
-			if (undoItem.getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-				if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null) {
-					undoItem.setNewValue(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN).toString());
-				}				
-				if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) != null) {
-					undoItem.setEquationNames(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN).toString());
-				} else {
-					undoItem.setEquationNames("");
-				}				
-			}
-			setUpReactionsUndo(undoItem);	
-		} 
+		//if (!updated) {
+			System.out.println("update");
+			if (formulaBar.getText() != null) {
+				LocalConfig.getInstance().reactionsTableChanged = true;
+			}						
+			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
+			String newValue = formulaBar.getText();
+			ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+			updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, reactionsTable.getSelectedColumn());
+			if (reactionUpdateValid) {
+				if (undoItem.getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null) {
+						undoItem.setNewValue(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN).toString());
+					}				
+					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) != null) {
+						undoItem.setEquationNames(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN).toString());
+					} else {
+						undoItem.setEquationNames("");
+					}				
+				}
+				setUpReactionsUndo(undoItem);	
+			} 
+		//}		
 	}
 
 	public void updateMetabolitesCell() {
@@ -3227,20 +3231,20 @@ public class GraphicalInterface extends JFrame {
 			maybeAddMetabolite(updater.getMaybeAddReactants().get(i));
 		}
 		for (int i = 0; i < updater.getMaybeAddProducts().size(); i++) {
-			maybeAddMetabolite(updater.getMaybeAddProducts().get(i));
+			System.out.println("update " + updater.getMaybeAddProducts().get(i));
+			maybeAddMetabolite(updater.getMaybeAddProducts().get(i));	
 		}
-		System.out.println("un");
 		createUnusedMetabolitesList();
 	}
 	
 	public void maybeAddMetabolite(String species) {
-		addMetabolite = true;
+		addMetabolite = true;		
 		int maxMetab = LocalConfig.getInstance().getMaxMetabolite();
 		int maxMetabId = LocalConfig.getInstance().getMaxMetaboliteId();
 		boolean newMetabolite = false;
 		if (!(LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(species.trim()))) {
 			newMetabolite = true;
-			if (GraphicalInterface.showPrompt && !(GraphicalInterface.replaceAllMode && LocalConfig.getInstance().yesToAllButtonClicked)) {
+			if (showPrompt && !(GraphicalInterface.replaceAllMode && LocalConfig.getInstance().yesToAllButtonClicked)) {
 				Object[] options = {"Yes",
 						"Yes to All",
 				"No"};
@@ -3280,7 +3284,7 @@ public class GraphicalInterface extends JFrame {
 				if (choice == JOptionPane.CANCEL_OPTION) {
 					addMetabolite = false;
 					LocalConfig.getInstance().addMetaboliteOption = false;
-					LocalConfig.getInstance().noButtonClicked = true; 					
+					LocalConfig.getInstance().noButtonClicked = true; 
 				}	
 			} else {
 				addNewMetabolite(maxMetab, maxMetabId, species);
@@ -3430,7 +3434,7 @@ public class GraphicalInterface extends JFrame {
 	
 	public void addNewMetabolite(int maxMetab, int maxMetabId, String species) {
 		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
-			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
 		} else {
 			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
 		}
@@ -3818,6 +3822,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().metabolitesTableChanged = false;
 		LocalConfig.getInstance().includesReactions = true;
 		saveFile = false;
+		updated = false;
 	}
 
 	public void clearConfigLists() {
