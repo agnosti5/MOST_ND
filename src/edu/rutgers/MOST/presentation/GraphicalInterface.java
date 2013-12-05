@@ -3232,23 +3232,20 @@ public class GraphicalInterface extends JFrame {
 		SBMLReactionEquation equation = new SBMLReactionEquation();	
 		ReactionEquationUpdater updater = new ReactionEquationUpdater();
 		updater.createLists(oldEquation, newEquation);
-		System.out.println("rem reac list " + updater.getRemoveReactantsList());
-		System.out.println("rem prod list " + updater.getRemoveProductsList());
+//		System.out.println("rem reac list " + updater.getRemoveReactantsList());
+//		System.out.println("rem prod list " + updater.getRemoveProductsList());
 		updater.removeOldItems(updater.getRemoveReactantsList(), updater.getRemoveProductsList());
 		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
 		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
 		ReactionParser parser = new ReactionParser();
 		parser.reactionList(newEquation.trim());
 		SBMLReactionEquation unprocessedEqun = parser.getEquation();
-		System.out.println("p " + parser.getEquation());
 		for (int i = 0; i < updater.getMaybeAddReactants().size(); i++) {
 			maybeAddMetabolite(updater.getMaybeAddReactants().get(i));
 			if (addMetabolite || LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(updater.getMaybeAddReactants().get(i))) {
-				//System.out.println("unpr " + unprocessedEqun.getReactants());
 				Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(updater.getMaybeAddReactants().get(i));				
 				for (int j = 0; j < unprocessedEqun.getReactants().size(); j++) {
 					if (unprocessedEqun.getReactants().get(j).getMetaboliteAbbreviation().equals(updater.getMaybeAddReactants().get(i))) {
-						System.out.println("eq " + updater.getMaybeAddReactants().get(i));
 						unprocessedEqun.getReactants().get(j).setMetaboliteId(metabId);
 						unprocessedEqun.getReactants().get(j).setReactionId(reactionId);
 						if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(unprocessedEqun.getReactants().get(j).getMetaboliteId())) {
@@ -3256,15 +3253,6 @@ public class GraphicalInterface extends JFrame {
 						}
 					}
 				}
-//				SBMLReactant reac = new SBMLReactant();
-//				reac.setReactionId(reactionId);
-//				//Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(updater.getMaybeAddReactants().get(i));				
-//				reac.setMetaboliteId(metabId);
-//				reac.setMetaboliteAbbreviation(updater.getMaybeAddReactants().get(i));
-//				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
-//					reac.setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
-//				}
-//				reactants.add(reac);
 				if (parser.isSuspicious(updater.getMaybeAddReactants().get(i))) {
 					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
@@ -3273,7 +3261,6 @@ public class GraphicalInterface extends JFrame {
 				updater.updateMetaboliteUsedMap(updater.getMaybeAddReactants().get(i), "new");
 			} else {
 				unprocessedEqun.removeReactantByAbbr(updater.getMaybeAddReactants().get(i));
-				//updater.getMaybeAddReactants().remove(updater.getMaybeAddReactants().get(i));
 			}
 		}
 		for (int i = 0; i < updater.getMaybeAddProducts().size(); i++) {
@@ -3282,7 +3269,6 @@ public class GraphicalInterface extends JFrame {
 				Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(updater.getMaybeAddProducts().get(i));				
 				for (int j = 0; j < unprocessedEqun.getProducts().size(); j++) {
 					if (unprocessedEqun.getProducts().get(j).getMetaboliteAbbreviation().equals(updater.getMaybeAddProducts().get(i))) {
-						System.out.println("eq " + updater.getMaybeAddProducts().get(i));
 						unprocessedEqun.getProducts().get(j).setMetaboliteId(metabId);
 						unprocessedEqun.getProducts().get(j).setReactionId(reactionId);
 						if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(unprocessedEqun.getProducts().get(j).getMetaboliteId())) {
@@ -3290,15 +3276,6 @@ public class GraphicalInterface extends JFrame {
 						}
 					}
 				}
-//				SBMLProduct prod = new SBMLProduct();
-//				prod.setReactionId(reactionId);
-//				Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteNameIdMap().get(updater.getMaybeAddProducts().get(i));				
-//				prod.setMetaboliteId(metabId);
-//				prod.setMetaboliteAbbreviation(updater.getMaybeAddProducts().get(i));
-//				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
-//					prod.setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
-//				}				
-//				products.add(prod);
 				if (parser.isSuspicious(updater.getMaybeAddProducts().get(i))) {
 					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
@@ -3307,21 +3284,27 @@ public class GraphicalInterface extends JFrame {
 				updater.updateMetaboliteUsedMap(updater.getMaybeAddProducts().get(i), "new");
 			} else {
 				unprocessedEqun.removeProductByAbbr(updater.getMaybeAddProducts().get(i));
-				//updater.getMaybeAddProducts().remove(updater.getMaybeAddProducts().get(i));
 			}
 		}
-		System.out.println("unpr aft " + unprocessedEqun);
-//		equation.setReactants(reactants);
-//		equation.setProducts(products);
-//		if (newEquation.contains("<") || (newEquation.contains("=") && !newEquation.contains(">"))) {										
-//			equation.setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
-//		} else if (newEquation.contains("-->") || newEquation.contains("->") || newEquation.contains("=>")) {
-//			equation.setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
-//		}		
-//		equation.setReversibleArrow(equation.getReversibleArrow());
-//		equation.setIrreversibleArrow(equation.getIrreversibleArrow());
-		unprocessedEqun.writeReactionEquation();
-		LocalConfig.getInstance().getReactionEquationMap().put(reactionId, unprocessedEqun);
+		// copy SBMLReactionEquation - if this is not done, all of the SBMLReactionEquation
+		// objects will be the same due to the reactant and product lists all being copies
+		// of the same lists
+		ArrayList<SBMLReactant> reac = new ArrayList<SBMLReactant>();
+		ArrayList<SBMLProduct> prod = new ArrayList<SBMLProduct>();
+		for (int i = 0; i < unprocessedEqun.getReactants().size(); i++) {
+			reac.add(unprocessedEqun.getReactants().get(i));
+		}
+		for (int i = 0; i < unprocessedEqun.getProducts().size(); i++) {
+			prod.add(unprocessedEqun.getProducts().get(i));
+		}
+		equation.setReactants(reac);
+		equation.setProducts(prod);
+		equation.setReversible(unprocessedEqun.getReversible());
+		equation.setReversibleArrow(unprocessedEqun.getReversibleArrow());
+		equation.setIrreversibleArrow(unprocessedEqun.getIrreversibleArrow());
+		equation.writeReactionEquation();
+		LocalConfig.getInstance().getReactionEquationMap().put(reactionId, equation);
+		//LocalConfig.getInstance().getReactionEquationMap().put(reactionId, unprocessedEqun);
 		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		if (LocalConfig.getInstance().noButtonClicked) {			
 			reactionsTable.getModel().setValueAt(unprocessedEqun.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
