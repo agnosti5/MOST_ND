@@ -3272,7 +3272,8 @@ public class GraphicalInterface extends JFrame {
 				}
 				updater.updateMetaboliteUsedMap(updater.getMaybeAddReactants().get(i), "new");
 			} else {
-				updater.getMaybeAddReactants().remove(updater.getMaybeAddReactants().get(i));
+				unprocessedEqun.removeReactantByAbbr(updater.getMaybeAddReactants().get(i));
+				//updater.getMaybeAddReactants().remove(updater.getMaybeAddReactants().get(i));
 			}
 		}
 		for (int i = 0; i < updater.getMaybeAddProducts().size(); i++) {
@@ -3305,7 +3306,8 @@ public class GraphicalInterface extends JFrame {
 				}
 				updater.updateMetaboliteUsedMap(updater.getMaybeAddProducts().get(i), "new");
 			} else {
-				updater.getMaybeAddProducts().remove(updater.getMaybeAddProducts().get(i));
+				unprocessedEqun.removeProductByAbbr(updater.getMaybeAddProducts().get(i));
+				//updater.getMaybeAddProducts().remove(updater.getMaybeAddProducts().get(i));
 			}
 		}
 		System.out.println("unpr aft " + unprocessedEqun);
