@@ -178,6 +178,14 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 		
 	}
 	
+	public void removeReactantByAbbr(String abbr) {
+		for (int i = 0; i < reactants.size(); i++) {
+			if (reactants.get(i).getMetaboliteAbbreviation().equals(abbr)) {
+				reactants.remove(i);
+			}
+		}		
+	}
+	
 	@Override
 	public String toString() {
 		String reactantsString = "";
