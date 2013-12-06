@@ -35,6 +35,8 @@ public class ReactionUndoItem implements UndoItem {
 	private ArrayList<String> newMetaColumnNames;
 	private String columnName;
 	private SBMLReactionEquation equn;
+	private int maxMetab;
+	private int maxMetabId;
 	
 	public Integer getId() {
 		return id;
@@ -156,13 +158,24 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	public void setColumnName(String columnName) {
 		this.columnName = columnName;
-	}
-	
+	}	
 	public SBMLReactionEquation getEqun() {
 		return equn;
 	}
 	public void setEqun(SBMLReactionEquation equn) {
 		this.equn = equn;
+	}	
+	public int getMaxMetab() {
+		return maxMetab;
+	}
+	public void setMaxMetab(int maxMetab) {
+		this.maxMetab = maxMetab;
+	}
+	public int getMaxMetabId() {
+		return maxMetabId;
+	}
+	public void setMaxMetabId(int maxMetabId) {
+		this.maxMetabId = maxMetabId;
 	}
 	
 	public String createUndoDescription() {
@@ -189,14 +202,12 @@ public class ReactionUndoItem implements UndoItem {
 			undoDescription = UndoConstants.CLEAR_CONTENTS;	
 		} else if (this.undoType.equals(UndoConstants.SORT)) {
 			undoDescription = UndoConstants.SORT;
-		} else if (this.undoType.equals(UndoConstants.EDIT_REACTION)) {
-			undoDescription = UndoConstants.EDIT_REACTION;
 		}
 		return undoDescription + UndoConstants.REACTION_UNDO_SUFFIX;
 	}
 	
 	public void undo() {
-		if (this.undoType.equals(UndoConstants.TYPING) || this.undoType.equals(UndoConstants.REPLACE) || this.undoType.equals(UndoConstants.EDIT_REACTION)) {
+		if (this.undoType.equals(UndoConstants.TYPING) || this.undoType.equals(UndoConstants.REPLACE)) {
 			undoEntry();
 		} else if (this.undoType.equals(UndoConstants.ADD_ROW)) {
 			undoAddRow();
@@ -259,6 +270,8 @@ public class ReactionUndoItem implements UndoItem {
 		GraphicalInterface.reactionsTable.getModel().setValueAt(oldValue, this.row, this.column);
 		
 		if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)) {
+			LocalConfig.getInstance().setMaxMetabolite(this.maxMetab);
+			LocalConfig.getInstance().setMaxMetaboliteId(this.maxMetabId);
 			Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
 			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
 				metabolitesIdRowMap.put((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN), i);
@@ -270,12 +283,8 @@ public class ReactionUndoItem implements UndoItem {
 				addedAbbr.add(abbrev);
 				LocalConfig.getInstance().getMetaboliteNameIdMap().remove(abbrev);
 				LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
-				setEqun((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id));
-				LocalConfig.getInstance().getReactionEquationMap().remove(this.id);
-				int maxId = LocalConfig.getInstance().getMaxMetaboliteId();
-				maxId -= 1;
-				LocalConfig.getInstance().setMaxMetaboliteId(maxId);
 				String row = (metabolitesIdRowMap.get(Integer.toString(this.addedMetabolites.get(i)))).toString();
+				
 				int rowNum = Integer.valueOf(row);
 				GraphicalInterface.metabolitesTable.getModel().setValueAt("", rowNum, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 			}
@@ -319,26 +328,6 @@ public class ReactionUndoItem implements UndoItem {
 			}				
 		}
 		GraphicalInterface.reactionsTable.getModel().setValueAt(newValue, this.row, this.column);
-		
-		if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)) {
-			Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
-			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
-				metabolitesIdRowMap.put((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN), i);
-			}
-			for (int i = 0; i < this.addedMetabolites.size(); i++) {
-				LocalConfig.getInstance().getMetaboliteNameIdMap().put(getAddedMetaboliteAbbr().get(i), this.id);
-				LocalConfig.getInstance().getMetaboliteUsedMap().put(getAddedMetaboliteAbbr().get(i), new Integer(1));
-				LocalConfig.getInstance().getReactionEquationMap().put(this.id, getEqun());
-				int maxId = LocalConfig.getInstance().getMaxMetaboliteId();
-				maxId += 1;
-				LocalConfig.getInstance().setMaxMetaboliteId(maxId);
-				String row = (metabolitesIdRowMap.get(Integer.toString(this.addedMetabolites.get(i)))).toString();
-				int rowNum = Integer.valueOf(row);
-				System.out.println("rownum" + rowNum);
-				GraphicalInterface.metabolitesTable.getModel().setValueAt(getAddedMetaboliteAbbr().get(i), rowNum, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-			}
-			System.out.println(LocalConfig.getInstance().getReactionEquationMap());
-		}
 		
 		return true;
 	} 

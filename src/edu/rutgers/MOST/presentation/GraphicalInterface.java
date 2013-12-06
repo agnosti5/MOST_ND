@@ -2026,7 +2026,7 @@ public class GraphicalInterface extends JFrame {
 							newValue = (String) reactionsTable.getModel().getValueAt(viewRow, getCurrentReactionsColumn());
 						} 						
 						//ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, getCurrentRow(), getCurrentColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-						updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, getCurrentReactionsColumn());
+						//updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, getCurrentReactionsColumn());
 						if (reactionUpdateValid) {
 							/*
 							if (undoItem.getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
@@ -2223,6 +2223,8 @@ public class GraphicalInterface extends JFrame {
 			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 			String newValue = formulaBar.getText();
 			ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+			undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
+			undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 			updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, reactionsTable.getSelectedColumn());
 			if (reactionUpdateValid) {
 				if (undoItem.getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
@@ -2983,6 +2985,8 @@ public class GraphicalInterface extends JFrame {
 			if (tcl.getOldValue() != tcl.getNewValue()) {
 				int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), 0)));
 				ReactionUndoItem undoItem = createReactionUndoItem(tcl.getOldValue(), tcl.getNewValue(), reactionsTable.getSelectedRow(), tcl.getColumn(), id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
+				undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 				LocalConfig.getInstance().reactionsTableChanged = true;
 				updateReactionsCellIfValid(tcl.getOldValue(), tcl.getNewValue(), tcl.getRow(), tcl.getColumn());
 				if (reactionUpdateValid) {
@@ -3308,6 +3312,7 @@ public class GraphicalInterface extends JFrame {
 		if (LocalConfig.getInstance().noButtonClicked) {			
 			reactionsTable.getModel().setValueAt(equation.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 		}
+		reactionsTable.getModel().setValueAt(equation.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 		reactionsTable.getModel().setValueAt(equation.getReversible(), rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 		GraphicalInterface.showPrompt = true;
 		createUnusedMetabolitesList();
@@ -3380,61 +3385,63 @@ public class GraphicalInterface extends JFrame {
 //}
 	
 	public void maybeAddMetabolite(String species) {
-		addMetabolite = true;		
-		int maxMetab = LocalConfig.getInstance().getMaxMetabolite();
-		int maxMetabId = LocalConfig.getInstance().getMaxMetaboliteId();
-		boolean newMetabolite = false;
-		if (!(LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(species.trim()))) {
-			newMetabolite = true;
-			if (showPrompt && !(GraphicalInterface.replaceAllMode && LocalConfig.getInstance().yesToAllButtonClicked)) {
-				Object[] options = {"Yes",
-						"Yes to All",
-				"No"};
-				LocalConfig.getInstance().addReactantPromptShown = true;
-				int choice = JOptionPane.showOptionDialog(null, 
-						"The metabolite " + species + " does not exist. Do you wish to add it?", 
-						"Add Metabolite?", 
-						JOptionPane.YES_NO_CANCEL_OPTION, 
-						JOptionPane.QUESTION_MESSAGE, 
-						null, options, options[0]);
-				//options[0] sets "Yes" as default button
+		if (species != null && species.length() > 0) {
+			addMetabolite = true;		
+			int maxMetab = LocalConfig.getInstance().getMaxMetabolite();
+			int maxMetabId = LocalConfig.getInstance().getMaxMetaboliteId();
+			boolean newMetabolite = false;
+			if (!(LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(species.trim()))) {
+				newMetabolite = true;
+				if (showPrompt && !(GraphicalInterface.replaceAllMode && LocalConfig.getInstance().yesToAllButtonClicked)) {
+					Object[] options = {"Yes",
+							"Yes to All",
+					"No"};
+					LocalConfig.getInstance().addReactantPromptShown = true;
+					int choice = JOptionPane.showOptionDialog(null, 
+							"The metabolite " + species + " does not exist. Do you wish to add it?", 
+							"Add Metabolite?", 
+							JOptionPane.YES_NO_CANCEL_OPTION, 
+							JOptionPane.QUESTION_MESSAGE, 
+							null, options, options[0]);
+					//options[0] sets "Yes" as default button
 
-				// interpret the user's choice	  
-				if (choice == JOptionPane.YES_OPTION)
-				{
-					LocalConfig.getInstance().addMetaboliteOption = true;
+					// interpret the user's choice	  
+					if (choice == JOptionPane.YES_OPTION)
+					{
+						LocalConfig.getInstance().addMetaboliteOption = true;
+						addNewMetabolite(maxMetab, maxMetabId, species);
+						maxMetab += 1;
+						LocalConfig.getInstance().setMaxMetabolite(maxMetab);
+						maxMetabId += 1;
+						LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
+					}
+					//No option actually corresponds to "Yes to All" button
+					if (choice == JOptionPane.NO_OPTION)
+					{
+						LocalConfig.getInstance().addMetaboliteOption = true;
+						GraphicalInterface.showPrompt = false;
+						addNewMetabolite(maxMetab, maxMetabId, species);
+						maxMetab += 1;
+						LocalConfig.getInstance().setMaxMetabolite(maxMetab);
+						maxMetabId += 1;
+						LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
+						LocalConfig.getInstance().yesToAllButtonClicked = true;
+					}
+					//Cancel option actually corresponds to "No" button
+					if (choice == JOptionPane.CANCEL_OPTION) {
+						addMetabolite = false;
+						LocalConfig.getInstance().addMetaboliteOption = false;
+						LocalConfig.getInstance().noButtonClicked = true; 
+					}	
+				} else {
 					addNewMetabolite(maxMetab, maxMetabId, species);
 					maxMetab += 1;
 					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
 					maxMetabId += 1;
 					LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
 				}
-				//No option actually corresponds to "Yes to All" button
-				if (choice == JOptionPane.NO_OPTION)
-				{
-					LocalConfig.getInstance().addMetaboliteOption = true;
-					GraphicalInterface.showPrompt = false;
-					addNewMetabolite(maxMetab, maxMetabId, species);
-					maxMetab += 1;
-					LocalConfig.getInstance().setMaxMetabolite(maxMetab);
-					maxMetabId += 1;
-					LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-					LocalConfig.getInstance().yesToAllButtonClicked = true;
-				}
-				//Cancel option actually corresponds to "No" button
-				if (choice == JOptionPane.CANCEL_OPTION) {
-					addMetabolite = false;
-					LocalConfig.getInstance().addMetaboliteOption = false;
-					LocalConfig.getInstance().noButtonClicked = true; 
-				}	
-			} else {
-				addNewMetabolite(maxMetab, maxMetabId, species);
-				maxMetab += 1;
-				LocalConfig.getInstance().setMaxMetabolite(maxMetab);
-				maxMetabId += 1;
-				LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
 			}
-		}
+		}		
 	}
 	
 	public void maybeAddSpecies(String species, SBMLReactionEquation equation, String type, int index) {
@@ -5067,7 +5074,9 @@ public class GraphicalInterface extends JFrame {
 			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 			int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 			reactionEditor.setReactionEquation(reactionEditor.reactionArea.getText());
-			//ReactionUndoItem undoItem = createReactionUndoItem(reactionEditor.getOldReaction(), reactionEditor.getReactionEquation(), reactionsTable.getSelectedRow(), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN, id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+			ReactionUndoItem undoItem = createReactionUndoItem(reactionEditor.getOldReaction(), reactionEditor.getReactionEquation(), reactionsTable.getSelectedRow(), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN, id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+			undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
+			undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 			if (reactionEditor.getReactionEquation().contains("<") || (reactionEditor.getReactionEquation().contains("=") && !reactionEditor.getReactionEquation().contains(">"))) {
 				reactionsTable.getModel().setValueAt(reactionEditor.getReactionEquation(), viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 				reactionsTable.getModel().setValueAt("true", viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
@@ -6936,6 +6945,13 @@ public class GraphicalInterface extends JFrame {
 									if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.DELETE_COLUMN)) {
 										scrollCol = ((ReactionUndoItem) undoMap.get(i)).getDeletedColumnIndex();
 									}
+									if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.TYPING) || 
+											((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.REPLACE)) {
+										if (((ReactionUndoItem) undoMap.get(i)).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+											System.out.println("update");
+											updateReactionEquation(((ReactionUndoItem) undoMap.get(i)).getRow(), ((ReactionUndoItem) undoMap.get(i)).getId(), ((ReactionUndoItem) undoMap.get(i)).getNewValue(), ((ReactionUndoItem) undoMap.get(i)).getOldValue());
+										}							
+									}
 									reactionUndoAction(i);
 									DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 									setUpReactionsTable(model);
@@ -6949,6 +6965,13 @@ public class GraphicalInterface extends JFrame {
 									if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
 										scrollCol = redoAddColumnScrollColumn("reactions");
 										addReacColumn = true;
+									}
+									if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.TYPING) || 
+											((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.REPLACE)) {
+										if (((ReactionUndoItem) undoMap.get(i)).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+											System.out.println("update");
+											updateReactionEquation(((ReactionUndoItem) undoMap.get(i)).getRow(), ((ReactionUndoItem) undoMap.get(i)).getId(), ((ReactionUndoItem) undoMap.get(i)).getOldValue(), ((ReactionUndoItem) undoMap.get(i)).getNewValue());
+										}	
 									}
 									reactionRedoAction(i);
 									DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
@@ -7233,6 +7256,12 @@ public class GraphicalInterface extends JFrame {
     		//DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
     		setUpReactionsTable(model);
     	} 
+    	if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.TYPING) ||
+    			((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.REPLACE)) {
+    		if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+				updateReactionEquation(((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow(), ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getId(), ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getNewValue(), ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getOldValue());
+			}
+    	}
     	LocalConfig.getInstance().getUndoItemMap().remove(index);
     	undoCount -= 1;		
     }
@@ -7268,6 +7297,12 @@ public class GraphicalInterface extends JFrame {
 			col = redoAddColumnScrollColumn("reactions");
 			addReacColumn = true;
 			scroll = true;
+		}
+		if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.TYPING) ||
+				((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.REPLACE)) {
+			if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+				updateReactionEquation(((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow(), ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getId(), ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getOldValue(), ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getNewValue());
+			}
 		}
 		reactionRedoAction(LocalConfig.getInstance().getRedoItemMap().size());
 		updateUndoButton();
@@ -7851,6 +7886,8 @@ public class GraphicalInterface extends JFrame {
 		String oldValue = (String) reactionsTable.getModel().getValueAt(viewRow, getReactionsReplaceLocation().get(1));		
 		String newValue = replaceValue(oldValue, replaceLocation(oldValue));
 		ReactionUndoItem undoItem = createReactionUndoItem(oldValue, newValue, reactionsTable.getSelectedRow(), getReactionsReplaceLocation().get(1), viewRow + 1, UndoConstants.REPLACE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+		undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
+		undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 		ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
 		if (replaceLocation(oldValue) > -1) {
 			reactionsTable.getModel().setValueAt(newValue, viewRow, getReactionsReplaceLocation().get(1));
