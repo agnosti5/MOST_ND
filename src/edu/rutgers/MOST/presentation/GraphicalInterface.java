@@ -3304,16 +3304,17 @@ public class GraphicalInterface extends JFrame {
 		equation.setIrreversibleArrow(unprocessedEqun.getIrreversibleArrow());
 		equation.writeReactionEquation();
 		LocalConfig.getInstance().getReactionEquationMap().put(reactionId, equation);
-		//LocalConfig.getInstance().getReactionEquationMap().put(reactionId, unprocessedEqun);
 		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		if (LocalConfig.getInstance().noButtonClicked) {			
-			reactionsTable.getModel().setValueAt(unprocessedEqun.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+			reactionsTable.getModel().setValueAt(equation.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 		}
-		reactionsTable.getModel().setValueAt(unprocessedEqun.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
-		reactionsTable.getModel().setValueAt(unprocessedEqun.getReversible(), rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+		reactionsTable.getModel().setValueAt(equation.getReversible(), rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 		GraphicalInterface.showPrompt = true;
 		createUnusedMetabolitesList();
-		
+		if (getParticipatingMetabolite() != null && getParticipatingMetabolite().trim().length() > 0) {
+			MetaboliteFactory aFactory = new MetaboliteFactory("SBML");
+			LocalConfig.getInstance().setParticipatingReactions(aFactory.participatingReactions(getParticipatingMetabolite()));
+		}		
 	}
 	
 //	public void updateReactionEquation(String newValue, int id, int rowIndex, SBMLReactionEquation oldEquation, SBMLReactionEquation equation) {
@@ -3511,28 +3512,22 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void addNewMetabolite(int maxMetab, int maxMetabId, String species) {
-		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
-			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-		} else {
-			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
-		}
 		DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();		
 //		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
 //		
 //		} else {
 			model.addRow(createMetabolitesRow(maxMetabId));
 //		}
-		model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-		LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
-		//LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-//		if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
-//			int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
-//			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));
-//		} else {
-//			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
-//		}
-				
-//		LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
+		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
+			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
+			model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+			LocalConfig.getInstance().getAddedMetabolites().add((maxMetab));
+		} else {
+			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+			model.setValueAt(species, maxMetabId, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+			LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
+		}		
+		System.out.println("added " + LocalConfig.getInstance().getAddedMetabolites());
 		setUpMetabolitesTable(model);
 		System.out.println("add id " + LocalConfig.getInstance().getMetaboliteNameIdMap());
 		System.out.println("add used " + LocalConfig.getInstance().getMetaboliteUsedMap());
