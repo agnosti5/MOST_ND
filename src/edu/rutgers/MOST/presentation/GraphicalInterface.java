@@ -3516,14 +3516,22 @@ public class GraphicalInterface extends JFrame {
 //		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
 //		
 //		} else {
-			model.addRow(createMetabolitesRow(maxMetabId));
+//			model.addRow(createMetabolitesRow(maxMetabId));
 //		}
-		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {
-			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-			model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-			LocalConfig.getInstance().getAddedMetabolites().add((maxMetab));
+		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {		
+			if (reactionsTable.getRowCount() > LocalConfig.getInstance().getMetaboliteNameIdMap().size()) {
+				LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
+				model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+				LocalConfig.getInstance().getAddedMetabolites().add((maxMetab));
+			} else {
+				model.addRow(createMetabolitesRow(maxMetabId));
+				LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+				model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+				LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
+			}			
 		} else {
 			LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+			model.addRow(createMetabolitesRow(maxMetabId));
 			model.setValueAt(species, maxMetabId, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 			LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
 		}		
