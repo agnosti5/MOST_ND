@@ -1993,46 +1993,19 @@ public class GraphicalInterface extends JFrame {
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
+				// if enter key not hit, but formula bar loses focus, old cell value is restored
+				// this avoids invalid values being placed in cells
 				formulaBarFocusGained = false;
 				selectedCellChanged = true;	
 				if (getCurrentReactionsRow() > -1 && getCurrentReactionsColumn() > 0) {
 					if (tabbedPane.getSelectedIndex() == 0) {
 						int viewRow = reactionsTable.convertRowIndexToModel(getCurrentReactionsRow());
-						String newValue = "";                        
-						if (reactionsTable.getModel().getValueAt(viewRow, getCurrentReactionsColumn()) != null) {
-							newValue = (String) reactionsTable.getModel().getValueAt(viewRow, getCurrentReactionsColumn());
-						} 						
-						//ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, getCurrentRow(), getCurrentColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-						//updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, getCurrentReactionsColumn());
-						if (reactionUpdateValid) {
-							/*
-							if (undoItem.getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-								if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null) {
-									undoItem.setNewValue(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN).toString());
-								}				
-								if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) != null) {
-									undoItem.setEquationNames(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN).toString());
-								} else {
-									undoItem.setEquationNames("");
-								}				
-							}
-							setUpReactionsUndo(undoItem);
-							 */
-						}
+						reactionsTable.getModel().setValueAt(getTableCellOldValue(), viewRow, getCurrentReactionsColumn());
 					} 
 				} else if (getCurrentMetabolitesRow() > -1 && getCurrentMetabolitesColumn() > 0) {
 					if (tabbedPane.getSelectedIndex() == 1) {
 						int viewRow = metabolitesTable.convertRowIndexToModel(getCurrentMetabolitesRow());
-						String newValue = "";                        
-						if (metabolitesTable.getModel().getValueAt(viewRow, getCurrentMetabolitesColumn()) != null) {
-							newValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getCurrentMetabolitesColumn());
-						}
-						//MetaboliteUndoItem undoItem = createMetaboliteUndoItem(getTableCellOldValue(), newValue, getCurrentRow(), getCurrentColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-						//setUndoOldCollections(undoItem);
-						updateMetabolitesCellIfValid(getTableCellOldValue(), newValue, viewRow, getCurrentMetabolitesColumn());	
-						if (metaboliteUpdateValid) {
-							//setUpMetabolitesUndo(undoItem);
-						}
+						metabolitesTable.getModel().setValueAt(getTableCellOldValue(), viewRow, getCurrentMetabolitesColumn());
 					}
 				} 
 			}
