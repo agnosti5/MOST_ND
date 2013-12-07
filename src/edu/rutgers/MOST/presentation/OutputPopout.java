@@ -22,8 +22,9 @@ public class OutputPopout extends JFrame {
 	private JFileChooser fileChooser = new JFileChooser(new java.io.File("."));
 	private final JMenuItem outputCopyItem = new JMenuItem("Copy");
 	private final JMenuItem outputSelectAllItem = new JMenuItem("Select All");
+	private String pathName;
 
-	public OutputPopout() {
+	public OutputPopout() {		
 		//... Create scrollable text area.
 		textArea = new JTextArea(30, 60);
 		textArea.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
@@ -31,6 +32,8 @@ public class OutputPopout extends JFrame {
 		textArea.setEditable(false);
 		JScrollPane scrollingText = new JScrollPane(textArea);
 
+		fileChooser.setFileFilter(new TextFileFilter());
+		
 		JPanel content = new JPanel();
 		content.setLayout(new BorderLayout());
 		content.add(scrollingText, BorderLayout.CENTER);
@@ -132,6 +135,8 @@ public class OutputPopout extends JFrame {
 		public void actionPerformed(ActionEvent e) {			
 			boolean done = false;
 			while (!done) {
+				File f = new File(getPathName().substring(0, getPathName().length() - 4) + ".txt");
+				fileChooser.setSelectedFile(f);
 				int retval = fileChooser.showSaveDialog(OutputPopout.this);
 				if (retval == JFileChooser.CANCEL_OPTION) {
 					done = true;
@@ -141,7 +146,7 @@ public class OutputPopout extends JFrame {
 					if (!path.endsWith(".txt")) {
 						path = path + ".txt";
 					}
-					File f = new File(path);
+					//File f = new File(path);
 
 					if (path == null) {
 						done = true;
@@ -183,6 +188,7 @@ public class OutputPopout extends JFrame {
 
 		try {
 			file = new File(path); 
+			setPathName(path);
 			in = new FileReader(file); 
 			char[] buffer = new char[4096]; // Read 4K characters at a time
 			int len; 
@@ -206,6 +212,14 @@ public class OutputPopout extends JFrame {
 			} catch (IOException e) {
 			}
 		}
+	}
+
+	public String getPathName() {
+		return pathName;
+	}
+
+	public void setPathName(String pathName) {
+		this.pathName = pathName;
 	}
 
 	public void clear() {
@@ -258,6 +272,16 @@ public class OutputPopout extends JFrame {
 	      StringSelection selection = new StringSelection(s);
 	      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
 	            selection, selection);
+	}
+	
+	class TextFileFilter extends javax.swing.filechooser.FileFilter {
+		public boolean accept(File f) {
+			return f.isDirectory() || f.getName().toLowerCase().endsWith(".txt");
+		}
+
+		public String getDescription() {
+			return ".txt files";
+		}
 	}
 	
 	public static void main(String[] args) {
