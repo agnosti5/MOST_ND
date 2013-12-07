@@ -1,7 +1,12 @@
 package edu.rutgers.MOST.optimization.solvers;
 
 import java.awt.HeadlessException;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -297,16 +302,44 @@ public class GurobiSolver extends Solver {
 
 	@Override
 	public double optimize() {
-		if (model == null)
+		final StringBuffer outputText = new StringBuffer();
+		if (model == null) {
 			return Double.NaN;
-		
-		try {
+		}
+					
+		try {			
+			outputText.append(LocalConfig.getInstance().getModelName() + "\n");
 //			Callback logic
 			Method modelGetVarsMethod = modelClass.getMethod("getVars", null);
+			outputText.append("modelGetVarsMethod " + modelGetVarsMethod.getName() + "\n");
+			outputText.append("model " + model.toString() + "\n");
 			final Object[] vars = (Object[]) modelGetVarsMethod.invoke(model, null);
+			outputText.append("vars " + vars.toString() + "\n");
 	
 			final Class<?> grbCallbackClass = classLoader.loadClass("gurobi.GRBCallback");
+			outputText.append("grbCallbackClass " + grbCallbackClass.getName() + "\n");
 			final Class<?> grbVarClass = classLoader.loadClass("gurobi.GRBVar");
+			outputText.append("grbVarClass " + grbVarClass.getName() + "\n");
+			
+			Writer writer = null;
+			try {
+				File file = new File("gurobiSolver.log");
+				writer = new BufferedWriter(new FileWriter(file));
+				writer.write(outputText.toString());
+
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (writer != null) {
+						writer.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			
 			ProxyFactory factory = new ProxyFactory();
 			factory.setSuperclass(grbCallbackClass);

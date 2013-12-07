@@ -741,8 +741,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {
 		// make this true only when troubleshooting, false for actual use
-		showIdColumn = true;
-		//showIdColumn = false;
+		//showIdColumn = true;
+		showIdColumn = false;
 
 		gi = this;
 
@@ -3033,7 +3033,7 @@ public class GraphicalInterface extends JFrame {
 					}
 				} 
 				maybeDisplaySuspiciousMetabMessage(statusBarRow());
-				System.out.println("update if valid " + LocalConfig.getInstance().getReactionEquationMap());
+				//System.out.println("update if valid " + LocalConfig.getInstance().getReactionEquationMap());
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.KO_COLUMN) {
 			if (validator.validTrueEntry(newValue)) {
@@ -3249,8 +3249,8 @@ public class GraphicalInterface extends JFrame {
 			MetaboliteFactory aFactory = new MetaboliteFactory("SBML");
 			LocalConfig.getInstance().setParticipatingReactions(aFactory.participatingReactions(getParticipatingMetabolite()));
 		}
-		System.out.println("upd " + LocalConfig.getInstance().getMetaboliteNameIdMap());
-		System.out.println("upd " + LocalConfig.getInstance().getMetaboliteUsedMap());
+//		System.out.println("upd " + LocalConfig.getInstance().getMetaboliteNameIdMap());
+//		System.out.println("upd " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public void maybeAddMetabolite(String species) {
@@ -5564,9 +5564,9 @@ public class GraphicalInterface extends JFrame {
 
 	public void updateMetaboliteMaps(int id, String metabAbbrev, String metabName, String newName, int columnIndex) {
 		if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN ) {
-			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteNameIdMap());
-			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteIdNameMap());
-			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());
+//			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteNameIdMap());
+//			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteIdNameMap());
+//			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());
 			LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);	
 			LocalConfig.getInstance().getMetaboliteNameIdMap().put(newName, id);
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
@@ -5574,9 +5574,9 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getMetaboliteUsedMap().remove(metabAbbrev);
 				LocalConfig.getInstance().getMetaboliteUsedMap().put(newName, value);
 			}			
-			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteNameIdMap());
-			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteIdNameMap());
-			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
+//			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteNameIdMap());
+//			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteIdNameMap());
+//			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
 		} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
 			LocalConfig.getInstance().getMetaboliteIdNameMap().remove(id);	
 			LocalConfig.getInstance().getMetaboliteIdNameMap().put(id, metabName);
@@ -5881,7 +5881,6 @@ public class GraphicalInterface extends JFrame {
 			deleteMetaboliteRowMenuItem.setEnabled(false);
 		}
 		if (metabolitesTable.getSelectedRow() > -1) {
-			System.out.println("del");
 			createUnusedMetabolitesList();
 			int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 			int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));			
@@ -5912,7 +5911,7 @@ public class GraphicalInterface extends JFrame {
 									int id = (Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
 									if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(id)) {
 										LocalConfig.getInstance().getSuspiciousMetabolites().remove(LocalConfig.getInstance().getSuspiciousMetabolites().indexOf(id));
-										System.out.println("susp " + LocalConfig.getInstance().getSuspiciousMetabolites());
+										//System.out.println("susp " + LocalConfig.getInstance().getSuspiciousMetabolites());
 									}
 									String key = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 									// check if id is used	
@@ -8368,7 +8367,7 @@ public class GraphicalInterface extends JFrame {
 			}
 		}
 		LocalConfig.getInstance().setUnusedList(unusedList);
-		System.out.println("unused" + unusedList);
+		//System.out.println("unused" + unusedList);
 	}
 
 	public void deleteItemFromDynamicTree() {
