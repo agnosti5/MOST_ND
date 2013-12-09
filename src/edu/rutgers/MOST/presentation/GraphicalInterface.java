@@ -3618,12 +3618,12 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.setModel(model);
 		setReactionsTableLayout();
 
-//		if (getReactionsSortColumnIndex() >= 0) {
-//			reactionsTable.setSortOrder(getReactionsSortColumnIndex(), getReactionsSortOrder());
-//		} else {
-//			setReactionsSortColumnIndex(0);
-//			setReactionsSortOrder(SortOrder.ASCENDING);
-//		}	
+		if (getReactionsSortColumnIndex() >= 0) {
+			reactionsTable.setSortOrder(getReactionsSortColumnIndex(), getReactionsSortOrder());
+		} else {
+			setReactionsSortColumnIndex(0);
+			setReactionsSortOrder(SortOrder.ASCENDING);
+		}	
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());			   
 	}
 
@@ -5175,7 +5175,25 @@ public class GraphicalInterface extends JFrame {
 		if (rowsSelected.length == reactionsTable.getRowCount() && colsSelected.length == reactionsTable.getColumnCount() && includeRxnColumnNames) {
 
 		} else {
-			if (getSelectionMode() == 2) {
+			if (getSelectionMode() == 1) {
+				StringBuffer excelStr=new StringBuffer(); 
+				for (int i = 0; i < reactionsTable.getRowCount(); i++) { 
+					for (int j=0; j<numCols; j++) { 
+						try {
+							excelStr.append(escape(reactionsTable.getValueAt(i, colsSelected[j]))); 
+						} catch (Throwable t) {
+
+						}
+						if (j<numCols-1) {
+							//System.out.println("t");
+							excelStr.append("\t"); 
+						} 
+					}
+					excelStr.append("\n");
+				}
+				StringSelection sel  = new StringSelection(excelStr.toString()); 
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+			} else if (getSelectionMode() == 2) {
 				LocalConfig.getInstance().includesReactions = true;
 				includeRxnColumnNames = false;				
 				selectReactionsRows();
@@ -6141,7 +6159,25 @@ public class GraphicalInterface extends JFrame {
 		if (rowsSelected.length == metabolitesTable.getRowCount() && colsSelected.length == metabolitesTable.getColumnCount() && includeRxnColumnNames) {
 
 		} else {
-			if (getSelectionMode() == 2) {
+			if (getSelectionMode() == 1) {
+				StringBuffer excelStr=new StringBuffer(); 
+				for (int i = 0; i < metabolitesTable.getRowCount(); i++) { 
+					for (int j=0; j<numCols; j++) { 
+						try {
+							excelStr.append(escape(metabolitesTable.getValueAt(i, colsSelected[j]))); 
+						} catch (Throwable t) {
+
+						}
+						if (j<numCols-1) {
+							//System.out.println("t");
+							excelStr.append("\t"); 
+						} 
+					}
+					excelStr.append("\n");
+				}
+				StringSelection sel  = new StringSelection(excelStr.toString()); 
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+			} else if (getSelectionMode() == 2) {
 				includeRxnColumnNames = false;				
 				selectMetabolitesRows();
 			} else {
