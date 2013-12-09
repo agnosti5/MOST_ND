@@ -281,7 +281,9 @@ public class GraphicalInterfaceConstants {
     public static final String INVALID_REACTIONS_ERROR_TITLE = "Invalid Reactions Warning";
     public static final String INVALID_REACTIONS_ERROR_MESSAGE = "Model contains invalid reactions. Are you sure you wish to save?";    
     public static final String INVALID_REACTIONS_ENTRY_ERROR_TITLE = "Invalid Reaction";
-    public static final String INVALID_REACTIONS_ENTRY_ERROR_MESSAGE = "Invalid Reaction Format";    
+    public static final String INVALID_REACTIONS_ENTRY_ERROR_MESSAGE = "Invalid Reaction Format"; 
+    public static final String EQUATION_NAMES_ERROR_TITLE = "Equation Not Editable";
+    public static final String EQUATION_NAMES_ERROR_MESSAGE = "Reaction equation with names is not editable";
     
     // replace errors
     public static final String REPLACE_ALL_ERROR_TITLE = "Replace All Error";

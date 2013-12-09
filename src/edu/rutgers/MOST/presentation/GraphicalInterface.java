@@ -3035,6 +3035,18 @@ public class GraphicalInterface extends JFrame {
 				maybeDisplaySuspiciousMetabMessage(statusBarRow());
 				//System.out.println("update if valid " + LocalConfig.getInstance().getReactionEquationMap());
 			}
+		} else if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
+			if (!replaceAllMode) {
+				setFindReplaceAlwaysOnTop(false);
+				JOptionPane.showMessageDialog(null,                
+						GraphicalInterfaceConstants.EQUATION_NAMES_ERROR_MESSAGE, 
+						GraphicalInterfaceConstants.EQUATION_NAMES_ERROR_TITLE,                               
+						JOptionPane.ERROR_MESSAGE);
+				formulaBar.setText(getTableCellOldValue());
+				setFindReplaceAlwaysOnTop(true);
+			}				
+			reactionUpdateValid = false;
+			reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);			
 		} else if (colIndex == GraphicalInterfaceConstants.KO_COLUMN) {
 			if (validator.validTrueEntry(newValue)) {
 				reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
