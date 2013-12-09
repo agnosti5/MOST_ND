@@ -3618,12 +3618,12 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.setModel(model);
 		setReactionsTableLayout();
 
-		if (getReactionsSortColumnIndex() >= 0) {
-			reactionsTable.setSortOrder(getReactionsSortColumnIndex(), getReactionsSortOrder());
-		} else {
-			setReactionsSortColumnIndex(0);
-			setReactionsSortOrder(SortOrder.ASCENDING);
-		}	
+//		if (getReactionsSortColumnIndex() >= 0) {
+//			reactionsTable.setSortOrder(getReactionsSortColumnIndex(), getReactionsSortOrder());
+//		} else {
+//			setReactionsSortColumnIndex(0);
+//			setReactionsSortOrder(SortOrder.ASCENDING);
+//		}	
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());			   
 	}
 
@@ -4914,6 +4914,55 @@ public class GraphicalInterface extends JFrame {
 			final int columnIndex) {
 		JPopupMenu contextMenu = new JPopupMenu();
 
+		JMenu selectMenu = new JMenu("Select");
+		
+		final JRadioButtonMenuItem selectColumns = new JRadioButtonMenuItem(
+        "Select Column(s)");
+		final JRadioButtonMenuItem selectRows = new JRadioButtonMenuItem(
+        "Select Row(s)");
+		final JRadioButtonMenuItem selectCells = new JRadioButtonMenuItem(
+        "Select Cell(s)");
+
+		ButtonGroup bgSelect = new ButtonGroup();
+		bgSelect.add(selectColumns);
+		bgSelect.add(selectRows);
+		bgSelect.add(selectCells);
+		if (getSelectionMode() == 0) {
+			selectCells.setSelected(true);
+		} else if (getSelectionMode() == 1) {
+			selectColumns.setSelected(true);
+		} else if (getSelectionMode() == 2) {
+			selectRows.setSelected(true);
+		}
+				
+		selectColumns.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectColumns.isSelected()) {
+					setUpColumnSelectionMode();
+				} 
+			}
+		});
+		selectRows.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectRows.isSelected()) {
+					setUpRowSelectionMode();
+				} 
+			}
+		});
+		selectCells.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectCells.isSelected()) {
+					setUpCellSelectionMode();
+				} 
+			}
+		});
+		
+        selectMenu.add(selectColumns);
+        selectMenu.add(selectRows);
+        selectMenu.add(selectCells);
+        
+        contextMenu.add(selectMenu);
+		
 		JMenu selectAllMenu = new JMenu("Select All");
 
 		final JRadioButtonMenuItem inclColNamesItem = new JRadioButtonMenuItem(
@@ -5065,6 +5114,7 @@ public class GraphicalInterface extends JFrame {
 		setClipboardContents("");
 
 		StringBuffer sbf=new StringBuffer();
+		ArrayList<ModelReactionEquation> copiedReactionList = new ArrayList<ModelReactionEquation>();
 		int numrows = reactionsTable.getSelectedRowCount(); 
 		int[] rowsselected=reactionsTable.getSelectedRows();  
 		reactionsTable.changeSelection(rowsselected[0], 1, false, false);
@@ -5089,15 +5139,22 @@ public class GraphicalInterface extends JFrame {
 			//starts at 1 to avoid reading hidden db id column
 			for (int j = 1; j < reactionsTable.getColumnCount(); j++) 
 			{ 
+				if (j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+					int viewRow = reactionsTable.convertRowIndexToModel(rowsselected[i]);
+					int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+					copiedReactionList.add(LocalConfig.getInstance().getReactionEquationMap().get(id));					
+				}
 				if (reactionsTable.getValueAt(rowsselected[i], j) != null) {
 					sbf.append(reactionsTable.getValueAt(rowsselected[i], j));
 				} else {
 					sbf.append(" ");
 				}
-				if (j < reactionsTable.getColumnCount()-1) sbf.append("\t");				 
+				if (j < reactionsTable.getColumnCount()-1) sbf.append("\t");
 			} 
 			sbf.append("\n"); 
-		}  
+		} 
+		
+		setCopiedReactions(copiedReactionList);
 		setClipboardContents(sbf.toString());
 		//System.out.println(sbf.toString());
 	}
@@ -5113,34 +5170,45 @@ public class GraphicalInterface extends JFrame {
 			JOptionPane.showMessageDialog(null, "Invalid Copy Selection", "Invalid Copy Selection", JOptionPane.ERROR_MESSAGE);
 			return; 
 		} 
+		
+		// Clipboard already contains correct values for select all and include column names, do not change 
+		if (rowsSelected.length == reactionsTable.getRowCount() && colsSelected.length == reactionsTable.getColumnCount() && includeRxnColumnNames) {
 
-		StringBuffer excelStr=new StringBuffer(); 
-		ArrayList<ModelReactionEquation> copiedReactionList = new ArrayList<ModelReactionEquation>();
-		for (int i=0; i<numRows; i++) { 
-			for (int j=0; j<numCols; j++) { 
-				if (colsSelected[j] == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-					int viewRow = reactionsTable.convertRowIndexToModel(rowsSelected[i]);
-					int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
-					copiedReactionList.add(LocalConfig.getInstance().getReactionEquationMap().get(id));					
+		} else {
+			if (getSelectionMode() == 2) {
+				LocalConfig.getInstance().includesReactions = true;
+				includeRxnColumnNames = false;				
+				selectReactionsRows();
+			} else {
+				StringBuffer excelStr=new StringBuffer(); 
+				ArrayList<ModelReactionEquation> copiedReactionList = new ArrayList<ModelReactionEquation>();
+				for (int i=0; i<numRows; i++) { 
+					for (int j=0; j<numCols; j++) { 
+						if (colsSelected[j] == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+							int viewRow = reactionsTable.convertRowIndexToModel(rowsSelected[i]);
+							int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+							copiedReactionList.add(LocalConfig.getInstance().getReactionEquationMap().get(id));					
+						}
+						try {
+							excelStr.append(escape(reactionsTable.getValueAt(rowsSelected[i], colsSelected[j]))); 
+						} catch (Throwable t) {
+
+						}						
+						if (j<numCols-1) {
+							//System.out.println("t");
+							excelStr.append("\t"); 
+						} 
+					} 
+					//System.out.println("n");
+					excelStr.append("\n"); 
 				}
-				try {
-					excelStr.append(escape(reactionsTable.getValueAt(rowsSelected[i], colsSelected[j]))); 
-				} catch (Throwable t) {
+				setCopiedReactions(copiedReactionList);
+				//System.out.println(getCopiedReactions());
 
-				}						
-				if (j<numCols-1) {
-					//System.out.println("t");
-					excelStr.append("\t"); 
-				} 
-			} 
-			//System.out.println("n");
-			excelStr.append("\n"); 
-		}
-		setCopiedReactions(copiedReactionList);
-		//System.out.println(getCopiedReactions());
-
-		StringSelection sel  = new StringSelection(excelStr.toString()); 
-		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+				StringSelection sel  = new StringSelection(excelStr.toString()); 
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+			}
+		}		
 	}
 
 	public void reactionsPaste() {
@@ -5790,6 +5858,55 @@ public class GraphicalInterface extends JFrame {
 			final int columnIndex) {
 		JPopupMenu contextMenu = new JPopupMenu();
 
+		JMenu selectMenu = new JMenu("Select");
+		
+		final JRadioButtonMenuItem selectColumns = new JRadioButtonMenuItem(
+        "Select Column(s)");
+		final JRadioButtonMenuItem selectRows = new JRadioButtonMenuItem(
+        "Select Row(s)");
+		final JRadioButtonMenuItem selectCells = new JRadioButtonMenuItem(
+        "Select Cell(s)");
+
+		ButtonGroup bgSelect = new ButtonGroup();
+		bgSelect.add(selectColumns);
+		bgSelect.add(selectRows);
+		bgSelect.add(selectCells);
+		if (getSelectionMode() == 0) {
+			selectCells.setSelected(true);
+		} else if (getSelectionMode() == 1) {
+			selectColumns.setSelected(true);
+		} else if (getSelectionMode() == 2) {
+			selectRows.setSelected(true);
+		}
+				
+		selectColumns.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectColumns.isSelected()) {
+					setUpColumnSelectionMode();
+				} 
+			}
+		});
+		selectRows.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectRows.isSelected()) {
+					setUpRowSelectionMode();
+				} 
+			}
+		});
+		selectCells.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectCells.isSelected()) {
+					setUpCellSelectionMode();
+				} 
+			}
+		});
+		
+        selectMenu.add(selectColumns);
+        selectMenu.add(selectRows);
+        selectMenu.add(selectCells);
+        
+        contextMenu.add(selectMenu);
+		
 		JMenu selectAllMenu = new JMenu("Select All");
 
 		final JRadioButtonMenuItem inclColNamesItem = new JRadioButtonMenuItem(
@@ -6020,25 +6137,35 @@ public class GraphicalInterface extends JFrame {
 			return; 
 		} 
 
-		StringBuffer excelStr=new StringBuffer(); 
-		for (int i=0; i<numRows; i++) { 
-			for (int j=0; j<numCols; j++) { 
-				try {
-					excelStr.append(escape(metabolitesTable.getValueAt(rowsSelected[i], colsSelected[j]))); 
-				} catch (Throwable t) {
+		// Clipboard already contains correct values for select all and include column names, do not change 
+		if (rowsSelected.length == metabolitesTable.getRowCount() && colsSelected.length == metabolitesTable.getColumnCount() && includeRxnColumnNames) {
 
-				}						
-				if (j<numCols-1) {
-					//System.out.println("t");
-					excelStr.append("\t"); 
+		} else {
+			if (getSelectionMode() == 2) {
+				includeRxnColumnNames = false;				
+				selectMetabolitesRows();
+			} else {
+				StringBuffer excelStr=new StringBuffer(); 
+				for (int i=0; i<numRows; i++) { 
+					for (int j=0; j<numCols; j++) { 
+						try {
+							excelStr.append(escape(metabolitesTable.getValueAt(rowsSelected[i], colsSelected[j]))); 
+						} catch (Throwable t) {
+
+						}						
+						if (j<numCols-1) {
+							//System.out.println("t");
+							excelStr.append("\t"); 
+						} 
+					} 
+					//System.out.println("n");
+					excelStr.append("\n"); 
 				} 
-			} 
-			//System.out.println("n");
-			excelStr.append("\n"); 
-		} 
 
-		StringSelection sel  = new StringSelection(excelStr.toString()); 
-		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+				StringSelection sel  = new StringSelection(excelStr.toString()); 
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+			}
+		}
 	}
 
 	public void metabolitesPaste() {
