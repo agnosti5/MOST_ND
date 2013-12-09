@@ -5458,21 +5458,17 @@ public class GraphicalInterface extends JFrame {
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
 			// TODO: get equation object after setting value and update to this value
-			/*
-			System.out.println(id);			
-			if (((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReversible() != null) {
-				String reversible = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReversible();
-				if (value.equals(reversible)) {
-					return true;
-				} else {
-					setPasteError(GraphicalInterfaceConstants.INVALID_PASTE_BOOLEAN_VALUE);
-					setReplaceAllError(GraphicalInterfaceConstants.INVALID_REPLACE_ALL_BOOLEAN_VALUE);
-					validPaste = false;
-					return false;
-				}
-			}
-			 */
 			if (value.compareTo("true") == 0 || value.compareTo("false") == 0) {
+				if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(value);
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
+					reactionsTable.setValueAt(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationAbbreviations, row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+					reactionsTable.setValueAt(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationNames, row, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+				}	
+				if (value.compareTo("false") == 0) {
+					// do we need to show a prompt?
+					reactionsTable.setValueAt("0.0", row, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				}
 				return true;
 			} else {
 				setPasteError(GraphicalInterfaceConstants.INVALID_PASTE_BOOLEAN_VALUE);

@@ -160,6 +160,12 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 			}			
 		}
 		
+		if (this.irreversibleArrow == null) {
+			this.irreversibleArrow = GraphicalInterfaceConstants.NOT_REVERSIBLE_ARROWS[2];
+		}
+		if (this.reversibleArrow == null) {
+			this.reversibleArrow = GraphicalInterfaceConstants.REVERSIBLE_ARROWS[1];
+		}
 		// prevents arrow only from being displayed if there are no reactants and no products
 		if (reacBfr.toString().trim().length() > 0 || prodBfr.toString().trim().length() > 0) {
 			if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
