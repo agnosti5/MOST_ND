@@ -6885,6 +6885,7 @@ public class GraphicalInterface extends JFrame {
 							Class cls = undoMap.get(i).getClass();
 							if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
 								int row = ((ReactionUndoItem) undoMap.get(i)).getRow();
+								int id = ((ReactionUndoItem) undoMap.get(i)).getId();
 								if (row > -1) {
 									scrollRow = row;
 								}
@@ -7856,7 +7857,8 @@ public class GraphicalInterface extends JFrame {
 		int viewRow = reactionsTable.convertRowIndexToModel(getReactionsReplaceLocation().get(0));
 		String oldValue = (String) reactionsTable.getModel().getValueAt(viewRow, getReactionsReplaceLocation().get(1));		
 		String newValue = replaceValue(oldValue, replaceLocation(oldValue));
-		ReactionUndoItem undoItem = createReactionUndoItem(oldValue, newValue, reactionsTable.getSelectedRow(), getReactionsReplaceLocation().get(1), viewRow + 1, UndoConstants.REPLACE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+		int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+		ReactionUndoItem undoItem = createReactionUndoItem(oldValue, newValue, reactionsTable.getSelectedRow(), getReactionsReplaceLocation().get(1), id, UndoConstants.REPLACE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 		undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
 		undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 		ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
@@ -8222,7 +8224,8 @@ public class GraphicalInterface extends JFrame {
 		int viewRow = metabolitesTable.convertRowIndexToModel(getMetabolitesReplaceLocation().get(0));
 		String oldValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getMetabolitesReplaceLocation().get(1));
 		String newValue = replaceValue(oldValue, replaceLocation(oldValue));
-		MetaboliteUndoItem undoItem = createMetaboliteUndoItem(oldValue, newValue, metabolitesTable.getSelectedRow(), getMetabolitesReplaceLocation().get(1), viewRow + 1, UndoConstants.REPLACE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+		int id = Integer.valueOf((String)  metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+		MetaboliteUndoItem undoItem = createMetaboliteUndoItem(oldValue, newValue, metabolitesTable.getSelectedRow(), getMetabolitesReplaceLocation().get(1), id, UndoConstants.REPLACE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 		setUndoOldCollections(undoItem);
 		if (replaceLocation(oldValue) > -1) {
 			//String newValue = replaceValue(oldValue, replaceLocation(oldValue));
