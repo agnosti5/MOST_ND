@@ -2200,6 +2200,8 @@ public class GraphicalInterface extends JFrame {
 		setUndoOldCollections(undoItem);
 		updateMetabolitesCellIfValid(getTableCellOldValue(), newValue, viewRow, metabolitesTable.getSelectedColumn());	
 		if (metaboliteUpdateValid) {
+			// fixes bug where entering value in formula bar in a sorted column and then
+			// hitting enter - old value (or value from somewhere else in row) set
 			formulaBar.setText(newValue);
 			setUndoNewCollections(undoItem);
 			setUpMetabolitesUndo(undoItem);
@@ -3993,7 +3995,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
-	// disables items if cell is non-editable
+	// disables items if cell or table is non-editable
 	public void enableOrDisableReactionsItems() {
 		if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
 			formulaBar.setEditable(false);
@@ -4357,28 +4359,18 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
-	// disables items if cell is non-editable
+	// disables items if table is non-editable
 	public void enableOrDisableMetabolitesItems() {
 		if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > 0) {
-			int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
-			String value = (String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()); 
-			if ((metabolitesTable.getSelectedColumn() == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN 
-					||  metabolitesTable.getSelectedColumn() == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN)) {
-				/*
-				if ((metabolitesTable.getSelectedColumn() == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN 
-					||  metabolitesTable.getSelectedColumn() == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN)
-					&& metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()) != null && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(value)) {
-				 */
+			if (isRoot) {
+				formulaBar.setEditable(true);
+				formulaBarPasteItem.setEnabled(true);
+				pastebutton.setEnabled(true);
+			} else {
 				formulaBar.setEditable(false);
 				formulaBar.setBackground(Color.WHITE);
 				formulaBarPasteItem.setEnabled(false);
 				pastebutton.setEnabled(false);
-			}  else {
-				if (isRoot) {
-					formulaBar.setEditable(true);
-					formulaBarPasteItem.setEnabled(true);
-					pastebutton.setEnabled(true);
-				}					
 			}
 		}		
 	}
