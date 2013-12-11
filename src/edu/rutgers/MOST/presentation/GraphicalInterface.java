@@ -2169,8 +2169,9 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().reactionsTableChanged = true;
 		}						
 		int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
+		int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 		String newValue = formulaBar.getText();
-		ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+		ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 		undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
 		undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 		updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, reactionsTable.getSelectedColumn());
@@ -2184,12 +2185,13 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().metabolitesTableChanged = true;
 		}						
 		int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());		
+		int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
 		String newValue = formulaBar.getText();
 		// these variables are needed since after the table is reloaded, there is
 		// no selected cell
 		int row = metabolitesTable.getSelectedRow();
 		int col = metabolitesTable.getSelectedColumn();
-		MetaboliteUndoItem undoItem = createMetaboliteUndoItem(getTableCellOldValue(), newValue, row, col, viewRow + 1, UndoConstants.TYPING, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+		MetaboliteUndoItem undoItem = createMetaboliteUndoItem(getTableCellOldValue(), newValue, row, col, id, UndoConstants.TYPING, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 		setUndoOldCollections(undoItem);
 		updateMetabolitesCellIfValid(getTableCellOldValue(), newValue, viewRow, metabolitesTable.getSelectedColumn());	
 		if (metaboliteUpdateValid) {
