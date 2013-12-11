@@ -1882,7 +1882,7 @@ public class GraphicalInterface extends JFrame {
 		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));     			
 
 		DynamicTreePanel.treePanel.setNodeSelected(0);
-
+		
 		/************************************************************************/
 		// end set up tables
 		/************************************************************************/
@@ -2181,7 +2181,8 @@ public class GraphicalInterface extends JFrame {
 		undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 		updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, reactionsTable.getSelectedColumn());
 		if (reactionUpdateValid) {
-			setUpReactionsUndo(undoItem);	
+			setUpReactionsUndo(undoItem);
+			scrollToLocation(reactionsTable, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn());
 		} 		
 	}
 
@@ -2205,6 +2206,7 @@ public class GraphicalInterface extends JFrame {
 			formulaBar.setText(newValue);
 			setUndoNewCollections(undoItem);
 			setUpMetabolitesUndo(undoItem);
+			scrollToLocation(metabolitesTable, metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn());
 		} 	
 	}
 
