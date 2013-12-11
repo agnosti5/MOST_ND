@@ -260,7 +260,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean addMetabolite;
 	public boolean saveFile;
 	public boolean saveSBML;
-	public boolean updated; // used to fix bug where formula bar sometimes updates reaction equations twice
+	public boolean enterPressed;
 	// close
 	public static boolean exit;
 
@@ -1914,11 +1914,12 @@ public class GraphicalInterface extends JFrame {
 				} else if (tabbedPane.getSelectedIndex() == 1 && metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > -1) {		
 					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 					if (formulaBarFocusGained) {
-						try {
-							metabolitesTable.getModel().setValueAt(formulaBar.getText(), viewRow, metabolitesTable.getSelectedColumn());    							
-						} catch (Throwable t) {
-
-						}					
+						metabolitesTable.getModel().setValueAt(formulaBar.getText(), viewRow, metabolitesTable.getSelectedColumn());    							
+//						try {
+//							metabolitesTable.getModel().setValueAt(formulaBar.getText(), viewRow, metabolitesTable.getSelectedColumn());    							
+//						} catch (Throwable t) {
+//
+//						}					
 					}
 				} 
 			}
@@ -1941,6 +1942,7 @@ public class GraphicalInterface extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
 				if (key == KeyEvent.VK_ENTER) {  
+					enterPressed = true;
 					// prevents editing of invisible id column for find events
 					if (tabbedPane.getSelectedIndex() == 0 && reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > 0) {	
 						try {
@@ -1997,17 +1999,20 @@ public class GraphicalInterface extends JFrame {
 				// this avoids invalid values being placed in cells
 				formulaBarFocusGained = false;
 				selectedCellChanged = true;	
-				if (getCurrentReactionsRow() > -1 && getCurrentReactionsColumn() > 0) {
-					if (tabbedPane.getSelectedIndex() == 0) {
-						int viewRow = reactionsTable.convertRowIndexToModel(getCurrentReactionsRow());
-						reactionsTable.getModel().setValueAt(getTableCellOldValue(), viewRow, getCurrentReactionsColumn());
+				if (!enterPressed) {
+					if (getCurrentReactionsRow() > -1 && getCurrentReactionsColumn() > 0) {
+						if (tabbedPane.getSelectedIndex() == 0) {
+							int viewRow = reactionsTable.convertRowIndexToModel(getCurrentReactionsRow());
+							reactionsTable.getModel().setValueAt(getTableCellOldValue(), viewRow, getCurrentReactionsColumn());
+						} 
+					} else if (getCurrentMetabolitesRow() > -1 && getCurrentMetabolitesColumn() > 0) {
+						if (tabbedPane.getSelectedIndex() == 1) {
+							int viewRow = metabolitesTable.convertRowIndexToModel(getCurrentMetabolitesRow());
+							metabolitesTable.getModel().setValueAt(getTableCellOldValue(), viewRow, getCurrentMetabolitesColumn());
+						}
 					} 
-				} else if (getCurrentMetabolitesRow() > -1 && getCurrentMetabolitesColumn() > 0) {
-					if (tabbedPane.getSelectedIndex() == 1) {
-						int viewRow = metabolitesTable.convertRowIndexToModel(getCurrentMetabolitesRow());
-						metabolitesTable.getModel().setValueAt(getTableCellOldValue(), viewRow, getCurrentMetabolitesColumn());
-					}
-				} 
+				}
+				enterPressed = false;
 			}
 		});
 
@@ -2195,6 +2200,7 @@ public class GraphicalInterface extends JFrame {
 		setUndoOldCollections(undoItem);
 		updateMetabolitesCellIfValid(getTableCellOldValue(), newValue, viewRow, metabolitesTable.getSelectedColumn());	
 		if (metaboliteUpdateValid) {
+			formulaBar.setText(newValue);
 			setUndoNewCollections(undoItem);
 			setUpMetabolitesUndo(undoItem);
 		} 	
@@ -2958,10 +2964,15 @@ public class GraphicalInterface extends JFrame {
 				if (metaboliteUpdateValid) {
 					if (renameMetabolite) {
 						undoItem.setUndoType(UndoConstants.RENAME_METABOLITE);
+					} else {
+						undoItem.setUndoType(UndoConstants.TYPING);
 					}
+					formulaBar.setText(mtcl.getNewValue());
 					setUndoNewCollections(undoItem);
 					setUpMetabolitesUndo(undoItem);
-				}			
+				} else {
+					formulaBar.setText(mtcl.getOldValue());
+				}
 			}			
 		}
 	};
@@ -3711,7 +3722,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().metabolitesTableChanged = false;
 		LocalConfig.getInstance().includesReactions = true;
 		saveFile = false;
-		updated = false;
+		enterPressed = false;
 	}
 
 	public void clearConfigLists() {
@@ -4269,29 +4280,36 @@ public class GraphicalInterface extends JFrame {
 					getFindReplaceDialog().replaceButton.setEnabled(false);
 					getFindReplaceDialog().replaceAllButton.setEnabled(false);
 					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
-				}				
-			}
-			//String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
-			maybeDisplaySuspiciousMetabMessage(statusBarRow());			
-			if (metabolitesTable.getRowCount() > 0 && metabolitesTable.getSelectedRow() > -1 && tabbedPane.getSelectedIndex() == 1) {
-				if (metabolitesTable.getSelectedRow() > -1) {
-					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
-					//String value = (String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()); 
-					enableOrDisableMetabolitesItems();
-					// if any cell selected any existing find all highlighting is unhighlighted
-					reactionsFindAll = false;
-					metabolitesFindAll = false;	
-					reactionsTable.repaint();
-					metabolitesTable.repaint();			 
-					selectedCellChanged = true;
-					changeMetaboliteFindSelection = true;
-					// prevents invisible id column from setting id in formulaBar for find events
-					if (metabolitesTable.getSelectedColumn() > 0) {
-						formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));	
-					}	    			
-				} else {
-					formulaBar.setText("");
 				}
+			}
+			String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
+			maybeDisplaySuspiciousMetabMessage(metaboliteRow);
+			if (metabolitesTable.getRowCount() > 0 && metabolitesTable.getSelectedRow() > -1 && tabbedPane.getSelectedIndex() == 1) {
+				enableOrDisableMetabolitesItems();
+				// if any cell selected any existing find all highlighting is unhighlighted
+				reactionsFindAll = false;
+				metabolitesFindAll = false;	
+				reactionsTable.repaint();
+				metabolitesTable.repaint();  
+				selectedCellChanged = true;
+				changeMetaboliteFindSelection = true;
+				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
+				// prevents invisible id column from setting id in formulaBar for find events
+				if (metabolitesTable.getSelectedColumn() > 0) {
+					try {
+						formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));
+					} catch (Throwable t) {
+
+					} 
+				}    			  						
+			} else {
+				// to catch strange error "Attempt to mutate in notification" 
+				try {
+					formulaBar.setText("");
+				} catch (Throwable t) {
+
+				}
+
 			}
 			if (event.getValueIsAdjusting()) {
 				return;
@@ -4310,27 +4328,32 @@ public class GraphicalInterface extends JFrame {
 					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}				
 			}
-			if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > -1 && tabbedPane.getSelectedIndex() == 1) {				
-				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
-				//String value = (String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()); 
+			if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > -1 && tabbedPane.getSelectedIndex() == 1) {
+				String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
+				maybeDisplaySuspiciousMetabMessage(metaboliteRow);
 				enableOrDisableMetabolitesItems();
 				// if any cell selected any existing find all highlighting is unhighlighted
 				reactionsFindAll = false;
 				metabolitesFindAll = false;	
 				reactionsTable.repaint();
-				metabolitesTable.repaint();								 
-				selectedCellChanged = true;
-				changeMetaboliteFindSelection = true;
+				metabolitesTable.repaint();
+				selectedCellChanged = true;	
+				changeReactionFindSelection = true;
+				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 				// prevents invisible id column from setting id in formulaBar for find events
 				if (metabolitesTable.getSelectedColumn() > 0) {
-					formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));			
+					try {
+						formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));				
+					} catch (Throwable t) {
+
+					}					
 				}				
-				if (event.getValueIsAdjusting()) {
-					return;
-				}
 			} else {
 				formulaBar.setText("");
-			}			
+			} 
+			if (event.getValueIsAdjusting()) {
+				return;
+			}
 		}
 	}
 
