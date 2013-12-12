@@ -6898,6 +6898,7 @@ public class GraphicalInterface extends JFrame {
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					boolean scroll = true;
+					boolean typing = false;
 					if (e.getActionCommand().equals(ENABLE)) {
 						int scrollRow = 0;
 						int scrollCol = 1;
@@ -6920,6 +6921,7 @@ public class GraphicalInterface extends JFrame {
 									}
 									if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.TYPING) || 
 											((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.REPLACE)) {
+										typing = true;
 										if (((ReactionUndoItem) undoMap.get(i)).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 											updateReactionEquation(((ReactionUndoItem) undoMap.get(i)).getRow(), ((ReactionUndoItem) undoMap.get(i)).getId(), ((ReactionUndoItem) undoMap.get(i)).getNewValue(), ((ReactionUndoItem) undoMap.get(i)).getOldValue());
 											for (int j = 0; j < ((ReactionUndoItem) undoMap.get(i)).getAddedMetabolites().size(); j++) {
@@ -6937,7 +6939,19 @@ public class GraphicalInterface extends JFrame {
 									}									
 									DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 									setUpReactionsTable(model);
-									undoCount -= 1;	       					
+									undoCount -= 1;	
+									if (typing) {
+										// this code prints correct id
+										for (int j = 0; j < reactionsTable.getRowCount(); j++) {
+											if (Integer.valueOf(reactionsTable.getModel().getValueAt(j, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString()) == id) {
+												int viewRow = reactionsTable.convertRowIndexToView(j);
+												System.out.println("row" + j);
+												System.out.println("vr" + viewRow);
+												scrollRow = viewRow;
+											}
+										}
+										typing = false;
+									}
 								} else if (type.equals("redo")) { 
 									if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.ADD_ROW)) {
 										//scrollRow = redoAddRowScrollRow(reactionsTable);
