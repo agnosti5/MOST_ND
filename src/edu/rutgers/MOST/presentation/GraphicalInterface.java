@@ -6977,6 +6977,7 @@ public class GraphicalInterface extends JFrame {
 								}											
 							} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
 								int row = ((MetaboliteUndoItem) undoMap.get(i)).getRow();
+								int id = ((MetaboliteUndoItem) undoMap.get(i)).getId();
 								if (row > -1) {
 									scrollRow = row;
 								}
@@ -6985,13 +6986,21 @@ public class GraphicalInterface extends JFrame {
 									scrollCol = col;
 								}
 								if (type.equals("undo")) {	
+									if (((MetaboliteUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.TYPING) ||
+											((MetaboliteUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.REPLACE)) {
+										typing = true;
+									}
 									if (((MetaboliteUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.DELETE_COLUMN)) {
 										scrollCol = ((MetaboliteUndoItem) undoMap.get(i)).getDeletedColumnIndex();
 									}
 									metaboliteUndoAction(i);
 									DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 									setUpMetabolitesTable(model);
-									undoCount -= 1;	       					
+									undoCount -= 1;	
+									if (typing) {
+										scrollRow = getRowFromMetabolitesId(id);
+										typing = false;
+									}
 								} else if (type.equals("redo")) { 
 									if (((MetaboliteUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.ADD_ROW)) {
 										//scrollRow = redoAddRowScrollRow(metabolitesTable);
@@ -7079,12 +7088,9 @@ public class GraphicalInterface extends JFrame {
 	
 	public Integer getRowFromReactionsId(int id) {
 		int viewRow = 0;
-		// this code prints correct id
 		for (int j = 0; j < reactionsTable.getRowCount(); j++) {
 			if (Integer.valueOf(reactionsTable.getModel().getValueAt(j, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString()) == id) {
 				viewRow = reactionsTable.convertRowIndexToView(j);
-				System.out.println("row" + j);
-				System.out.println("vr" + viewRow);
 			}
 		}
 		return viewRow;
@@ -7092,12 +7098,9 @@ public class GraphicalInterface extends JFrame {
 	
 	public Integer getRowFromMetabolitesId(int id) {
 		int viewRow = 0;
-		// this code prints correct id
 		for (int j = 0; j < metabolitesTable.getRowCount(); j++) {
 			if (Integer.valueOf(metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString()) == id) {
 				viewRow = metabolitesTable.convertRowIndexToView(j);
-				System.out.println("row" + j);
-				System.out.println("vr" + viewRow);
 			}
 		}
 		return viewRow;
