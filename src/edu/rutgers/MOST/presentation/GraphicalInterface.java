@@ -6941,7 +6941,7 @@ public class GraphicalInterface extends JFrame {
 									setUpReactionsTable(model);
 									undoCount -= 1;	
 									if (typing) {
-										scrollRow = getRowFromId(id);
+										scrollRow = getRowFromReactionsId(id);
 										typing = false;
 									}
 								} else if (type.equals("redo")) { 
@@ -7077,12 +7077,25 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
-	public Integer getRowFromId(int id) {
+	public Integer getRowFromReactionsId(int id) {
 		int viewRow = 0;
 		// this code prints correct id
 		for (int j = 0; j < reactionsTable.getRowCount(); j++) {
 			if (Integer.valueOf(reactionsTable.getModel().getValueAt(j, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString()) == id) {
 				viewRow = reactionsTable.convertRowIndexToView(j);
+				System.out.println("row" + j);
+				System.out.println("vr" + viewRow);
+			}
+		}
+		return viewRow;
+	}
+	
+	public Integer getRowFromMetabolitesId(int id) {
+		int viewRow = 0;
+		// this code prints correct id
+		for (int j = 0; j < metabolitesTable.getRowCount(); j++) {
+			if (Integer.valueOf(metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString()) == id) {
+				viewRow = metabolitesTable.convertRowIndexToView(j);
 				System.out.println("row" + j);
 				System.out.println("vr" + viewRow);
 			}
@@ -7908,7 +7921,7 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
 			undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 			if (reactionUpdateValid) {
-				scrollToLocation(reactionsTable, getRowFromId(id), getReactionsReplaceLocation().get(1));
+				scrollToLocation(reactionsTable, getRowFromReactionsId(id), getReactionsReplaceLocation().get(1));
 				formulaBar.setText(newValue);
 				setUpReactionsUndo(undoItem);
 			} else {
@@ -8268,13 +8281,14 @@ public class GraphicalInterface extends JFrame {
 		String oldValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getMetabolitesReplaceLocation().get(1));
 		String newValue = replaceValue(oldValue, replaceLocation(oldValue));
 		int id = Integer.valueOf((String)  metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
-		MetaboliteUndoItem undoItem = createMetaboliteUndoItem(oldValue, newValue, metabolitesTable.getSelectedRow(), getMetabolitesReplaceLocation().get(1), id, UndoConstants.REPLACE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-		setUndoOldCollections(undoItem);
 		if (replaceLocation(oldValue) > -1) {
 			//String newValue = replaceValue(oldValue, replaceLocation(oldValue));
 			metabolitesTable.getModel().setValueAt(newValue, viewRow, getMetabolitesReplaceLocation().get(1));
 			updateMetabolitesCellIfValid(oldValue, newValue, viewRow, getMetabolitesReplaceLocation().get(1));
+			MetaboliteUndoItem undoItem = createMetaboliteUndoItem(oldValue, newValue, metabolitesTable.getSelectedRow(), getMetabolitesReplaceLocation().get(1), id, UndoConstants.REPLACE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+			setUndoOldCollections(undoItem);
 			if (metaboliteUpdateValid) {
+				scrollToLocation(metabolitesTable, getRowFromMetabolitesId(id), getMetabolitesReplaceLocation().get(1));
 				formulaBar.setText(newValue);
 				setUndoNewCollections(undoItem);
 				setUpMetabolitesUndo(undoItem);
