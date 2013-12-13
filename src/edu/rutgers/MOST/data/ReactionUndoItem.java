@@ -289,6 +289,7 @@ public class ReactionUndoItem implements UndoItem {
 				int rowNum = Integer.valueOf(row);
 				GraphicalInterface.metabolitesTable.getModel().setValueAt("", rowNum, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 			}
+			System.out.println("added " + this.addedMetabolites);
 			setAddedMetaboliteAbbr(addedAbbr);
 			System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		}

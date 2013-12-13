@@ -6255,6 +6255,18 @@ public class GraphicalInterface extends JFrame {
 			MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 			setUndoOldCollections(undoItem);
+			ArrayList<Integer> pasteIds = new ArrayList<Integer>();
+			for (int y = 0; y < metabolitesTable.getSelectedRows().length; y++) {
+				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRows()[y]);
+				pasteIds.add(Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
+			}
+			System.out.println("ids " + pasteIds);
+			// save sort column and order
+			int sortColumnIndex = getMetabolitesSortColumnIndex();
+			SortOrder sortOrder = getMetabolitesSortOrder();
+			// unsort table to avoid sorting of pasted values that results in cells
+			// updated after sorted column populated with incorrect values
+			setSortDefault();
 			// if selected rows for paste > number of clipboard rows, need to paste
 			// clipboard rows repeatedly
 			if (numberOfClipboardRows() > 0 && metabolitesTable.getSelectedRows().length > numberOfClipboardRows()) {
@@ -6349,7 +6361,10 @@ public class GraphicalInterface extends JFrame {
 				DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 				copyMetabolitesTableModels(newMetabolitesModel); 
 				setUndoNewCollections(undoItem);
-				setUpMetabolitesUndo(undoItem);				
+				setUpMetabolitesUndo(undoItem);	
+				// reset sort column and order
+				setMetabolitesSortColumnIndex(sortColumnIndex);
+				setMetabolitesSortOrder(sortOrder);
 			}
 		}		
 	}
