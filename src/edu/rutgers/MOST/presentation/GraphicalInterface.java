@@ -7185,29 +7185,57 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void reactionUndoButtonAction() {
-		boolean scroll = false;
-		int row = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow();
+		//boolean scroll = false;
+		boolean typing = false;
+		int scrollRow = 0;
+		int scrollCol = 1;
+		ArrayList<Integer> deleteMetabRows = new ArrayList<Integer>();
+		int row = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow();		
+		int id = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getId();	 
+		if (row > -1) {
+			scrollRow = row;
+		}
 		int col = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn();	    				
+		if (col > -1) {
+			scrollCol = col;
+		}
 		if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getUndoType().equals(UndoConstants.DELETE_COLUMN)) {
 			col = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getDeletedColumnIndex();
-			scroll = true;
+			//scroll = true;
+		}
+		if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).equals(UndoConstants.TYPING) || 
+				((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getUndoType().equals(UndoConstants.REPLACE)) {
+			typing = true;
+			if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+				updateReactionEquation(((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow(), ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getId(), ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getNewValue(), ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getOldValue());
+				for (int j = 0; j < ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getAddedMetabolites().size(); j++) {
+					deleteMetabRows.add(((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getAddedMetabolites().get(j));
+				}
+			}							
 		}
 		reactionUndoAction(LocalConfig.getInstance().getUndoItemMap().size());
 		DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 		setUpReactionsTable(model);
-		undoCount -= 1;				
+		undoCount -= 1;	
+		if (typing) {
+			scrollRow = getRowFromReactionsId(id);
+			typing = false;
+		}
 		updateUndoButton();
 		updateRedoButton(); 
 		tabbedPane.setSelectedIndex(0);
-		if (row > -1 && col > -1) {
-			scrollToLocation(reactionsTable, row, col);
-		}
-		if (scroll) {
-			if (row < 0) {
-				row = 0;
-			}
-			scrollToLocation(reactionsTable, row, col);
-		}
+		scrollToLocation(reactionsTable, scrollRow, scrollCol);
+		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+//		if (row > -1 && col > -1) {
+//			//scrollToLocation(reactionsTable, row, col);
+//			scrollToLocation(reactionsTable, row, col);
+//		}
+//		if (scroll) {
+//			if (row < 0) {
+//				row = 0;
+//			}
+//			scrollToLocation(reactionsTable, row, col);
+//		}
 	}
 
 	public void metaboliteUndoButtonAction() {
