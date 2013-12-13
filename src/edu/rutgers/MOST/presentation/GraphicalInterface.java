@@ -6240,8 +6240,12 @@ public class GraphicalInterface extends JFrame {
 					"Paste Error",                                
 					JOptionPane.ERROR_MESSAGE);
 		} else {
+			// start at first item of pasteId's;
+			int startIndex = 0;
 			int startRow=metabolitesTable.getSelectedRows()[0]; 
 			int startCol=metabolitesTable.getSelectedColumns()[0];
+			int numSelectedRows = metabolitesTable.getSelectedRowCount(); 
+			//int numSelectedCol = metabolitesTable.getSelectedColumnCount(); 
 			String pasteString = ""; 
 			try { 
 				pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
@@ -6255,10 +6259,11 @@ public class GraphicalInterface extends JFrame {
 			MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 			setUndoOldCollections(undoItem);
-			ArrayList<Integer> pasteIds = new ArrayList<Integer>();
-			for (int y = 0; y < metabolitesTable.getSelectedRows().length; y++) {
+			ArrayList<String> pasteIds = new ArrayList<String>();
+			for (int y = 0; y < numSelectedRows; y++) {
+			//for (int y = 0; y < metabolitesTable.getSelectedRows().length; y++) {
 				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRows()[y]);
-				pasteIds.add(Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
+				pasteIds.add((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
 			}
 			System.out.println("ids " + pasteIds);
 			// save sort column and order
@@ -6267,11 +6272,33 @@ public class GraphicalInterface extends JFrame {
 			// unsort table to avoid sorting of pasted values that results in cells
 			// updated after sorted column populated with incorrect values
 			setSortDefault();
+			DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
+			setUpMetabolitesTable(model);
+			// after unsorting - get rows corresponding to ids. Using ids will not work if
+			// any rows are deleted, and updating each cell by id will take too long -
+			// O(n) for each cell updated vs O(1)
+			ArrayList<Integer> pasteRows = new ArrayList<Integer>();
+			Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
+			for (int i = 0; i < metabolitesTable.getRowCount(); i++) {
+				metabolitesIdRowMap.put((String) metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+			}
+			System.out.println(metabolitesIdRowMap);
+			for (int z = 0; z < pasteIds.size(); z++) {
+				String row = (metabolitesIdRowMap.get(pasteIds.get(z))).toString();
+				int rowNum = Integer.valueOf(row);
+				pasteRows.add(rowNum);
+			}
+			System.out.println("rows " + pasteRows);
 			// if selected rows for paste > number of clipboard rows, need to paste
 			// clipboard rows repeatedly
-			if (numberOfClipboardRows() > 0 && metabolitesTable.getSelectedRows().length > numberOfClipboardRows()) {
-				int quotient = metabolitesTable.getSelectedRows().length/numberOfClipboardRows();
-				int remainder = metabolitesTable.getSelectedRows().length%numberOfClipboardRows();
+			System.out.println("clip " + numberOfClipboardRows());
+			System.out.println("sel " + numSelectedRows);
+			if (numberOfClipboardRows() > 0 && numSelectedRows > numberOfClipboardRows()) {
+			//if (numberOfClipboardRows() > 0 && metabolitesTable.getSelectedRows().length > numberOfClipboardRows()) {
+				//int quotient = metabolitesTable.getSelectedRows().length/numberOfClipboardRows();
+				int quotient = numSelectedRows/numberOfClipboardRows();
+				//int remainder = metabolitesTable.getSelectedRows().length%numberOfClipboardRows();
+				int remainder = numSelectedRows%numberOfClipboardRows();
 				for (int q = 0; q < quotient; q++) {
 					String[] lines = pasteString.split("\n");
 					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
@@ -6282,21 +6309,28 @@ public class GraphicalInterface extends JFrame {
 							if (q < quotient) {
 								for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 									if (j < cells.length) {
-										updateMetabolitesCellIfPasteValid(cells[j], startRow+i, startCol+j);
+										System.out.println("quot index " + (startIndex + i));
+										updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+										//updateMetabolitesCellIfPasteValid(cells[j], startRow+i, startCol+j);
 									} else {
-										updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
+										System.out.println("quot sp index " + (startIndex + i));
+										updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+										//updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
 									} 
 								}
 							}									
 						} else {
 							if (q < quotient) {
-								for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-									updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
+								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+									System.out.println("quot sp2 index " + (startIndex + i));
+									updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+									//updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
 								}
 							}									
 						}							 
 					}
 					startRow += numberOfClipboardRows();
+					startIndex += numberOfClipboardRows();
 				}
 				for (int m = 0; m < remainder; m++) {
 					String[] lines = pasteString.split("\n");
@@ -6305,17 +6339,23 @@ public class GraphicalInterface extends JFrame {
 						for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 							if (j < cells.length) {
 								if (metabolitesTable.getRowCount()>startRow+m && metabolitesTable.getColumnCount()>startCol+j) { 
-									updateMetabolitesCellIfPasteValid(cells[j], startRow+m, startCol+j); 
+									System.out.println("rem index " + (startIndex + m));
+									updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + m), startCol+j);
+									//updateMetabolitesCellIfPasteValid(cells[j], startRow+m, startCol+j); 
 								} 
 							} else {
 								if (metabolitesTable.getRowCount()>startRow+m && metabolitesTable.getColumnCount()>startCol+j) { 
-									updateMetabolitesCellIfPasteValid("", startRow+m, startCol+j);
+									System.out.println("rem sp index " + (startIndex + m));
+									updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + m), startCol+j);
+									//updateMetabolitesCellIfPasteValid("", startRow+m, startCol+j);
 								} 										
 							} 
 						} 
 					} else {
-						for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-							updateMetabolitesCellIfPasteValid("", startRow+m, startCol+j);
+						for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+							System.out.println("rem sp2 index " + (startIndex + m));
+							updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + m), startCol+j);
+							//updateMetabolitesCellIfPasteValid("", startRow+m, startCol+j);
 						}
 					}
 				}
@@ -6333,15 +6373,21 @@ public class GraphicalInterface extends JFrame {
 							} else {
 								for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 									if (j < cells.length) {
-										updateMetabolitesCellIfPasteValid(cells[j], startRow+i, startCol+j);
+										System.out.println("paste less index " + (startIndex + i));
+										updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+										//updateMetabolitesCellIfPasteValid(cells[j], startRow+i, startCol+j);
 									} else {
-										updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
+										System.out.println("paste less sp index " + (startIndex + i));
+										updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+										//updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
 									} 
 								}
 							}
 						} else {
 							for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-								updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
+								System.out.println("paste less sp2 index " + (startIndex + i));
+								updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+								//updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
 							}
 						}
 					} 
@@ -6365,6 +6411,7 @@ public class GraphicalInterface extends JFrame {
 				// reset sort column and order
 				setMetabolitesSortColumnIndex(sortColumnIndex);
 				setMetabolitesSortOrder(sortOrder);
+				setUpMetabolitesTable(newMetabolitesModel);
 			}
 		}		
 	}
