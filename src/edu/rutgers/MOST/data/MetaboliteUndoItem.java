@@ -29,8 +29,8 @@ public class MetaboliteUndoItem implements UndoItem {
 	private int deletedColumnIndex;
 	private ArrayList<Integer> oldBlankMetabIds;
 	private ArrayList<Integer> newBlankMetabIds;
-	private Map<String, Object> oldMetaboliteNameIdMap;
-	private Map<String, Object> newMetaboliteNameIdMap;
+	private Map<String, Object> oldMetaboliteAbbreviationIdMap;
+	private Map<String, Object> newMetaboliteAbbreviationIdMap;
 	private Map<String, Object> oldMetaboliteUsedMap;
 	private Map<String, Object> newMetaboliteUsedMap;
 	private ArrayList<Integer> oldSuspiciousMetabolites;		
@@ -134,17 +134,17 @@ public class MetaboliteUndoItem implements UndoItem {
 	public void setNewBlankMetabIds(ArrayList<Integer> newBlankMetabIds) {
 		this.newBlankMetabIds = newBlankMetabIds;
 	}
-	public Map<String, Object> getOldMetaboliteNameIdMap() {
-		return oldMetaboliteNameIdMap;
+	public Map<String, Object> getOldMetaboliteAbbreviationIdMap() {
+		return oldMetaboliteAbbreviationIdMap;
 	}
-	public void setOldMetaboliteNameIdMap(Map<String, Object> oldMetaboliteNameIdMap) {
-		this.oldMetaboliteNameIdMap = oldMetaboliteNameIdMap;
+	public void setOldMetaboliteAbbreviationIdMap(Map<String, Object> oldMetaboliteAbbreviationIdMap) {
+		this.oldMetaboliteAbbreviationIdMap = oldMetaboliteAbbreviationIdMap;
 	}
-	public Map<String, Object> getNewMetaboliteNameIdMap() {
-		return newMetaboliteNameIdMap;
+	public Map<String, Object> getNewMetaboliteAbbreviationIdMap() {
+		return newMetaboliteAbbreviationIdMap;
 	}
-	public void setNewMetaboliteNameIdMap(Map<String, Object> newMetaboliteNameIdMap) {
-		this.newMetaboliteNameIdMap = newMetaboliteNameIdMap;
+	public void setNewMetaboliteAbbreviationIdMap(Map<String, Object> newMetaboliteAbbreviationIdMap) {
+		this.newMetaboliteAbbreviationIdMap = newMetaboliteAbbreviationIdMap;
 	}
 	public Map<String, Object> getOldMetaboliteUsedMap() {
 		return oldMetaboliteUsedMap;
@@ -397,7 +397,7 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public void restoreOldCollections() {
 		LocalConfig.getInstance().setBlankMetabIds(this.oldBlankMetabIds);
-		LocalConfig.getInstance().setMetaboliteNameIdMap(this.oldMetaboliteNameIdMap);
+		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(this.oldMetaboliteAbbreviationIdMap);
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.oldSuspiciousMetabolites);
 		LocalConfig.getInstance().setUnusedList(this.oldUnusedList);
@@ -413,7 +413,7 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public void restoreNewCollections() {
 		LocalConfig.getInstance().setBlankMetabIds(this.newBlankMetabIds);
-		LocalConfig.getInstance().setMetaboliteNameIdMap(this.newMetaboliteNameIdMap);
+		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(this.newMetaboliteAbbreviationIdMap);
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.newSuspiciousMetabolites);
 		LocalConfig.getInstance().setUnusedList(this.newUnusedList);
@@ -512,7 +512,7 @@ public class MetaboliteUndoItem implements UndoItem {
 			}								
 		}
 		
-		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteNameIdMap());
+		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());		
 		if (column == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldReactant)) {
@@ -520,10 +520,10 @@ public class MetaboliteUndoItem implements UndoItem {
 				LocalConfig.getInstance().getMetaboliteUsedMap().remove(oldReactant);
 				LocalConfig.getInstance().getMetaboliteUsedMap().put(newReactant, new Integer(usedCount));									
 			}
-			LocalConfig.getInstance().getMetaboliteNameIdMap().remove(oldReactant);
-			LocalConfig.getInstance().getMetaboliteNameIdMap().put(newReactant, this.id);
+			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(oldReactant);
+			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(newReactant, this.id);
 		}
-		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteNameIdMap());
+		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	

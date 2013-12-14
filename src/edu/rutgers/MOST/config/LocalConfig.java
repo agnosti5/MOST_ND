@@ -141,29 +141,15 @@ public class LocalConfig {
     
     //map used to hold metabolite abbreviation/id pairs, in order to construct reaction_reactant
 	//and reaction_product (lookup) tables
-    public static Map<String, Object> metaboliteIdAbbreviationMap = new HashMap<String, Object>();
-    
-    public static Map<String, Object> getMetaboliteIdAbbreviationMap() {
-		return metaboliteIdAbbreviationMap;
+    public static Map<String, Object> metaboliteAbbreviationIdMap = new HashMap<String, Object>();
+
+    public static Map<String, Object> getMetaboliteAbbreviationIdMap() {
+		return metaboliteAbbreviationIdMap;
 	}
 
-	public static void setMetaboliteIdAbbreviationMap(
-			Map<String, Object> metaboliteIdAbbreviationMap) {
-		LocalConfig.metaboliteIdAbbreviationMap = metaboliteIdAbbreviationMap;
-	}
-
-	//map used to hold metabolite name/id pairs, in order to construct reaction_reactant
-	//and reaction_product (lookup) tables
-	// TODO; rename to metaboliteAbbrIdMap since it is actually abbreviations and id's
-    public static Map<String, Object> metaboliteNameIdMap;
-    
-    public static Map<String, Object> getMetaboliteNameIdMap() {
-		return metaboliteNameIdMap;
-	}
-
-	public static void setMetaboliteNameIdMap(
-			Map<String, Object> metaboliteNameIdMap) {
-		LocalConfig.metaboliteNameIdMap = metaboliteNameIdMap;
+	public static void setMetaboliteAbbreviationIdMap(
+			Map<String, Object> metaboliteAbbreviationIdMap) {
+		LocalConfig.metaboliteAbbreviationIdMap = metaboliteAbbreviationIdMap;
 	}
 	
 	private static Map<Object, String> metaboliteIdNameMap;

@@ -128,7 +128,7 @@ public class TextMetabolitesModelReader {
 		}
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
-		LocalConfig.getInstance().getMetaboliteNameIdMap().clear();
+		LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().clear();
 
 		//if first row of file is not column names, starts reading after row that contains names
 		int correction = LocalConfig.getInstance().getMetabolitesNextRowCorrection();
@@ -174,10 +174,10 @@ public class TextMetabolitesModelReader {
 					if (metaboliteAbbreviation == null || metaboliteAbbreviation.trim().length() == 0) {
 						blankMetabIds.add(id);		
 					} else {
-						if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metaboliteAbbreviation)) {
+						if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(metaboliteAbbreviation)) {
 							metaboliteAbbreviation = metaboliteAbbreviation + duplicateSuffix(metaboliteAbbreviation);
 						}
-						LocalConfig.getInstance().getMetaboliteNameIdMap().put(metaboliteAbbreviation, id);
+						LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(metaboliteAbbreviation, id);
 					}
 					metabRow.add(metaboliteAbbreviation);
 					
@@ -219,6 +219,7 @@ public class TextMetabolitesModelReader {
 		}
 		
 		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+		System.out.println(LocalConfig.getInstance().getMetaboliteIdNameMap());
 		LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);					
 		LocalConfig.getInstance().hasMetabolitesFile = true;
 		setMetabolitesTableModel(metabTableModel);
@@ -227,9 +228,9 @@ public class TextMetabolitesModelReader {
 	
 	public String duplicateSuffix(String value) {
 		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
-		if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value + duplicateSuffix)) {
+		if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value + duplicateSuffix)) {
 			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
-			while (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
+			while (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
 				duplicateCount += 1;
 			}
 			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));

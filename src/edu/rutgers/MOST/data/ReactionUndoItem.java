@@ -280,9 +280,9 @@ public class ReactionUndoItem implements UndoItem {
 			System.out.println(metabolitesIdRowMap);
 			ArrayList<String> addedAbbr = new ArrayList<String>();
 			for (int i = 0; i < this.addedMetabolites.size(); i++) {
-				String abbrev = (String) getKeyFromValue(LocalConfig.getInstance().getMetaboliteNameIdMap(), this.addedMetabolites.get(i)); 
+				String abbrev = (String) getKeyFromValue(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap(), this.addedMetabolites.get(i)); 
 				addedAbbr.add(abbrev);
-				LocalConfig.getInstance().getMetaboliteNameIdMap().remove(abbrev);
+				LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(abbrev);
 				LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
 				String row = (metabolitesIdRowMap.get(Integer.toString(this.addedMetabolites.get(i)))).toString();
 				

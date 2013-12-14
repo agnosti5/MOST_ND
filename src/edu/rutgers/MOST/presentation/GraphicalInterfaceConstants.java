@@ -272,7 +272,7 @@ public class GraphicalInterfaceConstants {
     
     // duplicate metabolite
     public static final String DUPLICATE_METABOLITE_TITLE = "Duplicate Metabolite";
-    public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Rename As "; 
+    public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Rename as "; 
     public static final String DUPLICATE_METABOLITE_PASTE_MESSAGE = "Duplicate Metabolites. Names Will Be Appended With '[1]', '[2]', etc.";
     
     public static final String DUPLICATE_SUFFIX = "[1]";
