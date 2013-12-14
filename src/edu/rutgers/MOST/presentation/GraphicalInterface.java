@@ -237,6 +237,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean validPaste;                 // used for error message when pasting non-valid values
 	public static boolean showDuplicatePrompt;
 	public static boolean duplicateMetabOK;
+	public static boolean participatingMessageShown;
 	// other
 	public static boolean showErrorMessage;
 	public static boolean saveOptFile;
@@ -3706,6 +3707,7 @@ public class GraphicalInterface extends JFrame {
 		validPaste = true;
 		showDuplicatePrompt = true;
 		duplicateMetabOK = true;
+		participatingMessageShown = false;
 		// other
 		showErrorMessage = true;
 		saveOptFile = false;
@@ -6240,6 +6242,9 @@ public class GraphicalInterface extends JFrame {
 					"Paste Error",                                
 					JOptionPane.ERROR_MESSAGE);
 		} else {
+			showDuplicatePrompt = true;
+			duplicateMetabOK = true;
+			participatingMessageShown = false;
 			// start at first item of pasteId's;
 			int startIndex = 0;
 			int startRow=metabolitesTable.getSelectedRows()[0]; 
@@ -6401,7 +6406,11 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 					if (j < cells.length) {
-						updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+						try {
+							updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+						} catch (Throwable t) {
+							
+						}						
 					} else {
 						updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
 					} 
@@ -6431,11 +6440,18 @@ public class GraphicalInterface extends JFrame {
 	public void updateMetabolitesCellIfPasteValid(String value, int row, int col) {
 		int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));		
 		String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+		System.out.println(metabAbbrev);
 		if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(value)) {
-				System.out.println("no");
+			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
+				if (!participatingMessageShown) {
+					JOptionPane.showMessageDialog(null,                
+							GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_MESSAGE,                
+							GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_TITLE,                                
+							JOptionPane.ERROR_MESSAGE);
+					participatingMessageShown = true;
+				}				
 			} else {
-				if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value)) {
+				//if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value)) {
 					if (showDuplicatePrompt) {
 						Object[] options = {"    Yes    ", "    No    ",};
 						int choice = JOptionPane.showOptionDialog(null, 
@@ -6456,20 +6472,38 @@ public class GraphicalInterface extends JFrame {
 						if (choice == JOptionPane.NO_OPTION) {
 							showDuplicatePrompt = false;
 							duplicateMetabOK = false;
+							metabolitesTable.setValueAt(metabAbbrev, row, col);
 						}
 					} else {
-						value = value + duplicateSuffix(value);
-						metabolitesTable.setValueAt(value, row, col);
-						if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
-							LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
-						}
-						LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
+						if (duplicateMetabOK) {
+							value = value + duplicateSuffix(value);
+							metabolitesTable.setValueAt(value, row, col);
+							if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
+								LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
+							}
+							LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
+						}						
 					}
-				} else {
-					metabolitesTable.setValueAt(value, row, col);
-					LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
-				}
-			}			
+//				} else {
+//					metabolitesTable.setValueAt(value, row, col);
+//					LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
+//				}
+			}
+			System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
+		} else if (col == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
+			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
+				if (!participatingMessageShown) {
+					JOptionPane.showMessageDialog(null,                
+							GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_MESSAGE,                
+							GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_TITLE,                                
+							JOptionPane.ERROR_MESSAGE);
+					participatingMessageShown = true;
+				}		
+			} else {
+				metabolitesTable.setValueAt(value, row, col);
+				LocalConfig.getInstance().getMetaboliteIdNameMap().put(id, value);				
+			}
+			System.out.println(LocalConfig.getInstance().getMetaboliteIdNameMap());
 		} else if (isMetabolitesEntryValid(col, value)) {
 			metabolitesTable.setValueAt(value, row, col);
 			formulaBar.setText("");
