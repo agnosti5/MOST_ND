@@ -238,6 +238,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean showDuplicatePrompt;
 	public static boolean duplicateMetabOK;
 	public static boolean participatingMessageShown;
+	public static boolean pasteOutOfRangeErrorShown;
 	// other
 	public static boolean showErrorMessage;
 	public static boolean saveOptFile;
@@ -3715,6 +3716,7 @@ public class GraphicalInterface extends JFrame {
 		showDuplicatePrompt = true;
 		duplicateMetabOK = true;
 		participatingMessageShown = false;
+		pasteOutOfRangeErrorShown = false;
 		// other
 		showErrorMessage = true;
 		saveOptFile = false;
@@ -6252,6 +6254,7 @@ public class GraphicalInterface extends JFrame {
 			showDuplicatePrompt = true;
 			duplicateMetabOK = true;
 			participatingMessageShown = false;
+			pasteOutOfRangeErrorShown = false;
 			// start at first item of pasteId's;
 			int startIndex = 0;
 			int startRow=metabolitesTable.getSelectedRows()[0]; 
@@ -6271,11 +6274,23 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 			setUndoOldCollections(undoItem);
 			ArrayList<String> pasteIds = new ArrayList<String>();
-			for (int y = 0; y < numSelectedRows; y++) {
-			//for (int y = 0; y < metabolitesTable.getSelectedRows().length; y++) {
-				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRows()[y]);
-				pasteIds.add((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
-			}
+			int numPasteRows = 0;
+			// this allows selecting one row for paste even if many rows are copied
+			// and pastes the whole clipboard contents
+			if (numSelectedRows < numberOfClipboardRows()) {
+				for (int y = 0; y < numberOfClipboardRows(); y++) {
+					if (startRow + y < metabolitesTable.getRowCount()) {
+						int viewRow = metabolitesTable.convertRowIndexToModel(startRow + y);
+						pasteIds.add((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+					}
+				}
+			} else {
+				for (int y = 0; y < numSelectedRows; y++) {
+					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRows()[y]);
+					pasteIds.add((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+				}
+			}		
+			System.out.println("paste ids" + pasteIds);
 			// save sort column and order
 			int sortColumnIndex = getMetabolitesSortColumnIndex();
 			SortOrder sortOrder = getMetabolitesSortOrder();
@@ -6297,6 +6312,7 @@ public class GraphicalInterface extends JFrame {
 				int rowNum = Integer.valueOf(row);
 				pasteRows.add(rowNum);
 			}
+			System.out.println("paste rows" + pasteRows);
 			// if selected rows for paste > number of clipboard rows, need to paste
 			// clipboard rows repeatedly
 			if (numberOfClipboardRows() > 0 && numSelectedRows > numberOfClipboardRows()) {
@@ -6311,17 +6327,25 @@ public class GraphicalInterface extends JFrame {
 							// paste blank value over cell value if not blank
 							if (q < quotient) {
 								for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-									if (j < cells.length) {
-										updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+									if (startCol + cells.length > metabolitesTable.getColumnCount()) {
+										showPasteOutOfRangeError();				
 									} else {
-										updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
-									} 
+										if (j < cells.length) {
+											updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+										} else {
+											updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+										} 
+									}									
 								}
 							}									
 						} else {
 							if (q < quotient) {
 								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-									updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+									if (startCol + j > metabolitesTable.getColumnCount()) {
+										showPasteOutOfRangeError();			
+									} else {
+										updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+									}									
 								}
 							}									
 						}							 
@@ -6331,53 +6355,15 @@ public class GraphicalInterface extends JFrame {
 				for (int m = 0; m < remainder; m++) {
 					String[] lines = pasteString.split("\n");
 					pasteMetaboliteValues(m, lines, pasteRows, startIndex, startCol);
-//					if (m < lines.length) {
-//						String[] cells = lines[m].split("\t"); 
-//						for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-//							if (j < cells.length) {
-//								if (metabolitesTable.getRowCount()>startRow+m && metabolitesTable.getColumnCount()>startCol+j) { 
-//									updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + m), startCol+j); 
-//								} 
-//							} else {
-//								if (metabolitesTable.getRowCount()>startRow+m && metabolitesTable.getColumnCount()>startCol+j) { 
-//									updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + m), startCol+j);
-//								} 										
-//							} 
-//						} 
-//					} else {
-//						for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-//							System.out.println("rem sp2 index " + (startIndex + m));
-//							updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + m), startCol+j);
-//							//updateMetabolitesCellIfPasteValid("", startRow+m, startCol+j);
-//						}
-//					}
 				}
 				// if selected rows for paste <= number of clipboard rows 	
 			} else {
 				String[] lines = pasteString.split("\n");
 				if (startRow + lines.length > metabolitesTable.getRowCount()) {
-					System.out.println("Out of range error");
-				} else {					
+					showPasteOutOfRangeError();
+				} else {
 					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
 						pasteMetaboliteValues(i, lines, pasteRows, startIndex, startCol);
-//						if (i < lines.length) {
-//							String[] cells = lines[i].split("\t"); 
-//							if (startCol + cells.length > metabolitesTable.getColumnCount()) {
-//								System.out.println("Out of range error");
-//							} else {
-//								for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-//									if (j < cells.length) {
-//										updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
-//									} else {
-//										updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
-//									} 
-//								}
-//							}
-//						} else {
-//							for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-//								updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
-//							}
-//						}
 					} 
 				}
 			}
@@ -6409,17 +6395,14 @@ public class GraphicalInterface extends JFrame {
 		if (i < lines.length) {
 			String[] cells = lines[i].split("\t"); 
 			if (startCol + cells.length > metabolitesTable.getColumnCount()) {
-				System.out.println("Out of range error");
+				showPasteOutOfRangeError();			
 			} else {
 				for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 					if (j < cells.length) {
 						// try/catch needed to catch error thrown when pasting into cells with
-						// used metabolite abbreviations or names. otherwise index error thrown
-						try {
-							updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
-						} catch (Throwable t) {
-							
-						}						
+						// used metabolite abbreviations or names. otherwise index error thrown				
+						updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+					
 					} else {
 						updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
 					} 
@@ -6430,6 +6413,16 @@ public class GraphicalInterface extends JFrame {
 				updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
 			}
 		}
+	}
+	
+	public void showPasteOutOfRangeError() {
+		if (!pasteOutOfRangeErrorShown) {
+			JOptionPane.showMessageDialog(null,                
+					GraphicalInterfaceConstants.PASTE_OUT_OF_RANGE_ERROR,                
+					"Paste Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			pasteOutOfRangeErrorShown = true;
+		}				
 	}
 	
 	// used for invalid paste, invalid clear, and invalid replace all
@@ -6507,7 +6500,9 @@ public class GraphicalInterface extends JFrame {
 			}
 			System.out.println(LocalConfig.getInstance().getMetaboliteIdNameMap());
 		} else if (isMetabolitesEntryValid(col, value)) {
-			metabolitesTable.setValueAt(value, row, col);
+			if (col < metabolitesTable.getColumnCount()) {
+				metabolitesTable.setValueAt(value, row, col);
+			} 
 			formulaBar.setText("");
 		} else {
 			validPaste = false;
