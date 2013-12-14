@@ -6487,8 +6487,12 @@ public class GraphicalInterface extends JFrame {
 				}				
 			} else {
 				if (continuePasting) {
-					if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(metabAbbrev)) {
+					if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value)) {
 						System.out.println("contains" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+						System.out.println(value);
+						int mapValue = (int) LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().get(value);
+						System.out.println(mapValue);
+						System.out.println(metabolitesTable.getModel().getValueAt(mapValue, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN));
 						if (showDuplicatePrompt) {
 							Object[] options = {"    Yes    ", "    No    ",};
 							int choice = JOptionPane.showOptionDialog(null, 
