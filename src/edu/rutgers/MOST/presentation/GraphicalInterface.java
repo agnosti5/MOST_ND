@@ -6245,7 +6245,6 @@ public class GraphicalInterface extends JFrame {
 			int startRow=metabolitesTable.getSelectedRows()[0]; 
 			int startCol=metabolitesTable.getSelectedColumns()[0];
 			int numSelectedRows = metabolitesTable.getSelectedRowCount(); 
-			//int numSelectedCol = metabolitesTable.getSelectedColumnCount(); 
 			String pasteString = ""; 
 			try { 
 				pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
@@ -6265,7 +6264,6 @@ public class GraphicalInterface extends JFrame {
 				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRows()[y]);
 				pasteIds.add((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
 			}
-			System.out.println("ids " + pasteIds);
 			// save sort column and order
 			int sortColumnIndex = getMetabolitesSortColumnIndex();
 			SortOrder sortOrder = getMetabolitesSortOrder();
@@ -6282,22 +6280,15 @@ public class GraphicalInterface extends JFrame {
 			for (int i = 0; i < metabolitesTable.getRowCount(); i++) {
 				metabolitesIdRowMap.put((String) metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
 			}
-			System.out.println(metabolitesIdRowMap);
 			for (int z = 0; z < pasteIds.size(); z++) {
 				String row = (metabolitesIdRowMap.get(pasteIds.get(z))).toString();
 				int rowNum = Integer.valueOf(row);
 				pasteRows.add(rowNum);
 			}
-			System.out.println("rows " + pasteRows);
 			// if selected rows for paste > number of clipboard rows, need to paste
 			// clipboard rows repeatedly
-			System.out.println("clip " + numberOfClipboardRows());
-			System.out.println("sel " + numSelectedRows);
 			if (numberOfClipboardRows() > 0 && numSelectedRows > numberOfClipboardRows()) {
-			//if (numberOfClipboardRows() > 0 && metabolitesTable.getSelectedRows().length > numberOfClipboardRows()) {
-				//int quotient = metabolitesTable.getSelectedRows().length/numberOfClipboardRows();
 				int quotient = numSelectedRows/numberOfClipboardRows();
-				//int remainder = metabolitesTable.getSelectedRows().length%numberOfClipboardRows();
 				int remainder = numSelectedRows%numberOfClipboardRows();
 				for (int q = 0; q < quotient; q++) {
 					String[] lines = pasteString.split("\n");
@@ -6309,87 +6300,72 @@ public class GraphicalInterface extends JFrame {
 							if (q < quotient) {
 								for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 									if (j < cells.length) {
-										System.out.println("quot index " + (startIndex + i));
 										updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
-										//updateMetabolitesCellIfPasteValid(cells[j], startRow+i, startCol+j);
 									} else {
-										System.out.println("quot sp index " + (startIndex + i));
 										updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
-										//updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
 									} 
 								}
 							}									
 						} else {
 							if (q < quotient) {
 								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-									System.out.println("quot sp2 index " + (startIndex + i));
 									updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
-									//updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
 								}
 							}									
 						}							 
 					}
-					startRow += numberOfClipboardRows();
 					startIndex += numberOfClipboardRows();
 				}
 				for (int m = 0; m < remainder; m++) {
 					String[] lines = pasteString.split("\n");
-					if (m < lines.length) {
-						String[] cells = lines[m].split("\t"); 
-						for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-							if (j < cells.length) {
-								if (metabolitesTable.getRowCount()>startRow+m && metabolitesTable.getColumnCount()>startCol+j) { 
-									System.out.println("rem index " + (startIndex + m));
-									updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + m), startCol+j);
-									//updateMetabolitesCellIfPasteValid(cells[j], startRow+m, startCol+j); 
-								} 
-							} else {
-								if (metabolitesTable.getRowCount()>startRow+m && metabolitesTable.getColumnCount()>startCol+j) { 
-									System.out.println("rem sp index " + (startIndex + m));
-									updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + m), startCol+j);
-									//updateMetabolitesCellIfPasteValid("", startRow+m, startCol+j);
-								} 										
-							} 
-						} 
-					} else {
-						for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-							System.out.println("rem sp2 index " + (startIndex + m));
-							updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + m), startCol+j);
-							//updateMetabolitesCellIfPasteValid("", startRow+m, startCol+j);
-						}
-					}
+					pasteMetaboliteValues(m, lines, pasteRows, startIndex, startCol);
+//					if (m < lines.length) {
+//						String[] cells = lines[m].split("\t"); 
+//						for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+//							if (j < cells.length) {
+//								if (metabolitesTable.getRowCount()>startRow+m && metabolitesTable.getColumnCount()>startCol+j) { 
+//									updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + m), startCol+j); 
+//								} 
+//							} else {
+//								if (metabolitesTable.getRowCount()>startRow+m && metabolitesTable.getColumnCount()>startCol+j) { 
+//									updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + m), startCol+j);
+//								} 										
+//							} 
+//						} 
+//					} else {
+//						for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+//							System.out.println("rem sp2 index " + (startIndex + m));
+//							updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + m), startCol+j);
+//							//updateMetabolitesCellIfPasteValid("", startRow+m, startCol+j);
+//						}
+//					}
 				}
 				// if selected rows for paste <= number of clipboard rows 	
 			} else {
 				String[] lines = pasteString.split("\n");
 				if (startRow + lines.length > metabolitesTable.getRowCount()) {
 					System.out.println("Out of range error");
-				} else {
+				} else {					
 					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
-						if (i < lines.length) {
-							String[] cells = lines[i].split("\t"); 
-							if (startCol + cells.length > metabolitesTable.getColumnCount()) {
-								System.out.println("Out of range error");
-							} else {
-								for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-									if (j < cells.length) {
-										System.out.println("paste less index " + (startIndex + i));
-										updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
-										//updateMetabolitesCellIfPasteValid(cells[j], startRow+i, startCol+j);
-									} else {
-										System.out.println("paste less sp index " + (startIndex + i));
-										updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
-										//updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
-									} 
-								}
-							}
-						} else {
-							for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-								System.out.println("paste less sp2 index " + (startIndex + i));
-								updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
-								//updateMetabolitesCellIfPasteValid("", startRow+i, startCol+j);
-							}
-						}
+						pasteMetaboliteValues(i, lines, pasteRows, startIndex, startCol);
+//						if (i < lines.length) {
+//							String[] cells = lines[i].split("\t"); 
+//							if (startCol + cells.length > metabolitesTable.getColumnCount()) {
+//								System.out.println("Out of range error");
+//							} else {
+//								for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+//									if (j < cells.length) {
+//										updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+//									} else {
+//										updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+//									} 
+//								}
+//							}
+//						} else {
+//							for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+//								updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+//							}
+//						}
 					} 
 				}
 			}
@@ -6414,6 +6390,28 @@ public class GraphicalInterface extends JFrame {
 				setUpMetabolitesTable(newMetabolitesModel);
 			}
 		}		
+	}
+	
+	// i is the loop counter index
+	public void pasteMetaboliteValues(int i, String[] lines, ArrayList<Integer> pasteRows, int startIndex, int startCol) {
+		if (i < lines.length) {
+			String[] cells = lines[i].split("\t"); 
+			if (startCol + cells.length > metabolitesTable.getColumnCount()) {
+				System.out.println("Out of range error");
+			} else {
+				for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+					if (j < cells.length) {
+						updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+					} else {
+						updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+					} 
+				}
+			}
+		} else {
+			for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+				updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+			}
+		}
 	}
 	
 	// used for invalid paste, invalid clear, and invalid replace all
