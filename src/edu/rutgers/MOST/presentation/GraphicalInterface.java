@@ -6432,40 +6432,44 @@ public class GraphicalInterface extends JFrame {
 		int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));		
 		String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 		if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-			if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value)) {
-				if (showDuplicatePrompt) {
-					Object[] options = {"    Yes    ", "    No    ",};
-					int choice = JOptionPane.showOptionDialog(null, 
-							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_PASTE_MESSAGE, 
-							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
-							JOptionPane.YES_NO_OPTION, 
-							JOptionPane.QUESTION_MESSAGE, 
-							null, options, options[0]);
-					if (choice == JOptionPane.YES_OPTION) {	
+			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(value)) {
+				System.out.println("no");
+			} else {
+				if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value)) {
+					if (showDuplicatePrompt) {
+						Object[] options = {"    Yes    ", "    No    ",};
+						int choice = JOptionPane.showOptionDialog(null, 
+								GraphicalInterfaceConstants.DUPLICATE_METABOLITE_PASTE_MESSAGE, 
+								GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
+								JOptionPane.YES_NO_OPTION, 
+								JOptionPane.QUESTION_MESSAGE, 
+								null, options, options[0]);
+						if (choice == JOptionPane.YES_OPTION) {	
+							value = value + duplicateSuffix(value);
+							metabolitesTable.setValueAt(value, row, col);
+							if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
+								LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
+							}
+							LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
+							showDuplicatePrompt = false;
+						}
+						if (choice == JOptionPane.NO_OPTION) {
+							showDuplicatePrompt = false;
+							duplicateMetabOK = false;
+						}
+					} else {
 						value = value + duplicateSuffix(value);
 						metabolitesTable.setValueAt(value, row, col);
 						if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
 							LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
 						}
 						LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
-						showDuplicatePrompt = false;
-					}
-					if (choice == JOptionPane.NO_OPTION) {
-						showDuplicatePrompt = false;
-						duplicateMetabOK = false;
 					}
 				} else {
-					value = value + duplicateSuffix(value);
 					metabolitesTable.setValueAt(value, row, col);
-					if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
-						LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
-					}
 					LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
 				}
-			} else {
-				metabolitesTable.setValueAt(value, row, col);
-				LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
-			}
+			}			
 		} else if (isMetabolitesEntryValid(col, value)) {
 			metabolitesTable.setValueAt(value, row, col);
 			formulaBar.setText("");
