@@ -3348,8 +3348,15 @@ public class GraphicalInterface extends JFrame {
 		if (maxMetab < LocalConfig.getInstance().getMaxMetaboliteId()) {		
 			if (reactionsTable.getRowCount() > LocalConfig.getInstance().getMetaboliteNameIdMap().size()) {
 				LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetab);
-				model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-				LocalConfig.getInstance().getAddedMetabolites().add((maxMetab));
+				try {
+					model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+					LocalConfig.getInstance().getAddedMetabolites().add((maxMetab));
+				} catch (Throwable t) {
+					model.addRow(createMetabolitesRow(maxMetabId));
+					LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
+					model.setValueAt(species, maxMetab, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+					LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId));
+				}				
 			} else {
 				model.addRow(createMetabolitesRow(maxMetabId));
 				LocalConfig.getInstance().getMetaboliteNameIdMap().put(species, maxMetabId);
@@ -6406,6 +6413,8 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 					if (j < cells.length) {
+						// try/catch needed to catch error thrown when pasting into cells with
+						// used metabolite abbreviations or names. otherwise index error thrown
 						try {
 							updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
 						} catch (Throwable t) {
@@ -6434,13 +6443,11 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getMetabolitesUndoTableModelMap().remove(Integer.toString(numCopied + 1));
 		}
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
-		//System.out.println(LocalConfig.getInstance().getMetabolitesUndoTableModelMap());
 	}
 
 	public void updateMetabolitesCellIfPasteValid(String value, int row, int col) {
 		int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));		
 		String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-		System.out.println(metabAbbrev);
 		if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
 				if (!participatingMessageShown) {
@@ -6451,43 +6458,38 @@ public class GraphicalInterface extends JFrame {
 					participatingMessageShown = true;
 				}				
 			} else {
-				//if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(value)) {
-					if (showDuplicatePrompt) {
-						Object[] options = {"    Yes    ", "    No    ",};
-						int choice = JOptionPane.showOptionDialog(null, 
-								GraphicalInterfaceConstants.DUPLICATE_METABOLITE_PASTE_MESSAGE, 
-								GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
-								JOptionPane.YES_NO_OPTION, 
-								JOptionPane.QUESTION_MESSAGE, 
-								null, options, options[0]);
-						if (choice == JOptionPane.YES_OPTION) {	
-							value = value + duplicateSuffix(value);
-							metabolitesTable.setValueAt(value, row, col);
-							if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
-								LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
-							}
-							LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
-							showDuplicatePrompt = false;
+				if (showDuplicatePrompt) {
+					Object[] options = {"    Yes    ", "    No    ",};
+					int choice = JOptionPane.showOptionDialog(null, 
+							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_PASTE_MESSAGE, 
+							GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
+							JOptionPane.YES_NO_OPTION, 
+							JOptionPane.QUESTION_MESSAGE, 
+							null, options, options[0]);
+					if (choice == JOptionPane.YES_OPTION) {	
+						value = value + duplicateSuffix(value);
+						metabolitesTable.setValueAt(value, row, col);
+						if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
+							LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
 						}
-						if (choice == JOptionPane.NO_OPTION) {
-							showDuplicatePrompt = false;
-							duplicateMetabOK = false;
-							metabolitesTable.setValueAt(metabAbbrev, row, col);
-						}
-					} else {
-						if (duplicateMetabOK) {
-							value = value + duplicateSuffix(value);
-							metabolitesTable.setValueAt(value, row, col);
-							if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
-								LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
-							}
-							LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
-						}						
+						LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
+						showDuplicatePrompt = false;
 					}
-//				} else {
-//					metabolitesTable.setValueAt(value, row, col);
-//					LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
-//				}
+					if (choice == JOptionPane.NO_OPTION) {
+						showDuplicatePrompt = false;
+						duplicateMetabOK = false;
+						metabolitesTable.setValueAt(metabAbbrev, row, col);
+					}
+				} else {
+					if (duplicateMetabOK) {
+						value = value + duplicateSuffix(value);
+						metabolitesTable.setValueAt(value, row, col);
+						if (LocalConfig.getInstance().getMetaboliteNameIdMap().containsKey(metabAbbrev)) {
+							LocalConfig.getInstance().getMetaboliteNameIdMap().remove(metabAbbrev);
+						}
+						LocalConfig.getInstance().getMetaboliteNameIdMap().put(value, id);
+					}						
+				}
 			}
 			System.out.println(LocalConfig.getInstance().getMetaboliteNameIdMap());
 		} else if (col == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
