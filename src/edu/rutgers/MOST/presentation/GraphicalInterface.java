@@ -5302,8 +5302,12 @@ public class GraphicalInterface extends JFrame {
 					"Paste Error",                                
 					JOptionPane.ERROR_MESSAGE);
 		} else {
+			pasteOutOfRangeErrorShown = false;
+			// start at first item of pasteId's;
+			int startIndex = 0;
 			int startRow=reactionsTable.getSelectedRows()[0]; 
 			int startCol=reactionsTable.getSelectedColumns()[0];
+			int numSelectedRows = reactionsTable.getSelectedRowCount(); 
 			String pasteString = ""; 
 			try { 
 				pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
@@ -5316,11 +5320,51 @@ public class GraphicalInterface extends JFrame {
 			copyReactionsTableModels(oldReactionsModel);
 			ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
+			ArrayList<String> pasteIds = new ArrayList<String>();
+			int numPasteRows = 0;
+			// this allows selecting one row for paste even if many rows are copied
+			// and pastes the whole clipboard contents
+			if (numSelectedRows < numberOfClipboardRows()) {
+				for (int y = 0; y < numberOfClipboardRows(); y++) {
+					if (startRow + y < reactionsTable.getRowCount()) {
+						int viewRow = reactionsTable.convertRowIndexToModel(startRow + y);
+						pasteIds.add((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+					}
+				}
+			} else {
+				for (int y = 0; y < numSelectedRows; y++) {
+					int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRows()[y]);
+					pasteIds.add((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+				}
+			}		
+			System.out.println("paste ids" + pasteIds);
+			// save sort column and order
+			int sortColumnIndex = getReactionsSortColumnIndex();
+			SortOrder sortOrder = getReactionsSortOrder();
+			// unsort table to avoid sorting of pasted values that results in cells
+			// updated after sorted column populated with incorrect values
+			setSortDefault();
+			DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
+			setUpReactionsTable(model);
+			// after unsorting - get rows corresponding to ids. Using ids will not work if
+			// any rows are deleted, and updating each cell by id will take too long -
+			// O(n) for each cell updated vs O(1)
+			ArrayList<Integer> pasteRows = new ArrayList<Integer>();
+			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+			for (int i = 0; i < reactionsTable.getRowCount(); i++) {
+				reactionsIdRowMap.put((String) reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+			}
+			for (int z = 0; z < pasteIds.size(); z++) {
+				String row = (reactionsIdRowMap.get(pasteIds.get(z))).toString();
+				int rowNum = Integer.valueOf(row);
+				pasteRows.add(rowNum);
+			}
+			System.out.println("paste rows" + pasteRows);
 			// if selected rows for paste > number of clipboard rows, need to paste
 			// clipboard rows repeatedly
-			if (numberOfClipboardRows() > 0 && reactionsTable.getSelectedRows().length > numberOfClipboardRows()) {
-				int quotient = reactionsTable.getSelectedRows().length/numberOfClipboardRows();
-				int remainder = reactionsTable.getSelectedRows().length%numberOfClipboardRows();
+			if (numberOfClipboardRows() > 0 && numSelectedRows > numberOfClipboardRows()) {
+				int quotient = numSelectedRows/numberOfClipboardRows();
+				int remainder = numSelectedRows%numberOfClipboardRows();
 				for (int q = 0; q < quotient; q++) {
 					String[] lines = pasteString.split("\n");
 					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
@@ -5329,28 +5373,36 @@ public class GraphicalInterface extends JFrame {
 							// fixes bug where if last cell in row is blank, will not
 							// paste blank value over cell value if not blank
 							if (q < quotient) {
-								for (int j=0 ; j < numberOfClipboardColumns(); j++) {									
-									if (j < cells.length) {
-										updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
-										if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-											if (validPaste) {
-												updateReactionPasteEquationMap(startRow+i, i);
-											}						
-										}
+								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+									if (startCol + cells.length > reactionsTable.getColumnCount()) {
+										showPasteOutOfRangeError();				
 									} else {
-										updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
-									} 				
+										if (j < cells.length) {
+											updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
+											if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+												if (validPaste) {
+													updateReactionPasteEquationMap(startRow+i, i);
+												}						
+											}
+										} else {
+											updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+										} 	
+									}								
 								}
 							}									
 						} else {
 							if (q < quotient) {
 								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-									updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
-									if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-										if (validPaste) {
-											updateReactionPasteEquationMap(startRow+i, i);
-										}						
-									}
+									if (startCol + j > reactionsTable.getColumnCount()) {
+										showPasteOutOfRangeError();			
+									} else {
+										updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+										if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+											if (validPaste) {
+												updateReactionPasteEquationMap(startRow+i, i);
+											}						
+										}
+									}									
 								}
 							}									
 						}							 
@@ -5361,72 +5413,80 @@ public class GraphicalInterface extends JFrame {
 				for (int m = 0; m < remainder; m++) {
 					//System.out.println("rem start" + startRow);
 					String[] lines = pasteString.split("\n");
-					if (m < lines.length) {
-						String[] cells = lines[m].split("\t"); 
-						for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-							if (j < cells.length) {
-								if (reactionsTable.getRowCount()>startRow+m && reactionsTable.getColumnCount()>startCol+j) { 
-									updateReactionsCellIfPasteValid(cells[j], startRow+m, startCol+j); 
-									if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-										if (validPaste) {
-											updateReactionPasteEquationMap(startRow+m, m);
-										}						
-									}
-								} 
-							} else {
-								if (reactionsTable.getRowCount()>startRow+m && reactionsTable.getColumnCount()>startCol+j) { 
-									updateReactionsCellIfPasteValid("", startRow+m, startCol+j);
-								} 										
-							} 
-						} 
-					} else {
-						for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-							updateReactionsCellIfPasteValid("", startRow+m, startCol+j);
-							if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-								if (validPaste) {
-									updateReactionPasteEquationMap(startRow+m, m);
-								}						
-							}
-						}
-					}
+					pasteReactionValues(m, lines, pasteRows, startIndex, startCol);
+//					if (m < lines.length) {
+//						String[] cells = lines[m].split("\t"); 
+//						for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+//							if (j < cells.length) {
+//								if (reactionsTable.getRowCount()>startRow+m && reactionsTable.getColumnCount()>startCol+j) { 
+//									updateReactionsCellIfPasteValid(cells[j], startRow+m, startCol+j); 
+//									if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+//										if (validPaste) {
+//											updateReactionPasteEquationMap(startRow+m, m);
+//										}						
+//									}
+//								} 
+//							} else {
+//								if (reactionsTable.getRowCount()>startRow+m && reactionsTable.getColumnCount()>startCol+j) { 
+//									updateReactionsCellIfPasteValid("", startRow+m, startCol+j);
+//								} 										
+//							} 
+//						} 
+//					} else {
+//						for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+//							updateReactionsCellIfPasteValid("", startRow+m, startCol+j);
+//							if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+//								if (validPaste) {
+//									updateReactionPasteEquationMap(startRow+m, m);
+//								}						
+//							}
+//						}
+//					}
 				}
 				// if selected rows for paste <= number of clipboard rows 	
 			} else {
 				String[] lines = pasteString.split("\n");
 				if (startRow + lines.length > reactionsTable.getRowCount()) {
-					System.out.println("Out of range error");
+					showPasteOutOfRangeError();
 				} else {
 					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
-						if (i < lines.length) {
-							String[] cells = lines[i].split("\t"); 
-							if (startCol + cells.length > reactionsTable.getColumnCount()) {
-								System.out.println("Out of range error");
-							} else {
-								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-									if (j < cells.length) {
-										updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
-										if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-											if (validPaste) {
-												updateReactionPasteEquationMap(startRow+i, i);
-											}						
-										}
-									} else {
-										updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
-									} 
-								}
-							}
-						} else {
-							for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-								updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
-								if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-									if (validPaste) {
-										updateReactionPasteEquationMap(startRow+i, i);
-									}						
-								}
-							}
-						}
+						pasteReactionValues(i, lines, pasteRows, startIndex, startCol);
 					} 
 				}
+//				if (startRow + lines.length > reactionsTable.getRowCount()) {
+//					System.out.println("Out of range error");
+//				} else {
+//					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
+//						if (i < lines.length) {
+//							String[] cells = lines[i].split("\t"); 
+//							if (startCol + cells.length > reactionsTable.getColumnCount()) {
+//								System.out.println("Out of range error");
+//							} else {
+//								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+//									if (j < cells.length) {
+//										updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
+//										if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+//											if (validPaste) {
+//												updateReactionPasteEquationMap(startRow+i, i);
+//											}						
+//										}
+//									} else {
+//										updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+//									} 
+//								}
+//							}
+//						} else {
+//							for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+//								updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+//								if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+//									if (validPaste) {
+//										updateReactionPasteEquationMap(startRow+i, i);
+//									}						
+//								}
+//							}
+//						}
+//					} 
+//				}
 			}
 			// if paste not valid, set old model
 			if (!validPaste) {
@@ -5449,6 +5509,10 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r)));
 				}
 				//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+				// reset sort column and order
+				setReactionsSortColumnIndex(sortColumnIndex);
+				setReactionsSortOrder(sortOrder);
+				setUpReactionsTable(newReactionsModel);
 			}
 		}				
 	}
@@ -5463,6 +5527,11 @@ public class GraphicalInterface extends JFrame {
 				for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 					if (j < cells.length) {
 						updateReactionsCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+						if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+							if (validPaste) {
+								updateReactionPasteEquationMap(pasteRows.get(startIndex + i), i);
+							}						
+						}
 					} else {
 						updateReactionsCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
 					} 
