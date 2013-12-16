@@ -731,6 +731,17 @@ public class GraphicalInterface extends JFrame {
 		return reactionsSortColumnIndex;
 	}
 
+	private static int reactionsOldSortColumnIndex;
+	
+	public static int getReactionsOldSortColumnIndex() {
+		return reactionsOldSortColumnIndex;
+	}
+
+	public static void setReactionsOldSortColumnIndex(
+			int reactionsOldSortColumnIndex) {
+		GraphicalInterface.reactionsOldSortColumnIndex = reactionsOldSortColumnIndex;
+	}
+
 	private static SortOrder reactionsSortOrder;
 
 	public void setReactionsSortOrder(SortOrder reactionsSortOrder){
@@ -739,6 +750,16 @@ public class GraphicalInterface extends JFrame {
 
 	public static SortOrder getReactionsSortOrder() {
 		return reactionsSortOrder;
+	}
+	
+	private static SortOrder reactionsOldSortOrder;
+
+	public static SortOrder getReactionsOldSortOrder() {
+		return reactionsOldSortOrder;
+	}
+
+	public static void setReactionsOldSortOrder(SortOrder reactionsOldSortOrder) {
+		GraphicalInterface.reactionsOldSortOrder = reactionsOldSortOrder;
 	}
 
 	/*****************************************************************************/
@@ -5360,8 +5381,8 @@ public class GraphicalInterface extends JFrame {
 			}		
 			System.out.println("paste ids" + pasteIds);
 			// save sort column and order
-			int sortColumnIndex = getReactionsSortColumnIndex();
-			SortOrder sortOrder = getReactionsSortOrder();
+			setReactionsOldSortColumnIndex(getReactionsSortColumnIndex());
+			setReactionsOldSortOrder(getReactionsSortOrder());
 			// unsort table to avoid sorting of pasted values that results in cells
 			// updated after sorted column populated with incorrect values
 			setSortDefault();
@@ -5511,6 +5532,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			// if paste not valid, set old model
 			if (!validPaste) {
+				restoreOldReactionsSort();
 				JOptionPane.showMessageDialog(null,                
 						getPasteError(),                
 						"Paste Error",                                
@@ -5531,8 +5553,8 @@ public class GraphicalInterface extends JFrame {
 				}
 				//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 				// reset sort column and order
-				setReactionsSortColumnIndex(sortColumnIndex);
-				setReactionsSortOrder(sortOrder);
+				setReactionsSortColumnIndex(getReactionsOldSortColumnIndex());
+				setReactionsSortOrder(getReactionsOldSortOrder());
 				setUpReactionsTable(newReactionsModel);
 			}
 		}				
@@ -5579,6 +5601,13 @@ public class GraphicalInterface extends JFrame {
 		//System.out.println(LocalConfig.getInstance().getReactionsUndoTableModelMap());
 	}
 
+	public void restoreOldReactionsSort() {
+		setReactionsSortColumnIndex(getReactionsOldSortColumnIndex());
+		setReactionsSortOrder(getReactionsOldSortOrder());
+		DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
+		setUpReactionsTable(model);
+	}
+	
 	public void updateReactionsCellIfPasteValid(String value, int row, int col) {
 		if (isReactionsEntryValid(row, col, value)) {
 			reactionsTable.setValueAt(value, row, col);	
@@ -5623,6 +5652,7 @@ public class GraphicalInterface extends JFrame {
 				setPasteError("Number format exception");
 				setReplaceAllError("Number format exception");
 				validPaste = false;
+				return false;
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.KO_COLUMN) {
 			if (value.compareTo("true") == 0 || value.compareTo("false") == 0) {
@@ -6430,8 +6460,6 @@ public class GraphicalInterface extends JFrame {
 			// save sort column and order
 			setMetabolitesOldSortColumnIndex(getMetabolitesSortColumnIndex());
 			setMetabolitesOldSortOrder(getMetabolitesSortOrder());
-//			int sortColumnIndex = getMetabolitesSortColumnIndex();
-//			SortOrder sortOrder = getMetabolitesSortOrder();
 			// unsort table to avoid sorting of pasted values that results in cells
 			// updated after sorted column populated with incorrect values
 			setSortDefault();
@@ -6522,8 +6550,6 @@ public class GraphicalInterface extends JFrame {
 				setUndoNewCollections(undoItem);
 				setUpMetabolitesUndo(undoItem);	
 				// reset sort column and order
-//				setMetabolitesSortColumnIndex(sortColumnIndex);
-//				setMetabolitesSortOrder(sortOrder);
 				setMetabolitesSortColumnIndex(getMetabolitesOldSortColumnIndex());
 				setMetabolitesSortOrder(getMetabolitesOldSortOrder());
 				setUpMetabolitesTable(newMetabolitesModel);
