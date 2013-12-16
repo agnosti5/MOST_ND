@@ -5563,6 +5563,7 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 				copyReactionsTableModels(newReactionsModel); 
+				undoItem.setId(Integer.valueOf(pasteIds.get(0)));
 				setUpReactionsUndo(undoItem);
 				// add pasted reactions to equation map
 				ArrayList<Object> keys = new ArrayList<Object>(LocalConfig.getInstance().getReactionPasteEquationMap().keySet());
@@ -5574,6 +5575,7 @@ public class GraphicalInterface extends JFrame {
 				setReactionsSortColumnIndex(getReactionsOldSortColumnIndex());
 				setReactionsSortOrder(getReactionsOldSortOrder());
 				setUpReactionsTable(newReactionsModel);
+				scrollToLocation(reactionsTable, getRowFromReactionsId(Integer.valueOf(pasteIds.get(0))), startCol);
 			}
 		}				
 	}
@@ -6444,8 +6446,6 @@ public class GraphicalInterface extends JFrame {
 			int startRow=metabolitesTable.getSelectedRows()[0]; 
 			int startCol=metabolitesTable.getSelectedColumns()[0];
 			int numSelectedRows = metabolitesTable.getSelectedRowCount(); 
-			int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(startRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
-			System.out.println("id" + id);
 			String pasteString = ""; 
 			try { 
 				pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
@@ -6568,11 +6568,13 @@ public class GraphicalInterface extends JFrame {
 				DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 				copyMetabolitesTableModels(newMetabolitesModel); 
 				setUndoNewCollections(undoItem);
+				undoItem.setId(Integer.valueOf(pasteIds.get(0)));
 				setUpMetabolitesUndo(undoItem);	
 				// reset sort column and order
 				setMetabolitesSortColumnIndex(getMetabolitesOldSortColumnIndex());
 				setMetabolitesSortOrder(getMetabolitesOldSortOrder());
-				setUpMetabolitesTable(newMetabolitesModel);
+				setUpMetabolitesTable(newMetabolitesModel);			
+				scrollToLocation(metabolitesTable, getRowFromMetabolitesId(Integer.valueOf(pasteIds.get(0))), startCol);
 			}
 		}		
 	}
@@ -7254,6 +7256,7 @@ public class GraphicalInterface extends JFrame {
 									reactionRedoAction(i);
 									DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 									setUpReactionsTable(model);
+									scrollRow = getRowFromReactionsId(id);
 								}  
 								updateUndoButton();
 								updateRedoButton();
@@ -7305,6 +7308,7 @@ public class GraphicalInterface extends JFrame {
 									metaboliteRedoAction(i);
 									DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 									setUpMetabolitesTable(model);
+									scrollRow = getRowFromMetabolitesId(id);
 								} 
 								updateUndoButton();
 								updateRedoButton();
@@ -7630,6 +7634,7 @@ public class GraphicalInterface extends JFrame {
 		boolean scroll = false;
 		int row = ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow();
 		int col = ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn();	    				
+		int id = ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getId();	    				
 		if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_ROW)) {
 			//row = redoAddRowScrollRow(reactionsTable);
 			redoAddReactionRow();
@@ -7651,15 +7656,16 @@ public class GraphicalInterface extends JFrame {
 		DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 		setUpReactionsTable(model);
 		tabbedPane.setSelectedIndex(0);
-		if (row > -1 && col > -1) {
-			scrollToLocation(reactionsTable, row, col);  					
-		}
-		if (scroll) {
-			if (row < 0) {
-				row = 0;
-			}
-			scrollToLocation(reactionsTable, row, col);
-		}
+//		if (row > -1 && col > -1) {
+//			scrollToLocation(reactionsTable, row, col);  					
+//		}
+//		if (scroll) {
+//			if (row < 0) {
+//				row = 0;
+//			}
+//			scrollToLocation(reactionsTable, row, col);
+//		}
+		scrollToLocation(reactionsTable, getRowFromReactionsId(id), col);
 		addReacColumn = false;
 	}
 
@@ -7667,8 +7673,8 @@ public class GraphicalInterface extends JFrame {
 		boolean scroll = true;
 		int row = ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow();
 		int col = ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn();	    	
+		int id = ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getId();	    	
 		if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_ROW)) {
-			//row = redoAddRowScrollRow(metabolitesTable);
 			redoAddMetaboliteRow();
 		}
 		if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
@@ -7682,15 +7688,16 @@ public class GraphicalInterface extends JFrame {
 		DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 		setUpMetabolitesTable(model);
 		tabbedPane.setSelectedIndex(1);
-		if (row > -1 && col > -1) {
-			scrollToLocation(metabolitesTable, row, col);				
-		}
-		if (scroll) {
-			if (row < 0) {
-				row = 0;
-			}
-			scrollToLocation(metabolitesTable, row, col);
-		}
+//		if (row > -1 && col > -1) {
+//			scrollToLocation(metabolitesTable, row, col);				
+//		}
+//		if (scroll) {
+//			if (row < 0) {
+//				row = 0;
+//			}
+//			scrollToLocation(metabolitesTable, row, col);
+//		}
+		scrollToLocation(metabolitesTable, getRowFromMetabolitesId(id), col);
 		addMetabColumn = false;
 	}
 

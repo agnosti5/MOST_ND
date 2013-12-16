@@ -350,7 +350,7 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	
 	public boolean redoEntry() {
-
+		
 		if (this.column == GraphicalInterfaceConstants.BOUNDARY_COLUMN) {
 			if (this.newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
 				this.newValue = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
