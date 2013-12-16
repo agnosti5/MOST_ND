@@ -700,6 +700,27 @@ public class GraphicalInterface extends JFrame {
 		return metabolitesSortOrder;
 	}
 
+	private static int metabolitesOldSortColumnIndex;
+	
+	public static int getMetabolitesOldSortColumnIndex() {
+		return metabolitesOldSortColumnIndex;
+	}
+
+	public static void setMetabolitesOldSortColumnIndex(
+			int metabolitesOldSortColumnIndex) {
+		GraphicalInterface.metabolitesOldSortColumnIndex = metabolitesOldSortColumnIndex;
+	}
+
+	private static SortOrder metabolitesOldSortOrder;
+	
+	public void setMetabolitesOldSortOrder(SortOrder metabolitesOldSortOrder){
+		GraphicalInterface.metabolitesOldSortOrder = metabolitesOldSortOrder;
+	}
+
+	public static SortOrder getMetabolitesOldSortOrder() {
+		return metabolitesOldSortOrder;
+	}
+	
 	private static int reactionsSortColumnIndex;
 
 	public void setReactionsSortColumnIndex(int reactionsSortColumnIndex){
@@ -6407,8 +6428,10 @@ public class GraphicalInterface extends JFrame {
 			}		
 			System.out.println("paste ids" + pasteIds);
 			// save sort column and order
-			int sortColumnIndex = getMetabolitesSortColumnIndex();
-			SortOrder sortOrder = getMetabolitesSortOrder();
+			setMetabolitesOldSortColumnIndex(getMetabolitesSortColumnIndex());
+			setMetabolitesOldSortOrder(getMetabolitesSortOrder());
+//			int sortColumnIndex = getMetabolitesSortColumnIndex();
+//			SortOrder sortOrder = getMetabolitesSortOrder();
 			// unsort table to avoid sorting of pasted values that results in cells
 			// updated after sorted column populated with incorrect values
 			setSortDefault();
@@ -6484,6 +6507,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			// if paste not valid, set old model
 			if (!validPaste) {
+				restoreOldMetabolitesSort();
 				JOptionPane.showMessageDialog(null,                
 						getPasteError(),                
 						"Paste Error",                                
@@ -6498,8 +6522,10 @@ public class GraphicalInterface extends JFrame {
 				setUndoNewCollections(undoItem);
 				setUpMetabolitesUndo(undoItem);	
 				// reset sort column and order
-				setMetabolitesSortColumnIndex(sortColumnIndex);
-				setMetabolitesSortOrder(sortOrder);
+//				setMetabolitesSortColumnIndex(sortColumnIndex);
+//				setMetabolitesSortOrder(sortOrder);
+				setMetabolitesSortColumnIndex(getMetabolitesOldSortColumnIndex());
+				setMetabolitesSortOrder(getMetabolitesOldSortOrder());
 				setUpMetabolitesTable(newMetabolitesModel);
 			}
 		}		
@@ -6541,11 +6567,19 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
 	}
 
+	public void restoreOldMetabolitesSort() {
+		setMetabolitesSortColumnIndex(getMetabolitesOldSortColumnIndex());
+		setMetabolitesSortOrder(getMetabolitesOldSortOrder());
+		DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
+		setUpMetabolitesTable(model);
+	}
+	
 	public void updateMetabolitesCellIfPasteValid(String value, int row, int col) {
 		int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));		
 		String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 		if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
+				restoreOldMetabolitesSort();
 				if (!participatingMessageShown) {
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_MESSAGE,                
@@ -6563,6 +6597,7 @@ public class GraphicalInterface extends JFrame {
 						System.out.println(mapValue);
 						System.out.println(metabolitesTable.getModel().getValueAt(mapValue, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN));
 						if (showDuplicatePrompt) {
+							restoreOldMetabolitesSort();
 							Object[] options = {"    Yes    ", "    No    ",};
 							int choice = JOptionPane.showOptionDialog(null, 
 									GraphicalInterfaceConstants.DUPLICATE_METABOLITE_PASTE_MESSAGE, 
@@ -6608,6 +6643,7 @@ public class GraphicalInterface extends JFrame {
 		} else if (col == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
 				if (!participatingMessageShown) {
+					restoreOldMetabolitesSort();
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_MESSAGE,                
 							GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_TITLE,                                
