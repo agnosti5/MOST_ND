@@ -3614,6 +3614,16 @@ public class GraphicalInterface extends JFrame {
 		int rowNum = Integer.valueOf(row);
 		reactionsTable.getModel().setValueAt(value, rowNum, col);
 	}
+	
+	public static void updateMetabolitesCellById(String value, int id, int col) {
+		Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < metabolitesTable.getRowCount(); i++) {
+			metabolitesIdRowMap.put((String) metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+		}
+		String row = (metabolitesIdRowMap.get(Integer.toString(id))).toString();
+		int rowNum = Integer.valueOf(row);
+		metabolitesTable.getModel().setValueAt(value, rowNum, col);
+	}
 
 	public void deleteMetabolitesRowById(int id) {
 		Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
@@ -4701,9 +4711,17 @@ public class GraphicalInterface extends JFrame {
 
 	// sets sorted by db id and ascending
 	public void setSortDefault() {
+		setReactionsSortDefault();
+		setMetabolitesSortDefault();
+	}
+	
+	public void setReactionsSortDefault() {
 		setReactionsSortColumnIndex(0);
-		setMetabolitesSortColumnIndex(0);
 		setReactionsSortOrder(SortOrder.ASCENDING);
+	}
+	
+	public void setMetabolitesSortDefault() {
+		setMetabolitesSortColumnIndex(0);
 		setMetabolitesSortOrder(SortOrder.ASCENDING);
 	}
 
@@ -5385,7 +5403,7 @@ public class GraphicalInterface extends JFrame {
 			setReactionsOldSortOrder(getReactionsSortOrder());
 			// unsort table to avoid sorting of pasted values that results in cells
 			// updated after sorted column populated with incorrect values
-			setSortDefault();
+			setReactionsSortDefault();
 			DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 			setUpReactionsTable(model);
 			// after unsorting - get rows corresponding to ids. Using ids will not work if
@@ -6426,6 +6444,8 @@ public class GraphicalInterface extends JFrame {
 			int startRow=metabolitesTable.getSelectedRows()[0]; 
 			int startCol=metabolitesTable.getSelectedColumns()[0];
 			int numSelectedRows = metabolitesTable.getSelectedRowCount(); 
+			int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(startRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+			System.out.println("id" + id);
 			String pasteString = ""; 
 			try { 
 				pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
@@ -6462,7 +6482,7 @@ public class GraphicalInterface extends JFrame {
 			setMetabolitesOldSortOrder(getMetabolitesSortOrder());
 			// unsort table to avoid sorting of pasted values that results in cells
 			// updated after sorted column populated with incorrect values
-			setSortDefault();
+			setMetabolitesSortDefault();
 			DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 			setUpMetabolitesTable(model);
 			// after unsorting - get rows corresponding to ids. Using ids will not work if
@@ -6603,6 +6623,7 @@ public class GraphicalInterface extends JFrame {
 	public void updateMetabolitesCellIfPasteValid(String value, int row, int col) {
 		int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));		
 		String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+		int viewRow = metabolitesTable.convertRowIndexToView(row);
 		if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
 				restoreOldMetabolitesSort();
@@ -6617,11 +6638,7 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				if (continuePasting) {
 					if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value)) {
-						System.out.println("contains" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-						System.out.println(value);
 						int mapValue = (int) LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().get(value);
-						System.out.println(mapValue);
-						System.out.println(metabolitesTable.getModel().getValueAt(mapValue, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN));
 						if (showDuplicatePrompt) {
 							restoreOldMetabolitesSort();
 							Object[] options = {"    Yes    ", "    No    ",};
@@ -6633,12 +6650,9 @@ public class GraphicalInterface extends JFrame {
 									null, options, options[0]);
 							if (choice == JOptionPane.YES_OPTION) {	
 								value = value + duplicateSuffix(value);
-								metabolitesTable.setValueAt(value, row, col);
-								//if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(metabAbbrev)) {
-									LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(metabAbbrev);
-								//}
+								updateMetabolitesCellById(value, id, col);
+								LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(metabAbbrev);
 								LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(value, id);
-								System.out.println("upd paste v " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 								showDuplicatePrompt = false;
 							}
 							if (choice == JOptionPane.NO_OPTION) {
@@ -6649,12 +6663,12 @@ public class GraphicalInterface extends JFrame {
 						} else {
 							if (duplicateMetabOK) {
 								value = value + duplicateSuffix(value);
-								metabolitesTable.setValueAt(value, row, col);
+								updateMetabolitesCellById(value, id, col);
+								//metabolitesTable.setValueAt(value, viewRow, col);
 								if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(metabAbbrev)) {
 									LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(metabAbbrev);
 								}
 								LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(value, id);
-								System.out.println("upd paste v2 " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 							}						
 						}
 					} else {
