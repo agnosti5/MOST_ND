@@ -47,6 +47,7 @@ public class GurobiSolver extends Solver {
 	private Class<?> modelClass;
 	private Object env = null;
 	private Object model = null;
+	private StringBuffer outputText = new StringBuffer();
 
 	private ArrayList<Object> vars = new ArrayList<Object>();
 
@@ -61,6 +62,7 @@ public class GurobiSolver extends Solver {
 
 	public GurobiSolver() {
 	//public GurobiSolver(String logName) {
+		outputText.append("Gurobi Solver constructor \n");
 		try {
 			//File gurobiJARFile = new File("C:\\gurobi500\\win64\\lib\\gurobi.jar");
 			if (classLoader == null || !gurobiPath.equals(GraphicalInterface.getGurobiPath())) {
@@ -69,10 +71,12 @@ public class GurobiSolver extends Solver {
 				classLoader = URLClassLoader.newInstance(new URL[]{ gurobiJARFile.toURI().toURL() });
 			}
 			grbClass = classLoader.loadClass("gurobi.GRB");
+			outputText.append("gurobi.GRB loaded \n");
 			
 			//log.debug("creating Gurobi environment");
 			
 			envClass = classLoader.loadClass("gurobi.GRBEnv");
+			outputText.append("gurobi.GRBEnv loaded \n");
 //			Constructor<?> envConstr = envClass.getConstructor(new Class[]{ String.class });
 //			env = envConstr.newInstance(new Object[]{ logName });
 			Constructor<?> envConstr = envClass.getConstructor(new Class[]{});
@@ -81,7 +85,9 @@ public class GurobiSolver extends Solver {
 			//log.debug("setting Gurobi parameters");
 			
 			Class<?> grbDoubleParam = classLoader.loadClass("gurobi.GRB$DoubleParam");
-			Class<?> grbIntParam = classLoader.loadClass("gurobi.GRB$IntParam");	
+			outputText.append("gurobi.GRB$DoubleParam loaded \n");
+			Class<?> grbIntParam = classLoader.loadClass("gurobi.GRB$IntParam");
+			outputText.append("gurobi.GRB$IntParam loaded \n");
 			Enum[] grbDoubleParamConstants = (Enum[]) grbDoubleParam.getEnumConstants();
 			Enum[] grbIntParamConstants = (Enum[]) grbIntParam.getEnumConstants();
 			Method envSetDoubleMethod = envClass.getMethod("set", new Class[]{ grbDoubleParam, double.class });
@@ -109,6 +115,7 @@ public class GurobiSolver extends Solver {
 			//log.debug("creating Gurobi Model");
 			
 			modelClass = classLoader.loadClass("gurobi.GRBModel");
+			outputText.append("gurobi.GRBModel loaded \n");
 			Constructor<?> modelConstr = modelClass.getConstructor(new Class[]{ envClass });
 		    model = modelConstr.newInstance(new Object[]{ env });
 			
@@ -302,8 +309,10 @@ public class GurobiSolver extends Solver {
 
 	@Override
 	public double optimize() {
-		final StringBuffer outputText = new StringBuffer();
+		outputText.append("optimize \n");
 		if (model == null) {
+			outputText.append("model is null \n");
+			writeLogFile(outputText);
 			return Double.NaN;
 		}
 					
@@ -311,35 +320,12 @@ public class GurobiSolver extends Solver {
 			outputText.append(LocalConfig.getInstance().getModelName() + "\n");
 //			Callback logic
 			Method modelGetVarsMethod = modelClass.getMethod("getVars", null);
-			outputText.append("modelGetVarsMethod " + modelGetVarsMethod.getName() + "\n");
-			outputText.append("model " + model.toString() + "\n");
 			final Object[] vars = (Object[]) modelGetVarsMethod.invoke(model, null);
-			outputText.append("vars " + vars.toString() + "\n");
 	
 			final Class<?> grbCallbackClass = classLoader.loadClass("gurobi.GRBCallback");
-			outputText.append("grbCallbackClass " + grbCallbackClass.getName() + "\n");
+			outputText.append("gurobi.GRBCallback loaded \n");
 			final Class<?> grbVarClass = classLoader.loadClass("gurobi.GRBVar");
-			outputText.append("grbVarClass " + grbVarClass.getName() + "\n");
-			
-			Writer writer = null;
-			try {
-				File file = new File("gurobiSolver.log");
-				writer = new BufferedWriter(new FileWriter(file));
-				writer.write(outputText.toString());
-
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (writer != null) {
-						writer.close();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			outputText.append("gurobi.GRBVar loaded \n");
 			
 			ProxyFactory factory = new ProxyFactory();
 			factory.setSuperclass(grbCallbackClass);
@@ -373,6 +359,7 @@ public class GurobiSolver extends Solver {
 							ClassLoader classLoader = grbCallbackClass.getClassLoader();
 
 							Class grbClass = classLoader.loadClass("gurobi.GRB");
+							outputText.append("gurobi.GRB loaded \n");
 							Field[] asdf = grbClass.getDeclaredFields();
 							
 							Field whereField = grbCallbackClass.getDeclaredField("where");
@@ -413,6 +400,7 @@ public class GurobiSolver extends Solver {
 //			modelWriteMethod.invoke(model, new Object[]{ "model.mps" });
 			
 			Class<?> grbDoubleAttr = classLoader.loadClass("gurobi.GRB$DoubleAttr");
+			outputText.append("gurobi.GRB$DoubleAttr loaded \n");
 				
 			Enum[] grbDoubleAttrConstants = (Enum[]) grbDoubleAttr.getEnumConstants();
 			Enum objValAttr = null;
@@ -423,6 +411,7 @@ public class GurobiSolver extends Solver {
 				}
 			
 			Method modelGetMethod = modelClass.getMethod("get", new Class[]{ grbDoubleAttr });
+			writeLogFile(outputText);
 			return (double) modelGetMethod.invoke(model, new Object[]{ objValAttr });
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | ClassNotFoundException | InstantiationException e) {
 			// TODO Auto-generated catch block
@@ -430,6 +419,7 @@ public class GurobiSolver extends Solver {
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
+		outputText.append("return NaN \n");
 		
 		return Double.NaN;
 	}
@@ -566,6 +556,28 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
+		}
+	}
+	
+	public void writeLogFile(StringBuffer outputText) {
+		Writer writer = null;
+		try {
+			File file = new File("gurobiSolver.log");
+			writer = new BufferedWriter(new FileWriter(file));
+			writer.write(outputText.toString());
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (writer != null) {
+					writer.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
