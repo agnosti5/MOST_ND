@@ -480,6 +480,8 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem deleteReactionRowMenuItem = new JMenuItem("Delete Row(s)");
 	public final JMenuItem deleteMetaboliteRowMenuItem = new JMenuItem("Delete Row(s)");
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
+	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
+	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
 
 	public final JMenuItem formulaBarCutItem = new JMenuItem("Cut");
 	public final JMenuItem formulaBarCopyItem = new JMenuItem("Copy");
@@ -1644,6 +1646,30 @@ public class GraphicalInterface extends JFrame {
 		metaboliteColAddRenameInterface.okButton.addActionListener(addMetabColOKButtonActionListener);
 		metaboliteColAddRenameInterface.cancelButton.addActionListener(addMetabColCancelButtonActionListener);
 
+		editMenu.addSeparator(); 
+		
+		editMenu.add(unsortReacMenuItem);
+		unsortReacMenuItem.setMnemonic(KeyEvent.VK_T);
+		
+		unsortReacMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				setReactionsSortDefault();
+				DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
+				setUpReactionsTable(model);
+			}
+		});
+		
+		editMenu.add(unsortMetabMenuItem);
+		unsortMetabMenuItem.setMnemonic(KeyEvent.VK_A);
+		
+		unsortMetabMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				setMetabolitesSortDefault();
+				DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
+				setUpMetabolitesTable(model);
+			}
+		});
+		
 		menuBar.add(editMenu);
 
 		JMenu optionsMenu = new JMenu("Options");
