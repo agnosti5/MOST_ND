@@ -1650,14 +1650,17 @@ public class GraphicalInterface extends JFrame {
 		
 		editMenu.add(unsortReacMenuItem);
 		unsortReacMenuItem.setMnemonic(KeyEvent.VK_T);
+		unsortReacMenuItem.setEnabled(false);
 		
 		unsortReacMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				setReactionsSortDefault();
 				
+				unsortReacMenuItem.setEnabled(false);
 				int id = 0;
 				if (reactionsTable.getSelectedRow() > -1) {
-					id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(reactionsTable.getSelectedRow(), GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+					int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
+					id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 				}
 				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), id, UndoConstants.UNSORT, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				LocalConfig.getInstance().getReactionsSortColumns().add(0);
@@ -1670,19 +1673,23 @@ public class GraphicalInterface extends JFrame {
 				
 				DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 				setUpReactionsTable(model);
+				tabbedPane.setSelectedIndex(0);
 			}
 		});
 		
 		editMenu.add(unsortMetabMenuItem);
 		unsortMetabMenuItem.setMnemonic(KeyEvent.VK_A);
+		unsortMetabMenuItem.setEnabled(false);
 		
 		unsortMetabMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				setMetabolitesSortDefault();
 				
+				unsortMetabMenuItem.setEnabled(false);
 				int id = 0;
 				if (metabolitesTable.getSelectedRow() > -1) {
-					id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(metabolitesTable.getSelectedRow(), GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
+					id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));					
 				}
 				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), id, UndoConstants.UNSORT, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 				setUndoOldCollections(undoItem);
@@ -1696,6 +1703,7 @@ public class GraphicalInterface extends JFrame {
 				
 				DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 				setUpMetabolitesTable(model);
+				tabbedPane.setSelectedIndex(1);
 			}
 		});
 		
@@ -2401,7 +2409,7 @@ public class GraphicalInterface extends JFrame {
 		public void actionPerformed(ActionEvent ae) {	
 			csvLoadInterface.setVisible(false);
 			csvLoadInterface.dispose();	
-			loadSetUp();
+			//loadSetUp();
 			//isCSVFile = true;
 			loadCSV();
 		}
@@ -2453,6 +2461,7 @@ public class GraphicalInterface extends JFrame {
 			getMetaboliteColumnNameInterface().getColumnIndices();
 			setFileType("csv");
 
+			loadSetUp();
 			TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
 			if (getMetaboliteColumnNameInterface().validColumns) {
 				getMetaboliteColumnNameInterface().setVisible(false);
@@ -2525,6 +2534,9 @@ public class GraphicalInterface extends JFrame {
 			listModel.clear();
 			setFileType("csv");
 
+			if (!LocalConfig.getInstance().hasMetabolitesFile) {
+				loadSetUp();
+			}			
 			TextReactionsModelReader reader = new TextReactionsModelReader();
 			reader.load(LocalConfig.getInstance().getReactionsCSVFile());	
 			setUpReactionsTable(reader.getReactionsTableModel());
@@ -3735,8 +3747,10 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setMetabolitesLocationsListCount(0);		
 		// default selection mode cells only
 		setUpCellSelectionMode();
+		unsortReacMenuItem.setEnabled(false);
+		unsortMetabMenuItem.setEnabled(false);
 	}
-
+	
 	public void setUpMetabolitesTable(DefaultTableModel model) {
 		metabolitesTable.setModel(model);
 		setMetabolitesTableLayout();
@@ -4139,13 +4153,14 @@ public class GraphicalInterface extends JFrame {
 	// after editing and updating database
 	class ReactionsColumnHeaderListener extends MouseAdapter {
 		public void mouseClicked(MouseEvent evt) {
-			int r = reactionsTable.getSortedColumnIndex();
+			int r = reactionsTable.getSortedColumnIndex();			
 			// bug: mouse listener sets multiple undo items for one event at times
 			// this fix works
 			if (r != getReactionsSortColumnIndex() || reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()) != getReactionsSortOrder()) {
 				int id = 0;
 				if (reactionsTable.getSelectedRow() > -1) {
-					id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(reactionsTable.getSelectedRow(), GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+					int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());	
+					id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 				}
 				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), id, UndoConstants.SORT, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				LocalConfig.getInstance().getReactionsSortColumns().add(r);
@@ -4155,6 +4170,7 @@ public class GraphicalInterface extends JFrame {
 				undoItem.setOldSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 2));
 				undoItem.setNewSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 1));
 				setUpReactionsUndo(undoItem);
+				unsortReacMenuItem.setEnabled(true);
 			}
 			setReactionsSortColumnIndex(r);
 			setReactionsSortOrder(reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()));
@@ -4511,7 +4527,8 @@ public class GraphicalInterface extends JFrame {
 			if (m != getMetabolitesSortColumnIndex() || metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()) != getMetabolitesSortOrder()) {
 				int id = 0;
 				if (metabolitesTable.getSelectedRow() > -1) {
-					id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(metabolitesTable.getSelectedRow(), GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
+					id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
 				}
 				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), id, UndoConstants.SORT, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 				setUndoOldCollections(undoItem);
@@ -4522,6 +4539,7 @@ public class GraphicalInterface extends JFrame {
 				undoItem.setOldSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 2));
 				undoItem.setNewSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 1));
 				setUpMetabolitesUndo(undoItem);
+				unsortMetabMenuItem.setEnabled(true);
 			}
 			setMetabolitesSortColumnIndex(m);
 			setMetabolitesSortOrder(metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()));
