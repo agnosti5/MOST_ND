@@ -25,6 +25,7 @@ public class UndoConstants {
 	
 	// sort
 	public static final String SORT = "Sort";
+	public static final String UNSORT = "Unsort";
 	
 	public static final String REACTION_UNDO_ITEM_TYPE = "reactions";
 	public static final String METABOLITE_UNDO_ITEM_TYPE = "metabolites";

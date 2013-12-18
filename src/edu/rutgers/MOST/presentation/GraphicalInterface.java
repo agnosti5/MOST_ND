@@ -1654,6 +1654,20 @@ public class GraphicalInterface extends JFrame {
 		unsortReacMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				setReactionsSortDefault();
+				
+				int id = 0;
+				if (reactionsTable.getSelectedRow() > -1) {
+					id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(reactionsTable.getSelectedRow(), GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+				}
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), id, UndoConstants.UNSORT, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				LocalConfig.getInstance().getReactionsSortColumns().add(0);
+				LocalConfig.getInstance().getReactionsSortOrderList().add(reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()));
+				undoItem.setOldSortColumnIndex(LocalConfig.getInstance().getReactionsSortColumns().get(LocalConfig.getInstance().getReactionsSortColumns().size() - 2));
+				undoItem.setNewSortColumnIndex(LocalConfig.getInstance().getReactionsSortColumns().get(LocalConfig.getInstance().getReactionsSortColumns().size() - 1));
+				undoItem.setOldSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 2));
+				undoItem.setNewSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 1));
+				setUpReactionsUndo(undoItem);
+				
 				DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 				setUpReactionsTable(model);
 			}
@@ -1665,6 +1679,21 @@ public class GraphicalInterface extends JFrame {
 		unsortMetabMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				setMetabolitesSortDefault();
+				
+				int id = 0;
+				if (metabolitesTable.getSelectedRow() > -1) {
+					id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(metabolitesTable.getSelectedRow(), GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+				}
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), id, UndoConstants.UNSORT, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				setUndoOldCollections(undoItem);
+				LocalConfig.getInstance().getMetabolitesSortColumns().add(0);
+				LocalConfig.getInstance().getMetabolitesSortOrderList().add(metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()));
+				undoItem.setOldSortColumnIndex(LocalConfig.getInstance().getMetabolitesSortColumns().get(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 2));
+				undoItem.setNewSortColumnIndex(LocalConfig.getInstance().getMetabolitesSortColumns().get(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 1));
+				undoItem.setOldSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 2));
+				undoItem.setNewSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 1));
+				setUpMetabolitesUndo(undoItem);
+				
 				DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 				setUpMetabolitesTable(model);
 			}
@@ -4114,14 +4143,18 @@ public class GraphicalInterface extends JFrame {
 			// bug: mouse listener sets multiple undo items for one event at times
 			// this fix works
 			if (r != getReactionsSortColumnIndex() || reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()) != getReactionsSortOrder()) {
-				  ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), 1, UndoConstants.SORT, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-				  LocalConfig.getInstance().getReactionsSortColumns().add(r);
-				  LocalConfig.getInstance().getReactionsSortOrderList().add(reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()));
-				  undoItem.setOldSortColumnIndex(LocalConfig.getInstance().getReactionsSortColumns().get(LocalConfig.getInstance().getReactionsSortColumns().size() - 2));
-				  undoItem.setNewSortColumnIndex(LocalConfig.getInstance().getReactionsSortColumns().get(LocalConfig.getInstance().getReactionsSortColumns().size() - 1));
-				  undoItem.setOldSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 2));
-				  undoItem.setNewSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 1));
-				  setUpReactionsUndo(undoItem);
+				int id = 0;
+				if (reactionsTable.getSelectedRow() > -1) {
+					id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(reactionsTable.getSelectedRow(), GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+				}
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), id, UndoConstants.SORT, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				LocalConfig.getInstance().getReactionsSortColumns().add(r);
+				LocalConfig.getInstance().getReactionsSortOrderList().add(reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()));
+				undoItem.setOldSortColumnIndex(LocalConfig.getInstance().getReactionsSortColumns().get(LocalConfig.getInstance().getReactionsSortColumns().size() - 2));
+				undoItem.setNewSortColumnIndex(LocalConfig.getInstance().getReactionsSortColumns().get(LocalConfig.getInstance().getReactionsSortColumns().size() - 1));
+				undoItem.setOldSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 2));
+				undoItem.setNewSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 1));
+				setUpReactionsUndo(undoItem);
 			}
 			setReactionsSortColumnIndex(r);
 			setReactionsSortOrder(reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()));
@@ -4476,15 +4509,19 @@ public class GraphicalInterface extends JFrame {
 			// bug: mouse listener sets multiple undo items
 			// this fix works
 			if (m != getMetabolitesSortColumnIndex() || metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()) != getMetabolitesSortOrder()) {
-				  MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 1, UndoConstants.SORT, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-				  setUndoOldCollections(undoItem);
-				  LocalConfig.getInstance().getMetabolitesSortColumns().add(m);
-				  LocalConfig.getInstance().getMetabolitesSortOrderList().add(metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()));
-				  undoItem.setOldSortColumnIndex(LocalConfig.getInstance().getMetabolitesSortColumns().get(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 2));
-				  undoItem.setNewSortColumnIndex(LocalConfig.getInstance().getMetabolitesSortColumns().get(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 1));
-				  undoItem.setOldSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 2));
-				  undoItem.setNewSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 1));
-				  setUpMetabolitesUndo(undoItem);
+				int id = 0;
+				if (metabolitesTable.getSelectedRow() > -1) {
+					id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(metabolitesTable.getSelectedRow(), GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+				}
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), id, UndoConstants.SORT, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				setUndoOldCollections(undoItem);
+				LocalConfig.getInstance().getMetabolitesSortColumns().add(m);
+				LocalConfig.getInstance().getMetabolitesSortOrderList().add(metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()));
+				undoItem.setOldSortColumnIndex(LocalConfig.getInstance().getMetabolitesSortColumns().get(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 2));
+				undoItem.setNewSortColumnIndex(LocalConfig.getInstance().getMetabolitesSortColumns().get(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 1));
+				undoItem.setOldSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 2));
+				undoItem.setNewSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 1));
+				setUpMetabolitesUndo(undoItem);
 			}
 			setMetabolitesSortColumnIndex(m);
 			setMetabolitesSortOrder(metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()));
@@ -7584,14 +7621,14 @@ public class GraphicalInterface extends JFrame {
     	setUpMetabolitesTable(model);
     	LocalConfig.getInstance().getRedoItemMap().put(redoCount, LocalConfig.getInstance().getUndoItemMap().get(index));
     	redoCount += 1;		
-    	if (((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT)) {
+    	if (((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT) ||
+    			((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.UNSORT)) {
     		setMetabolitesSortColumnIndex(((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getOldSortColumnIndex());
     		setMetabolitesSortOrder(((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getOldSortOrder());
     		LocalConfig.getInstance().getMetabolitesRedoSortColumns().add(getMetabolitesSortColumnIndex());
     		LocalConfig.getInstance().getMetabolitesRedoSortOrderList().add(getMetabolitesSortOrder());
     		LocalConfig.getInstance().getMetabolitesSortColumns().remove(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 1);
     		LocalConfig.getInstance().getMetabolitesSortOrderList().remove(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 1);
-    		//DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
     		setUpMetabolitesTable(model);
     	}
     	LocalConfig.getInstance().getUndoItemMap().remove(index);
@@ -7606,14 +7643,14 @@ public class GraphicalInterface extends JFrame {
     	setUpReactionsTable(model);
     	LocalConfig.getInstance().getRedoItemMap().put(redoCount, LocalConfig.getInstance().getUndoItemMap().get(index));    	
     	redoCount += 1;		
-    	if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT)) {
+    	if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT) ||
+    			((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.UNSORT)) {
     		setReactionsSortColumnIndex(((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getOldSortColumnIndex());
     		setReactionsSortOrder(((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getOldSortOrder());
     		LocalConfig.getInstance().getReactionsRedoSortColumns().add(getReactionsSortColumnIndex());
     		LocalConfig.getInstance().getReactionsRedoSortOrderList().add(getReactionsSortOrder());
     		LocalConfig.getInstance().getReactionsSortColumns().remove(LocalConfig.getInstance().getReactionsSortColumns().size() - 1);
     		LocalConfig.getInstance().getReactionsSortOrderList().remove(LocalConfig.getInstance().getReactionsSortOrderList().size() - 1);
-    		//DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
     		setUpReactionsTable(model);
     	} 
     	ArrayList<Integer> deleteMetabRows = new ArrayList<Integer>();
@@ -7731,7 +7768,8 @@ public class GraphicalInterface extends JFrame {
     	((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).redo();     	
     	LocalConfig.getInstance().getUndoItemMap().put(undoCount, LocalConfig.getInstance().getRedoItemMap().get(index));
     	//undoCount += 1;
-    	if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT)) {
+    	if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT) ||
+    			((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getUndoType().equals(UndoConstants.UNSORT)) {
     		setMetabolitesSortColumnIndex(((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getNewSortColumnIndex());
     		setMetabolitesSortOrder(((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getNewSortOrder());
     		LocalConfig.getInstance().getMetabolitesSortColumns().add(getMetabolitesSortColumnIndex());
@@ -7751,7 +7789,8 @@ public class GraphicalInterface extends JFrame {
     	((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).redo();  
     	LocalConfig.getInstance().getUndoItemMap().put(undoCount, LocalConfig.getInstance().getRedoItemMap().get(index));    	
     	//undoCount += 1;
-    	if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT)) {
+    	if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT) ||
+    			((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getUndoType().equals(UndoConstants.UNSORT)) {
     		setReactionsSortColumnIndex(((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getNewSortColumnIndex());
     		setReactionsSortOrder(((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getNewSortOrder());
     		LocalConfig.getInstance().getReactionsSortColumns().add(getReactionsSortColumnIndex());

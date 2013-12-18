@@ -202,6 +202,8 @@ public class ReactionUndoItem implements UndoItem {
 			undoDescription = UndoConstants.CLEAR_CONTENTS;	
 		} else if (this.undoType.equals(UndoConstants.SORT)) {
 			undoDescription = UndoConstants.SORT;
+		} else if (this.undoType.equals(UndoConstants.UNSORT)) {
+			undoDescription = UndoConstants.UNSORT;	
 		}
 		return undoDescription + UndoConstants.REACTION_UNDO_SUFFIX;
 	}

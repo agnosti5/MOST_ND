@@ -240,6 +240,8 @@ public class MetaboliteUndoItem implements UndoItem {
 			undoDescription = UndoConstants.CLEAR_CONTENTS;	
 		} else if (this.undoType.equals(UndoConstants.SORT)) {
 			undoDescription = UndoConstants.SORT;
+		} else if (this.undoType.equals(UndoConstants.UNSORT)) {
+			undoDescription = UndoConstants.UNSORT;	
 		} else if (this.undoType.equals(UndoConstants.DELETE_UNUSED)) {
 			undoDescription = UndoConstants.DELETE_UNUSED;	
 		} else if (this.undoType.equals(UndoConstants.RENAME_METABOLITE)) {
