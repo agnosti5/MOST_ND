@@ -109,6 +109,7 @@ public class GraphicalInterface extends JFrame {
 	static Logger log = Logger.getLogger(GraphicalInterface.class);
 
 	public static JToolBar toolbar = new JToolBar("Toolbar", JToolBar.HORIZONTAL);
+	public static JButton savebutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.SAVE_ICON_IMAGE_PATH));
 	public static JButton copybutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.COPY_ICON_IMAGE_PATH));
 	public static JButton pastebutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.PASTE_ICON_IMAGE_PATH));
 	public static JButton findbutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.FIND_ICON_IMAGE_PATH));
@@ -264,6 +265,7 @@ public class GraphicalInterface extends JFrame {
 	public boolean saveFile;
 	public boolean saveSBML;
 	public boolean enterPressed;
+	public boolean saveDisabled;
 	// close
 	public static boolean exit;
 
@@ -461,6 +463,7 @@ public class GraphicalInterface extends JFrame {
 	/*****************************************************************************/
 
 	public final JMenuItem loadExistingItem = new JMenuItem(GraphicalInterfaceConstants.LOAD_FROM_MODEL_COLLECTION_TABLE_TITLE);
+	public final JMenuItem saveItem = new JMenuItem("Save");
 	public final JMenuItem saveSBMLItem = new JMenuItem("Save As SBML");
 	public final JMenuItem saveCSVMetabolitesItem = new JMenuItem("Save As CSV Metabolites");
 	public final JMenuItem saveCSVReactionsItem = new JMenuItem("Save As CSV Reactions");
@@ -1154,8 +1157,12 @@ public class GraphicalInterface extends JFrame {
 
 		modelMenu.addSeparator();
 
+		modelMenu.add(saveItem);
+		saveItem.setMnemonic(KeyEvent.VK_S);
+		saveItem.addActionListener(new SaveItemAction());
+		
 		modelMenu.add(saveSBMLItem);
-		saveSBMLItem.setMnemonic(KeyEvent.VK_S);
+		saveSBMLItem.setMnemonic(KeyEvent.VK_B);
 		saveSBMLItem.addActionListener(new SaveSBMLItemAction());
 
 		modelMenu.add(saveCSVMetabolitesItem);
@@ -1779,6 +1786,13 @@ public class GraphicalInterface extends JFrame {
 		//set up toolbar
 		/**************************************************************************/			
 
+		toolbar.add(savebutton);
+		setUpToolbarButton(savebutton);
+		savebutton.setToolTipText("Save");
+		savebutton.addActionListener(saveButtonActionListener);
+		
+		toolbar.addSeparator();
+		
 		toolbar.add(copybutton);
 		setUpToolbarButton(copybutton);
 		copybutton.setToolTipText("Copy");
@@ -2366,7 +2380,7 @@ public class GraphicalInterface extends JFrame {
 					} else {
 						listModel.clear();						
 						DynamicTreePanel.treePanel.clear();
-						setFileType("sbml");
+						setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
 						String filename;
 						if (rawFilename.endsWith(".xml")) {
 							filename = rawFilename.substring(0, rawFilename.length() - 4);
@@ -2382,6 +2396,7 @@ public class GraphicalInterface extends JFrame {
 
 						task = new Task();
 						task.execute();
+						saveDisabled = false;
 					}
 				}
 			}			
@@ -2459,7 +2474,7 @@ public class GraphicalInterface extends JFrame {
 	ActionListener okButtonCSVMetabLoadActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			getMetaboliteColumnNameInterface().getColumnIndices();
-			setFileType("csv");
+			setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 
 			loadSetUp();
 			TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
@@ -2473,6 +2488,7 @@ public class GraphicalInterface extends JFrame {
 				if (LocalConfig.getInstance().hasReactionsFile) {
 					loadReactionColumnNameInterface();
 				} else {
+					saveDisabled = false;
 					DefaultTableModel blankReacModel = createBlankReactionsTableModel();
 					setUpReactionsTable(blankReacModel);
 					LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), blankReacModel);
@@ -2532,11 +2548,12 @@ public class GraphicalInterface extends JFrame {
 
 			DynamicTreePanel.treePanel.clear();
 			listModel.clear();
-			setFileType("csv");
+			setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 
 			if (!LocalConfig.getInstance().hasMetabolitesFile) {
 				loadSetUp();
-			}			
+			}
+			saveDisabled = false;
 			TextReactionsModelReader reader = new TextReactionsModelReader();
 			reader.load(LocalConfig.getInstance().getReactionsCSVFile());	
 			setUpReactionsTable(reader.getReactionsTableModel());
@@ -2585,6 +2602,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
+	// need path in settings to prevent overwriting
 	ActionListener modelCollectionOKButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {			
 			if (!modelCollectionOKButtonClicked) {
@@ -2592,19 +2610,28 @@ public class GraphicalInterface extends JFrame {
 					loadSetUp();
 					listModel.clear();
 					DynamicTreePanel.treePanel.clear();
-					setFileType("sbml");
-					String path = getModelCollectionTable().getPath();
-					File file = new File(path);
-					setSBMLFile(file);
-					LocalConfig.getInstance().setModelName(getModelCollectionTable().getFileName());
-					LocalConfig.getInstance().setProgress(0);
-					progressBar.setVisible(true);
+					saveDisabled = true;
+					saveItem.setEnabled(false);
+					savebutton.setEnabled(false);
+					if (getModelCollectionTable().getFileType().equals(GraphicalInterfaceConstants.SBML_FILE_TYPE)) {
+						setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
+						String path = getModelCollectionTable().getPath();
+						File file = new File(path);
+						setSBMLFile(file);
+						LocalConfig.getInstance().setModelName(getModelCollectionTable().getFileName());
+						LocalConfig.getInstance().setProgress(0);
+						progressBar.setVisible(true);
 
-					timer.start();
+						timer.start();
 
-					task = new Task();
-					task.execute();
-
+						task = new Task();
+						task.execute();
+					} else if (getModelCollectionTable().getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE)) {
+						setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
+						// currently there are no csv files in the table, but if added in the future
+						// add loading code here
+					}
+					
 					loadExistingItem.setEnabled(true);
 
 					modelCollectionOKButtonClicked = true;					
@@ -2627,33 +2654,64 @@ public class GraphicalInterface extends JFrame {
 	//save methods and actions
 	/*******************************************************************************/
 
+	class SaveItemAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			saveLoadedFile();
+		}
+	} 
+	
+	public void saveLoadedFile() {
+		if (getFileType().equals(GraphicalInterfaceConstants.SBML_FILE_TYPE)) {
+			if (curSettings.get("LastSBML") != null) {
+				System.out.println(curSettings.get("LastSBML"));
+				// do not show file chooser
+				//saveAsSBML();
+			} else {
+				// show file chooser
+			}
+		} else if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE)) {
+			// will need a last csv metabolites and last csv reactions in settings
+			//curSettings.get("LastCSV")
+			if (tabbedPane.getSelectedIndex() == 0) {
+				
+			} else if (tabbedPane.getSelectedIndex() == 1) {
+				
+			}
+		} 
+	}
+	
+	public void saveAsSBML() {
+		saveFile = true;
+		saveSBML = true;
+		try {
+			JSBMLWriter jWrite = new JSBMLWriter();
+
+			jWrite.formConnect(LocalConfig.getInstance());
+			if (jWrite.load) {
+				setSBMLFile(jWrite.getOutFile());
+				String modelName = jWrite.getOutFile().getName();
+				
+				if (modelName.endsWith(".xml")) {
+					modelName = modelName.substring(0, modelName.length() - 4);
+				}
+				LocalConfig.getInstance().setModelName(modelName);
+				LocalConfig.getInstance().setProgress(0);
+				progressBar.setVisible(true);
+
+				timer.start();
+				task = new Task();
+				task.execute();
+				saveDisabled = false;
+			}				
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	
 	class SaveSBMLItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			saveFile = true;
-			saveSBML = true;
-			try {
-				JSBMLWriter jWrite = new JSBMLWriter();
-
-				jWrite.formConnect(LocalConfig.getInstance());
-				if (jWrite.load) {
-					setSBMLFile(jWrite.getOutFile());
-					String modelName = jWrite.getOutFile().getName();
-					
-					if (modelName.endsWith(".xml")) {
-						modelName = modelName.substring(0, modelName.length() - 4);
-					}
-					LocalConfig.getInstance().setModelName(modelName);
-					LocalConfig.getInstance().setProgress(0);
-					progressBar.setVisible(true);
-
-					timer.start();
-					task = new Task();
-					task.execute();
-				}				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
+			saveAsSBML();
 		}
 	}
 
@@ -2665,6 +2723,7 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void saveMetabolitesTextFile(String path, String filename) {
+		saveDisabled = false;
 		TextMetabolitesWriter writer = new TextMetabolitesWriter();
 		writer.write(path);	
 		if (filename.endsWith(".csv")) {
@@ -2737,7 +2796,7 @@ public class GraphicalInterface extends JFrame {
 						}       		    	  
 					} else {
 						done = true;
-
+						
 						saveMetabolitesTextFile(path, filename);
 					}
 				}			                  	  
@@ -2770,6 +2829,7 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void saveReactionsTextFile(String path, String filename) {
+		saveDisabled = false;
 		TextReactionsWriter writer = new TextReactionsWriter();
 		writer.write(path);		
 		if (filename.endsWith(".csv")) {
@@ -3811,6 +3871,10 @@ public class GraphicalInterface extends JFrame {
 		setSortDefault();
 		setUpCellSelectionMode();		
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());
+		if (!saveDisabled) {
+			saveItem.setEnabled(true);
+			savebutton.setEnabled(true);
+		}
 	}
 
 	public void setBooleanDefaults() {
@@ -7941,6 +8005,12 @@ public class GraphicalInterface extends JFrame {
 		});
 	}
 
+	ActionListener saveButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			saveLoadedFile();
+		}
+	};
+	
 	ActionListener copyButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (tabbedPane.getSelectedIndex() == 0) {
@@ -9000,8 +9070,10 @@ public class GraphicalInterface extends JFrame {
 		// unused metabolite id's for deletion from table
 		for (int i = 0; i < idList.size(); i++) {						
 			if (!usedList.contains(idList.get(i))) {
-				int id = (Integer) idMap.get(idList.get(i));
-				unusedList.add(id); 
+				if (idMap.get(idList.get(i)) != null) {
+					int id = (Integer) idMap.get(idList.get(i));
+					unusedList.add(id); 
+				}				
 			}
 		}
 		LocalConfig.getInstance().setUnusedList(unusedList);

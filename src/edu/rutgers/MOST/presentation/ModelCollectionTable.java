@@ -48,7 +48,7 @@ class ModelCollectionTable
 	public static JButton okButton = new JButton("  OK  ");
 	public static JButton cancelButton = new JButton("Cancel");
 	
-	public String fileName;
+	private String fileName;
 
 	public String getFileName() {
 		return fileName;
@@ -58,7 +58,7 @@ class ModelCollectionTable
 		this.fileName = fileName;
 	}
 
-	public String path;
+	private String path;
 
 	public String getPath() {
 		return path;
@@ -68,6 +68,16 @@ class ModelCollectionTable
 		this.path = path;
 	}
 	
+	private String fileType;
+	
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+
 	// Constructor of main frame
 	public ModelCollectionTable(File file)
 	{
@@ -210,8 +220,10 @@ class ModelCollectionTable
 				String ending = "";
 				String type = (table.getModel().getValueAt(table.getSelectedRow(), 8)).toString();
 				if (type.equals("sbml")) {
+					setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
 					ending = ".xml";
 				} else if (type.equals("csv")) {
+					setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 					ending = "._mtb.csv";
 				}
 				setFileName(filename);
