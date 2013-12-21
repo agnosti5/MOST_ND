@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;  
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
    
 // based on code from http://www.coderanch.com/t/344723/GUI/java/JDialog-resize
 public class ResizableDialog extends javax.swing.JDialog  
@@ -12,64 +14,92 @@ public class ResizableDialog extends javax.swing.JDialog
     /**
 	 * 
 	 */
-	
-//	JCheckBox AddRemoveCheckBox;  
-    JPanel ButtonPanel;  
-    JButton OKButton;  
-    JButton DetailsButton;
-    JPanel StuffPanel;  
+	 
+	private JPanel LabelPanel;
+    private JPanel ButtonPanel;  
+    private JButton OKButton;  
+    private JButton DetailsButton;
+    private JPanel MessagePanel;  
+    private JLabel Label;
     public boolean messageShown;
+    
+    private String errorTitle;
+
+	public String getErrorTitle() {
+		return errorTitle;
+	}
+
+	public void setErrorTitle(String errorTitle) {
+		this.errorTitle = errorTitle;
+	}
+
+	private String errorDescription;
 	
+	public String getErrorDescription() {
+		return errorDescription;
+	}
+
+	public void setErrorDescription(String errorDescription) {
+		this.errorDescription = errorDescription;
+	}
+
+	private String errorMessage;
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
 	private static final long serialVersionUID = 1L;
 	public ResizableDialog()  
     {  
         super();  
         initComponents();  
-        setVisible(true);  
     }  
                            
     private void initComponents()  
     {  
+    	setErrorTitle("Error");
+    	setErrorDescription("Testing a long, long, long, long error message");
+    	setErrorMessage("Testing\nTesting");
+    	
     	messageShown = false;
-//        StuffPanel = new javax.swing.JPanel();  
-//        AddRemoveCheckBox = new javax.swing.JCheckBox();  
+    	LabelPanel = new javax.swing.JPanel(); 
+    	Label = new javax.swing.JLabel(); 
         ButtonPanel = new javax.swing.JPanel();  
         OKButton = new javax.swing.JButton();  
         DetailsButton = new javax.swing.JButton();  
-        StuffPanel = new javax.swing.JPanel();  
-//        AddRemoveCheckBox = new javax.swing.JCheckBox(); 
+        MessagePanel = new javax.swing.JPanel();       
+              
+        getRootPane().setDefaultButton(OKButton);
+        
+        setTitle(getErrorTitle());
+        Label.setText(getErrorDescription());
    
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);  
-//        AddRemoveCheckBox.setText("Add Stuff!");  
-//        AddRemoveCheckBox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));  
-//        AddRemoveCheckBox.setMargin(new java.awt.Insets(0, 0, 0, 0));  
-//        AddRemoveCheckBox.addItemListener(new java.awt.event.ItemListener()  
-//        {  
-//            public void itemStateChanged(java.awt.event.ItemEvent evt)  
-//            {  
-//                AddRemoveCheckBoxItemStateChanged(evt);  
-//            }  
-//        });  
    
-//        StuffPanel.add(AddRemoveCheckBox);  
+        LabelPanel.add(Label);
+        getContentPane().add(LabelPanel, java.awt.BorderLayout.NORTH); 
+        getContentPane().add(MessagePanel, java.awt.BorderLayout.SOUTH);  
    
-        getContentPane().add(StuffPanel, java.awt.BorderLayout.SOUTH);  
+        ButtonPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));  
    
-        ButtonPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));  
-   
-        OKButton.setText("OK");  
+        OKButton.setText("  OK  ");  
         OKButton.addActionListener(new ActionListener()  
         {  
             public void actionPerformed(ActionEvent evt)  
             {  
-            	System.out.println("ok");
             	setVisible(false); 
             }  
         });  
    
         ButtonPanel.add(OKButton);
         
-        DetailsButton.setText("Details >>");  
+        DetailsButton.setText("Details >>"); 
+        DetailsButton.setMnemonic(KeyEvent.VK_D);
         DetailsButton.addActionListener(new java.awt.event.ActionListener()  
         {  
             public void actionPerformed(java.awt.event.ActionEvent evt)  
@@ -77,23 +107,24 @@ public class ResizableDialog extends javax.swing.JDialog
             	// Add or remove some stuff!  
                 if(!messageShown) {
                 	TextArea textArea = new TextArea();
-                	StuffPanel.add(textArea);
+                	MessagePanel.add(textArea);
                 	DetailsButton.setText("<< Details");
+                	textArea.setText(getErrorMessage());
                 	messageShown = true;
                 } else {
                 	DetailsButton.setText("Details >>");
-                	Component[] oldStuff = StuffPanel.getComponents();  
-                    for( Component c : oldStuff )  
+                	Component[] old = MessagePanel.getComponents();  
+                    for( Component c : old )  
                     {   
                         if( c instanceof TextArea )  
                         {  
-                            StuffPanel.remove(c);  
+                        	MessagePanel.remove(c);  
                         } 
                     } 
                     messageShown = false;
                 }
                               
-                // resize with the new stuff!  
+                // resize with the new components  
                 pack();   
             }  
         });  
@@ -103,46 +134,17 @@ public class ResizableDialog extends javax.swing.JDialog
         getContentPane().add(ButtonPanel, java.awt.BorderLayout.CENTER);  
    
         pack();  
-    }  
-   
-//    private void AddRemoveCheckBoxItemStateChanged(java.awt.event.ItemEvent evt)                                                     
-//    {                                                         
-//        // Add or remove some stuff!  
-//        if( AddRemoveCheckBox.isSelected() )  
-//        {  
-//        	TextArea textArea = new TextArea();
-//        	StuffPanel.add(textArea);
-//        	DetailsButton.setText("<< Details");
-//        	// add stuff  
-//            for( int i = 0; i < 10; i++ )  
-//            {   
-////            	JLabel temp = new JLabel("New Stuff " + i);  
-////              StuffPanel.add(temp);  
-//            }  
-//        }  
-//        else  
-//        {  
-//            // remove the stuff  
-//            Component[] oldStuff = StuffPanel.getComponents();  
-//            for( Component c : oldStuff )  
-//            {  
-////                if( c instanceof JLabel )  
-////                {  
-////                    StuffPanel.remove(c);  
-////                }  
-//                if( c instanceof TextArea )  
-//                {  
-//                    StuffPanel.remove(c);  
-//                } 
-//            }  
-//        }  
-//          
-//        // resize with the new stuff!  
-//        pack();  
-//    }                                                                                                  
+    }                                                                                                  
     
     public static void main(String[] args) {
+    	final ArrayList<Image> icons = new ArrayList<Image>(); 
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+    	
     	ResizableDialog r = new ResizableDialog();
+    	r.setIconImages(icons);
+    	r.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    	r.setLocationRelativeTo(null);
     	r.setVisible(true);
     }
 }  
