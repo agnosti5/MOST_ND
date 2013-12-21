@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -416,6 +418,9 @@ public class GurobiSolver extends Solver {
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | ClassNotFoundException | InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			errors.toString();
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -580,4 +585,5 @@ public class GurobiSolver extends Solver {
 			}
 		}
 	}
+
 }
