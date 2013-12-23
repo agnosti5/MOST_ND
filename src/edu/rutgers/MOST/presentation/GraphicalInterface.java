@@ -9040,21 +9040,28 @@ public class GraphicalInterface extends JFrame {
 	public void createUnusedMetabolitesList() {
 		Map<String, Object> idMap = LocalConfig.getInstance().getMetaboliteAbbreviationIdMap();
 
-		ArrayList<String> usedList = new ArrayList<String>(LocalConfig.getInstance().getMetaboliteUsedMap().keySet());
-		ArrayList<String> idList = new ArrayList<String>(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().keySet());
-		ArrayList<Integer> unusedList = new ArrayList<Integer>();
-		// removes unused metabolites from idMap and populates list of
-		// unused metabolite id's for deletion from table
-		for (int i = 0; i < idList.size(); i++) {						
-			if (!usedList.contains(idList.get(i))) {
-				if (idMap.get(idList.get(i)) != null) {
-					int id = (Integer) idMap.get(idList.get(i));
-					unusedList.add(id); 
-				}				
+		try {
+			ArrayList<String> usedList = new ArrayList<String>(LocalConfig.getInstance().getMetaboliteUsedMap().keySet());
+			ArrayList<String> idList = new ArrayList<String>(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().keySet());
+			ArrayList<Integer> unusedList = new ArrayList<Integer>();
+			// removes unused metabolites from idMap and populates list of
+			// unused metabolite id's for deletion from table
+			for (int i = 0; i < idList.size(); i++) {						
+				if (!usedList.contains(idList.get(i))) {
+					try {
+						int id = (Integer) idMap.get(idList.get(i));
+						unusedList.add(id); 
+					} catch (Throwable t) {
+						ResizableDialog d = new ResizableDialog();
+					}								
+				}
 			}
+			LocalConfig.getInstance().setUnusedList(unusedList);
+			//System.out.println("unused" + unusedList);
+		} catch (Throwable t) {
+			
 		}
-		LocalConfig.getInstance().setUnusedList(unusedList);
-		//System.out.println("unused" + unusedList);
+		
 	}
 
 	public void deleteItemFromDynamicTree() {
