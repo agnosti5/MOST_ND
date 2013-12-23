@@ -168,6 +168,8 @@ public class ResizableDialog extends JDialog
     	textArea.setEditable(false);
 
     	final JPopupMenu popupMenu = new JPopupMenu(); 
+    	copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		selectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		popupMenu.add(copyItem);
 		copyItem.setEnabled(true);
 		copyItem.addActionListener(new ActionListener() {

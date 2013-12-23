@@ -101,6 +101,10 @@ public class FindReplaceDialog extends JDialog {
         findBox.setEditable(true);
         final JTextField findField = (JTextField)findBox.getEditor().getEditorComponent();
         final JPopupMenu findPopupMenu = new JPopupMenu();
+        findCutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        findCopyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        findPasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        findSelectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
         findPopupMenu.add(findCutItem);
         findPopupMenu.add(findCopyItem);
         findPopupMenu.add(findPasteItem);
@@ -178,6 +182,10 @@ public class FindReplaceDialog extends JDialog {
         replaceBox.setEditable(true);
         final JTextField replaceField = (JTextField)replaceBox.getEditor().getEditorComponent();
         final JPopupMenu replacePopupMenu = new JPopupMenu();
+        replaceCutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        replaceCopyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        replacePasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        replaceSelectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
         replacePopupMenu.add(replaceCutItem);
         replacePopupMenu.add(replaceCopyItem);
         replacePopupMenu.add(replacePasteItem);

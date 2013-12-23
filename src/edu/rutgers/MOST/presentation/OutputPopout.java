@@ -64,7 +64,9 @@ public class OutputPopout extends JFrame {
 		setLocationRelativeTo(null);
 		setVisible(true);
 		
-		final JPopupMenu outputPopupMenu = new JPopupMenu(); 
+		final JPopupMenu outputPopupMenu = new JPopupMenu();
+		outputCopyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		outputSelectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		outputPopupMenu.add(outputCopyItem);
 		outputCopyItem.setEnabled(false);
 		outputCopyItem.addActionListener(new ActionListener() {

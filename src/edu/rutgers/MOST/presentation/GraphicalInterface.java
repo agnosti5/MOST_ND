@@ -1067,6 +1067,7 @@ public class GraphicalInterface extends JFrame {
 		final JPopupMenu outputPopupMenu = new JPopupMenu(); 
 		outputPopupMenu.add(outputCopyItem);
 		outputCopyItem.setEnabled(false);
+		outputCopyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
 		outputCopyItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
 				setClipboardContents(outputTextArea.getSelectedText());							
@@ -1074,6 +1075,7 @@ public class GraphicalInterface extends JFrame {
 		});
 		outputPopupMenu.add(outputSelectAllItem);
 		outputSelectAllItem.setEnabled(false);
+		outputSelectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		outputSelectAllItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				outputTextArea.selectAll();							
@@ -2056,7 +2058,7 @@ public class GraphicalInterface extends JFrame {
 					formulaBarCutItem.setEnabled(true);
 					formulaBarCopyItem.setEnabled(true);
 					formulaBarDeleteItem.setEnabled(true);
-					formulaBarSelectAllItem.setEnabled(true);
+					formulaBarSelectAllItem.setEnabled(true);				
 				} else {
 					formulaBarCutItem.setEnabled(false);
 					formulaBarCopyItem.setEnabled(false);
@@ -2145,6 +2147,10 @@ public class GraphicalInterface extends JFrame {
 		});
 
 		final JPopupMenu formulaBarPopupMenu = new JPopupMenu(); 
+		formulaBarCutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+		formulaBarCopyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		formulaBarPasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+		formulaBarSelectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		formulaBarPopupMenu.add(formulaBarCutItem);
 		formulaBarPopupMenu.add(formulaBarCopyItem);
 		formulaBarPopupMenu.add(formulaBarPasteItem);
