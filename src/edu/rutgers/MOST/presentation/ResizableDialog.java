@@ -33,9 +33,6 @@ public class ResizableDialog extends JDialog
     private JLabel Label;
     public boolean messageShown;
     
-    private final JMenuItem copyItem = new JMenuItem("Copy");
-	private final JMenuItem selectAllItem = new JMenuItem("Select All");
-    
     private String errorTitle;
 
 	public String getErrorTitle() {
@@ -66,19 +63,21 @@ public class ResizableDialog extends JDialog
 		this.errorMessage = errorMessage;
 	}
 
+    
+    private final JMenuItem copyItem = new JMenuItem("Copy");
+	private final JMenuItem selectAllItem = new JMenuItem("Select All");
+
 	private static final long serialVersionUID = 1L;
-	public ResizableDialog()  
-    {  
-        super();  
-        initComponents();  
+	public ResizableDialog(String errorTitle, String errorDescription, String errorMessage) 
+    {   
+        initComponents(errorTitle, errorDescription, errorMessage); 
     }  
                            
-    private void initComponents()  
-    {  
-    	setErrorTitle("Error");
-    	setErrorDescription("Testing a long, long, long, long error message");
-    	setErrorMessage("Testing\nTesting\nTesting\nTesting");
-    	
+    private void initComponents(String errorTitle, String errorDescription, String errorMessage)  
+    {   	
+    	setErrorTitle(errorTitle);
+    	setErrorDescription(errorDescription);
+    	setErrorMessage(errorMessage);
     	messageShown = false;
     	LabelPanel = new JPanel(); 
     	Label = new JLabel(); 
@@ -89,8 +88,8 @@ public class ResizableDialog extends JDialog
               
         getRootPane().setDefaultButton(OKButton);
         
-        setTitle(getErrorTitle());
-        Label.setText(getErrorDescription());
+        setTitle(errorTitle);
+        Label.setText(errorDescription);
    
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);  
         
@@ -117,10 +116,12 @@ public class ResizableDialog extends JDialog
         {  
             public void actionPerformed(ActionEvent evt)  
             {  
+            	setTitle(getErrorTitle());
+            	Label.setText(getErrorDescription());
             	// Add or remove some stuff!  
                 if(!messageShown) {
                 	JTextArea textArea = createTextArea();
-                	//JTextArea textArea = new JTextArea();
+                	//JTextArea textArea = new JTextArea();                	                	
                 	DetailsButton.setText("<< Details");
                 	textArea.setText(getErrorMessage());
                 	//add reaction field to scroll pane		
@@ -265,7 +266,8 @@ public class ResizableDialog extends JDialog
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
     	
-    	ResizableDialog r = new ResizableDialog();
+    	ResizableDialog r = new ResizableDialog("Error", "Error message", "Testing\nTesting\nTesting\nTesting");
+    	
     	r.setIconImages(icons);
     	r.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     	r.setLocationRelativeTo(null);

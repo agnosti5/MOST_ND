@@ -1,10 +1,13 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Image;
 import java.io.File;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
@@ -100,6 +103,19 @@ public class Utilities {
 				return defaultPath;
 			}
 		}
+	}
+	
+	public void showResizableDialog(String errorTitle, String errorDescription, String errorMessage) {
+		final ArrayList<Image> icons = new ArrayList<Image>(); 
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+		
+		ResizableDialog r = new ResizableDialog(errorTitle, errorDescription, errorMessage);
+		
+		r.setIconImages(icons);
+    	//r.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    	r.setLocationRelativeTo(null);
+    	r.setVisible(true);
 	}
 	
 }

@@ -790,6 +790,8 @@ public class GraphicalInterface extends JFrame {
 	public Integer selectedMetabolitesColumnEndIndex;
 
 	public GraphicalInterface() {
+		System.out.println("max memory " + java.lang.Runtime.getRuntime().freeMemory());
+		
 		// make this true only when troubleshooting, false for actual use
 		//showIdColumn = true;
 		showIdColumn = false;
@@ -9052,16 +9054,19 @@ public class GraphicalInterface extends JFrame {
 						int id = (Integer) idMap.get(idList.get(i));
 						unusedList.add(id); 
 					} catch (Throwable t) {
-						ResizableDialog d = new ResizableDialog();
+						System.out.println("Error");
+//						Utilities u = new Utilities();
+//						u.showResizableDialog("Error", "Error", "errorMessage");
 					}								
 				}
 			}
 			LocalConfig.getInstance().setUnusedList(unusedList);
 			//System.out.println("unused" + unusedList);
 		} catch (Throwable t) {
-			
-		}
-		
+			System.out.println("Error");
+//			Utilities u = new Utilities();
+//			u.showResizableDialog("Error", "Error", "errorMessage");
+		}		
 	}
 
 	public void deleteItemFromDynamicTree() {
@@ -9660,7 +9665,7 @@ public class GraphicalInterface extends JFrame {
 	/******************************************************************************/
 	// end Gurobi path methods
 	/******************************************************************************/
-
+	
 	public static void main(String[] args) throws Exception {
 		curSettings = new SettingsFactory();
 
