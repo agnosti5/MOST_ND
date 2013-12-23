@@ -5521,227 +5521,164 @@ public class GraphicalInterface extends JFrame {
 			pasteOutOfRangeErrorShown = false;
 			// start at first item of pasteId's;
 			int startIndex = 0;
-			int startRow = 0;
-			int startCol = 1;
+		    // this prevents paste menu item and paste button from throwing null pointer exception if
+			// pressed when no cell is selected. if this is done, nothing happens. may want to gray out
 			if (reactionsTable.getSelectedRows().length > 0 && reactionsTable.getSelectedColumns().length > 0) {
-				startRow =reactionsTable.getSelectedRows()[0]; 
-				startCol =reactionsTable.getSelectedColumns()[0];
-			} 
-			
-			int numSelectedRows = reactionsTable.getSelectedRowCount(); 
-			String pasteString = ""; 
-			try { 
-				pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
-			} catch (Exception e1) { 
-				JOptionPane.showMessageDialog(null, "Invalid Paste Type", "Invalid Paste Type", JOptionPane.ERROR_MESSAGE);
-				return; 
-			}
-			// copy model so old model can be restored if paste not valid
-			DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
-			copyReactionsTableModels(oldReactionsModel);
-			ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
-			ArrayList<String> pasteIds = new ArrayList<String>();
-			int numPasteRows = 0;
-			// this allows selecting one row for paste even if many rows are copied
-			// and pastes the whole clipboard contents
-			if (numSelectedRows < numberOfClipboardRows()) {
-				for (int y = 0; y < numberOfClipboardRows(); y++) {
-					if (startRow + y < reactionsTable.getRowCount()) {
-						int viewRow = reactionsTable.convertRowIndexToModel(startRow + y);
+				int startRow =reactionsTable.getSelectedRows()[0]; 
+				int startCol =reactionsTable.getSelectedColumns()[0];
+				int numSelectedRows = reactionsTable.getSelectedRowCount(); 
+				String pasteString = ""; 
+				try { 
+					pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
+				} catch (Exception e1) { 
+					JOptionPane.showMessageDialog(null, "Invalid Paste Type", "Invalid Paste Type", JOptionPane.ERROR_MESSAGE);
+					return; 
+				}
+				// copy model so old model can be restored if paste not valid
+				DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
+				copyReactionsTableModels(oldReactionsModel);
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
+				ArrayList<String> pasteIds = new ArrayList<String>();
+				int numPasteRows = 0;
+				// this allows selecting one row for paste even if many rows are copied
+				// and pastes the whole clipboard contents
+				if (numSelectedRows < numberOfClipboardRows()) {
+					for (int y = 0; y < numberOfClipboardRows(); y++) {
+						if (startRow + y < reactionsTable.getRowCount()) {
+							int viewRow = reactionsTable.convertRowIndexToModel(startRow + y);
+							pasteIds.add((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+						}
+					}
+				} else {
+					for (int y = 0; y < numSelectedRows; y++) {
+						int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRows()[y]);
 						pasteIds.add((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 					}
+				}		
+				System.out.println("paste ids" + pasteIds);
+				// save sort column and order
+				setReactionsOldSortColumnIndex(getReactionsSortColumnIndex());
+				setReactionsOldSortOrder(getReactionsSortOrder());
+				// unsort table to avoid sorting of pasted values that results in cells
+				// updated after sorted column populated with incorrect values
+				setReactionsSortDefault();
+				DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
+				setUpReactionsTable(model);
+				// after unsorting - get rows corresponding to ids. Using ids will not work if
+				// any rows are deleted, and updating each cell by id will take too long -
+				// O(n) for each cell updated vs O(1)
+				ArrayList<Integer> pasteRows = new ArrayList<Integer>();
+				Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+				for (int i = 0; i < reactionsTable.getRowCount(); i++) {
+					reactionsIdRowMap.put((String) reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
 				}
-			} else {
-				for (int y = 0; y < numSelectedRows; y++) {
-					int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRows()[y]);
-					pasteIds.add((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+				for (int z = 0; z < pasteIds.size(); z++) {
+					String row = (reactionsIdRowMap.get(pasteIds.get(z))).toString();
+					int rowNum = Integer.valueOf(row);
+					pasteRows.add(rowNum);
 				}
-			}		
-			System.out.println("paste ids" + pasteIds);
-			// save sort column and order
-			setReactionsOldSortColumnIndex(getReactionsSortColumnIndex());
-			setReactionsOldSortOrder(getReactionsSortOrder());
-			// unsort table to avoid sorting of pasted values that results in cells
-			// updated after sorted column populated with incorrect values
-			setReactionsSortDefault();
-			DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
-			setUpReactionsTable(model);
-			// after unsorting - get rows corresponding to ids. Using ids will not work if
-			// any rows are deleted, and updating each cell by id will take too long -
-			// O(n) for each cell updated vs O(1)
-			ArrayList<Integer> pasteRows = new ArrayList<Integer>();
-			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
-			for (int i = 0; i < reactionsTable.getRowCount(); i++) {
-				reactionsIdRowMap.put((String) reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
-			}
-			for (int z = 0; z < pasteIds.size(); z++) {
-				String row = (reactionsIdRowMap.get(pasteIds.get(z))).toString();
-				int rowNum = Integer.valueOf(row);
-				pasteRows.add(rowNum);
-			}
-			System.out.println("paste rows" + pasteRows);
-			// if selected rows for paste > number of clipboard rows, need to paste
-			// clipboard rows repeatedly
-			if (numberOfClipboardRows() > 0 && numSelectedRows > numberOfClipboardRows()) {
-				int quotient = numSelectedRows/numberOfClipboardRows();
-				int remainder = numSelectedRows%numberOfClipboardRows();
-				for (int q = 0; q < quotient; q++) {
-					String[] lines = pasteString.split("\n");
-					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
-						if (i < lines.length) {
-							String[] cells = lines[i].split("\t");
-							// fixes bug where if last cell in row is blank, will not
-							// paste blank value over cell value if not blank
-							if (q < quotient) {
-								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-									if (startCol + cells.length > reactionsTable.getColumnCount()) {
-										showPasteOutOfRangeError();				
-									} else {
-										if (j < cells.length) {
-											updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
+				System.out.println("paste rows" + pasteRows);
+				// if selected rows for paste > number of clipboard rows, need to paste
+				// clipboard rows repeatedly
+				if (numberOfClipboardRows() > 0 && numSelectedRows > numberOfClipboardRows()) {
+					int quotient = numSelectedRows/numberOfClipboardRows();
+					int remainder = numSelectedRows%numberOfClipboardRows();
+					for (int q = 0; q < quotient; q++) {
+						String[] lines = pasteString.split("\n");
+						for (int i=0 ; i<numberOfClipboardRows(); i++) { 
+							if (i < lines.length) {
+								String[] cells = lines[i].split("\t");
+								// fixes bug where if last cell in row is blank, will not
+								// paste blank value over cell value if not blank
+								if (q < quotient) {
+									for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+										if (startCol + cells.length > reactionsTable.getColumnCount()) {
+											showPasteOutOfRangeError();				
+										} else {
+											if (j < cells.length) {
+												updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
+												if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+													if (validPaste) {
+														updateReactionPasteEquationMap(startRow+i, i);
+													}						
+												}
+											} else {
+												updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+											} 	
+										}								
+									}
+								}									
+							} else {
+								if (q < quotient) {
+									for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+										if (startCol + j > reactionsTable.getColumnCount()) {
+											showPasteOutOfRangeError();			
+										} else {
+											updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
 											if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 												if (validPaste) {
 													updateReactionPasteEquationMap(startRow+i, i);
 												}						
 											}
-										} else {
-											updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
-										} 	
-									}								
-								}
-							}									
-						} else {
-							if (q < quotient) {
-								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-									if (startCol + j > reactionsTable.getColumnCount()) {
-										showPasteOutOfRangeError();			
-									} else {
-										updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
-										if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-											if (validPaste) {
-												updateReactionPasteEquationMap(startRow+i, i);
-											}						
-										}
-									}									
-								}
-							}									
-						}							 
+										}									
+									}
+								}									
+							}							 
+						}
+						startRow += numberOfClipboardRows();
+						//System.out.println("start" + startRow);
 					}
-					startRow += numberOfClipboardRows();
-					//System.out.println("start" + startRow);
-				}
-				for (int m = 0; m < remainder; m++) {
-					//System.out.println("rem start" + startRow);
-					String[] lines = pasteString.split("\n");
-					pasteReactionValues(m, lines, pasteRows, startIndex, startCol);
-//					if (m < lines.length) {
-//						String[] cells = lines[m].split("\t"); 
-//						for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-//							if (j < cells.length) {
-//								if (reactionsTable.getRowCount()>startRow+m && reactionsTable.getColumnCount()>startCol+j) { 
-//									updateReactionsCellIfPasteValid(cells[j], startRow+m, startCol+j); 
-//									if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-//										if (validPaste) {
-//											updateReactionPasteEquationMap(startRow+m, m);
-//										}						
-//									}
-//								} 
-//							} else {
-//								if (reactionsTable.getRowCount()>startRow+m && reactionsTable.getColumnCount()>startCol+j) { 
-//									updateReactionsCellIfPasteValid("", startRow+m, startCol+j);
-//								} 										
-//							} 
-//						} 
-//					} else {
-//						for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-//							updateReactionsCellIfPasteValid("", startRow+m, startCol+j);
-//							if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-//								if (validPaste) {
-//									updateReactionPasteEquationMap(startRow+m, m);
-//								}						
-//							}
-//						}
-//					}
-				}
-				// if selected rows for paste <= number of clipboard rows 	
-			} else {
-				String[] lines = pasteString.split("\n");
-				if (startRow + lines.length > reactionsTable.getRowCount()) {
-					showPasteOutOfRangeError();
+					for (int m = 0; m < remainder; m++) {
+						//System.out.println("rem start" + startRow);
+						String[] lines = pasteString.split("\n");
+						pasteReactionValues(m, lines, pasteRows, startIndex, startCol);
+					}
+					// if selected rows for paste <= number of clipboard rows 	
 				} else {
-					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
-						pasteReactionValues(i, lines, pasteRows, startIndex, startCol);
-					} 
+					String[] lines = pasteString.split("\n");
+					if (startRow + lines.length > reactionsTable.getRowCount()) {
+						showPasteOutOfRangeError();
+					} else {
+						for (int i=0 ; i<numberOfClipboardRows(); i++) { 
+							pasteReactionValues(i, lines, pasteRows, startIndex, startCol);
+						} 
+					}
 				}
-//				if (startRow + lines.length > reactionsTable.getRowCount()) {
-//					System.out.println("Out of range error");
-//				} else {
-//					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
-//						if (i < lines.length) {
-//							String[] cells = lines[i].split("\t"); 
-//							if (startCol + cells.length > reactionsTable.getColumnCount()) {
-//								System.out.println("Out of range error");
-//							} else {
-//								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-//									if (j < cells.length) {
-//										updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
-//										if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-//											if (validPaste) {
-//												updateReactionPasteEquationMap(startRow+i, i);
-//											}						
-//										}
-//									} else {
-//										updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
-//									} 
-//								}
-//							}
-//						} else {
-//							for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-//								updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
-//								if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-//									if (validPaste) {
-//										updateReactionPasteEquationMap(startRow+i, i);
-//									}						
-//								}
-//							}
-//						}
-//					} 
-//				}
-			}
-			// if paste not valid, set old model
-			if (!validPaste) {
-				restoreOldReactionsSort();
-				JOptionPane.showMessageDialog(null,                
-						getPasteError(),                
-						"Paste Error",                                
-						JOptionPane.ERROR_MESSAGE);
-				setUpReactionsTable(oldReactionsModel);
-				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), oldReactionsModel);
-				deleteReactionsPasteUndoItem();
-				//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
-				validPaste = true;
-			} else {
-				DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
-				copyReactionsTableModels(newReactionsModel);
-				if (pasteIds.size() > 0) {
-					undoItem.setId(Integer.valueOf(pasteIds.get(0)));
-				}				
-				setUpReactionsUndo(undoItem);
-				// add pasted reactions to equation map
-				ArrayList<Object> keys = new ArrayList<Object>(LocalConfig.getInstance().getReactionPasteEquationMap().keySet());
-				for (int r = 0; r < keys.size(); r++) {
-					LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r)));
+				// if paste not valid, set old model
+				if (!validPaste) {
+					restoreOldReactionsSort();
+					JOptionPane.showMessageDialog(null,                
+							getPasteError(),                
+							"Paste Error",                                
+							JOptionPane.ERROR_MESSAGE);
+					setUpReactionsTable(oldReactionsModel);
+					LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), oldReactionsModel);
+					deleteReactionsPasteUndoItem();
+					//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+					validPaste = true;
+				} else {
+					DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
+					copyReactionsTableModels(newReactionsModel);
+					if (pasteIds.size() > 0) {
+						undoItem.setId(Integer.valueOf(pasteIds.get(0)));
+					}				
+					setUpReactionsUndo(undoItem);
+					// add pasted reactions to equation map
+					ArrayList<Object> keys = new ArrayList<Object>(LocalConfig.getInstance().getReactionPasteEquationMap().keySet());
+					for (int r = 0; r < keys.size(); r++) {
+						LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r)));
+					}
+					//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+					// reset sort column and order
+					setReactionsSortColumnIndex(getReactionsOldSortColumnIndex());
+					setReactionsSortOrder(getReactionsOldSortOrder());
+					setUpReactionsTable(newReactionsModel);
+					if (pasteIds.size() > 0) {
+						scrollToLocation(reactionsTable, getRowFromReactionsId(Integer.valueOf(pasteIds.get(0))), startCol);
+					}				
 				}
-				//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
-				// reset sort column and order
-				setReactionsSortColumnIndex(getReactionsOldSortColumnIndex());
-				setReactionsSortOrder(getReactionsOldSortOrder());
-				setUpReactionsTable(newReactionsModel);
-				if (pasteIds.size() > 0) {
-					scrollToLocation(reactionsTable, getRowFromReactionsId(Integer.valueOf(pasteIds.get(0))), startCol);
-				}				
-			}
+			} 	
 		}				
 	}
 
@@ -5905,46 +5842,50 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void reactionsClear() {
-		int startRow=(reactionsTable.getSelectedRows())[0]; 
-		int startCol=(reactionsTable.getSelectedColumns())[0];
-		// copy model for undo 
-		DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());	
-		copyReactionsTableModels(oldReactionsModel);
-		ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 1, UndoConstants.CLEAR_CONTENTS, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-		undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());		
-		boolean valid = true;
-		// check if columns that require values will be cleared
-		for(int j=0; j < reactionsTable.getSelectedColumns().length ;j++) { 
-			if (startCol + j == GraphicalInterfaceConstants.KO_COLUMN || startCol + j == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
-					startCol + j == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || startCol + j == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN
-					|| startCol + j == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || startCol + j == GraphicalInterfaceConstants.REVERSIBLE_COLUMN ||
-					startCol + j == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN || startCol + j == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
-				valid = false;
+		// this prevents clear contents menu item from throwing null pointer exception if
+		// pressed when no cell is selected. if this is done, nothing happens. may want to gray out
+		if (reactionsTable.getSelectedRows().length > 0 && reactionsTable.getSelectedColumns().length > 0) {
+			int startRow=(reactionsTable.getSelectedRows())[0]; 
+			int startCol=(reactionsTable.getSelectedColumns())[0];
+			// copy model for undo 
+			DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());	
+			copyReactionsTableModels(oldReactionsModel);
+			ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 1, UndoConstants.CLEAR_CONTENTS, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());		
+			boolean valid = true;
+			// check if columns that require values will be cleared
+			for(int j=0; j < reactionsTable.getSelectedColumns().length ;j++) { 
+				if (startCol + j == GraphicalInterfaceConstants.KO_COLUMN || startCol + j == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
+						startCol + j == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || startCol + j == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN
+						|| startCol + j == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || startCol + j == GraphicalInterfaceConstants.REVERSIBLE_COLUMN ||
+						startCol + j == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN || startCol + j == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
+					valid = false;
+				}
 			}
-		}
-		if (valid) {
-			for(int i=0; i < reactionsTable.getSelectedRows().length ;i++) { 
-				for(int j=0; j < reactionsTable.getSelectedColumns().length ;j++) {
-					int viewRow = reactionsTable.convertRowIndexToModel(startRow + i);
-					// TODO: use to remove reaction equations from map
-					int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
-					reactionsTable.setValueAt(" ", startRow + i, startCol + j);	
-					if (startCol + j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-						LocalConfig.getInstance().getReactionEquationMap().remove(id);
-						reactionsTable.setValueAt(" ", startRow + i, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);	
-					}							
-				} 
+			if (valid) {
+				for(int i=0; i < reactionsTable.getSelectedRows().length ;i++) { 
+					for(int j=0; j < reactionsTable.getSelectedColumns().length ;j++) {
+						int viewRow = reactionsTable.convertRowIndexToModel(startRow + i);
+						// TODO: use to remove reaction equations from map
+						int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
+						reactionsTable.setValueAt(" ", startRow + i, startCol + j);	
+						if (startCol + j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+							LocalConfig.getInstance().getReactionEquationMap().remove(id);
+							reactionsTable.setValueAt(" ", startRow + i, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);	
+						}							
+					} 
+				}
+				DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
+				copyReactionsTableModels(newReactionsModel);  
+				setUpReactionsUndo(undoItem);
+			} else {
+				JOptionPane.showMessageDialog(null,                
+						GraphicalInterfaceConstants.CLEAR_ERROR_MESSAGE,                
+						"Clear Error",                                
+						JOptionPane.ERROR_MESSAGE);
+				deleteReactionsPasteUndoItem();
 			}
-			DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
-			copyReactionsTableModels(newReactionsModel);  
-			setUpReactionsUndo(undoItem);
-		} else {
-			JOptionPane.showMessageDialog(null,                
-					GraphicalInterfaceConstants.CLEAR_ERROR_MESSAGE,                
-					"Clear Error",                                
-					JOptionPane.ERROR_MESSAGE);
-			deleteReactionsPasteUndoItem();
-		}
+		}		
 	}
 	
 	/**************************************************************************/
@@ -6612,147 +6553,147 @@ public class GraphicalInterface extends JFrame {
 			continuePasting = true;
 			// start at first item of pasteId's;
 			int startIndex = 0;
-			int startRow = 0;
-			int startCol = 1;
+			// this prevents paste menu item and paste button from throwing null pointer exception if
+			// pressed when no cell is selected. if this is done, nothing happens. may want to gray out
 			if (metabolitesTable.getSelectedRows().length > 0 && metabolitesTable.getSelectedColumns().length > 0) {
-				startRow=metabolitesTable.getSelectedRows()[0]; 
-				startCol=metabolitesTable.getSelectedColumns()[0];
-			}			
-			int numSelectedRows = metabolitesTable.getSelectedRowCount(); 
-			String pasteString = ""; 
-			try { 
-				pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
-			} catch (Exception e1) { 
-				JOptionPane.showMessageDialog(null, "Invalid Paste Type", "Invalid Paste Type", JOptionPane.ERROR_MESSAGE);
-				return; 
-			} 
-			// copy model so old model can be restored if paste not valid
-			DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
-			copyMetabolitesTableModels(oldMetabolitesModel); 
-			MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
-			setUndoOldCollections(undoItem);
-			ArrayList<String> pasteIds = new ArrayList<String>();
-			int numPasteRows = 0;
-			// this allows selecting one row for paste even if many rows are copied
-			// and pastes the whole clipboard contents
-			if (numSelectedRows < numberOfClipboardRows()) {
-				for (int y = 0; y < numberOfClipboardRows(); y++) {
-					if (startRow + y < metabolitesTable.getRowCount()) {
-						int viewRow = metabolitesTable.convertRowIndexToModel(startRow + y);
+				int startRow=metabolitesTable.getSelectedRows()[0]; 
+				int startCol=metabolitesTable.getSelectedColumns()[0];
+				int numSelectedRows = metabolitesTable.getSelectedRowCount(); 
+				String pasteString = ""; 
+				try { 
+					pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
+				} catch (Exception e1) { 
+					JOptionPane.showMessageDialog(null, "Invalid Paste Type", "Invalid Paste Type", JOptionPane.ERROR_MESSAGE);
+					return; 
+				} 
+				// copy model so old model can be restored if paste not valid
+				DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
+				copyMetabolitesTableModels(oldMetabolitesModel); 
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+				setUndoOldCollections(undoItem);
+				ArrayList<String> pasteIds = new ArrayList<String>();
+				int numPasteRows = 0;
+				// this allows selecting one row for paste even if many rows are copied
+				// and pastes the whole clipboard contents
+				if (numSelectedRows < numberOfClipboardRows()) {
+					for (int y = 0; y < numberOfClipboardRows(); y++) {
+						if (startRow + y < metabolitesTable.getRowCount()) {
+							int viewRow = metabolitesTable.convertRowIndexToModel(startRow + y);
+							pasteIds.add((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+						}
+					}
+				} else {
+					for (int y = 0; y < numSelectedRows; y++) {
+						int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRows()[y]);
 						pasteIds.add((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
 					}
+				}		
+				System.out.println("paste ids" + pasteIds);
+				// save sort column and order
+				setMetabolitesOldSortColumnIndex(getMetabolitesSortColumnIndex());
+				setMetabolitesOldSortOrder(getMetabolitesSortOrder());
+				// unsort table to avoid sorting of pasted values that results in cells
+				// updated after sorted column populated with incorrect values
+				setMetabolitesSortDefault();
+				DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
+				setUpMetabolitesTable(model);
+				// after unsorting - get rows corresponding to ids. Using ids will not work if
+				// any rows are deleted, and updating each cell by id will take too long -
+				// O(n) for each cell updated vs O(1)
+				ArrayList<Integer> pasteRows = new ArrayList<Integer>();
+				Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
+				for (int i = 0; i < metabolitesTable.getRowCount(); i++) {
+					metabolitesIdRowMap.put((String) metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
 				}
-			} else {
-				for (int y = 0; y < numSelectedRows; y++) {
-					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRows()[y]);
-					pasteIds.add((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+				for (int z = 0; z < pasteIds.size(); z++) {
+					String row = (metabolitesIdRowMap.get(pasteIds.get(z))).toString();
+					int rowNum = Integer.valueOf(row);
+					pasteRows.add(rowNum);
 				}
-			}		
-			System.out.println("paste ids" + pasteIds);
-			// save sort column and order
-			setMetabolitesOldSortColumnIndex(getMetabolitesSortColumnIndex());
-			setMetabolitesOldSortOrder(getMetabolitesSortOrder());
-			// unsort table to avoid sorting of pasted values that results in cells
-			// updated after sorted column populated with incorrect values
-			setMetabolitesSortDefault();
-			DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
-			setUpMetabolitesTable(model);
-			// after unsorting - get rows corresponding to ids. Using ids will not work if
-			// any rows are deleted, and updating each cell by id will take too long -
-			// O(n) for each cell updated vs O(1)
-			ArrayList<Integer> pasteRows = new ArrayList<Integer>();
-			Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
-			for (int i = 0; i < metabolitesTable.getRowCount(); i++) {
-				metabolitesIdRowMap.put((String) metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
-			}
-			for (int z = 0; z < pasteIds.size(); z++) {
-				String row = (metabolitesIdRowMap.get(pasteIds.get(z))).toString();
-				int rowNum = Integer.valueOf(row);
-				pasteRows.add(rowNum);
-			}
-			System.out.println("paste rows" + pasteRows);
-			// if selected rows for paste > number of clipboard rows, need to paste
-			// clipboard rows repeatedly
-			if (numberOfClipboardRows() > 0 && numSelectedRows > numberOfClipboardRows()) {
-				int quotient = numSelectedRows/numberOfClipboardRows();
-				int remainder = numSelectedRows%numberOfClipboardRows();
-				for (int q = 0; q < quotient; q++) {
-					String[] lines = pasteString.split("\n");
-					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
-						if (i < lines.length) {
-							String[] cells = lines[i].split("\t");
-							// fixes bug where if last cell in row is blank, will not
-							// paste blank value over cell value if not blank
-							if (q < quotient) {
-								for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-									if (startCol + cells.length > metabolitesTable.getColumnCount()) {
-										showPasteOutOfRangeError();				
-									} else {
-										if (j < cells.length) {
-											updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+				System.out.println("paste rows" + pasteRows);
+				// if selected rows for paste > number of clipboard rows, need to paste
+				// clipboard rows repeatedly
+				if (numberOfClipboardRows() > 0 && numSelectedRows > numberOfClipboardRows()) {
+					int quotient = numSelectedRows/numberOfClipboardRows();
+					int remainder = numSelectedRows%numberOfClipboardRows();
+					for (int q = 0; q < quotient; q++) {
+						String[] lines = pasteString.split("\n");
+						for (int i=0 ; i<numberOfClipboardRows(); i++) { 
+							if (i < lines.length) {
+								String[] cells = lines[i].split("\t");
+								// fixes bug where if last cell in row is blank, will not
+								// paste blank value over cell value if not blank
+								if (q < quotient) {
+									for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+										if (startCol + cells.length > metabolitesTable.getColumnCount()) {
+											showPasteOutOfRangeError();				
+										} else {
+											if (j < cells.length) {
+												updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+											} else {
+												updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+											} 
+										}									
+									}
+								}									
+							} else {
+								if (q < quotient) {
+									for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+										if (startCol + j > metabolitesTable.getColumnCount()) {
+											showPasteOutOfRangeError();			
 										} else {
 											updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
-										} 
-									}									
-								}
-							}									
-						} else {
-							if (q < quotient) {
-								for (int j=0 ; j < numberOfClipboardColumns(); j++) {
-									if (startCol + j > metabolitesTable.getColumnCount()) {
-										showPasteOutOfRangeError();			
-									} else {
-										updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
-									}									
-								}
-							}									
-						}							 
+										}									
+									}
+								}									
+							}							 
+						}
+						startIndex += numberOfClipboardRows();
 					}
-					startIndex += numberOfClipboardRows();
-				}
-				for (int m = 0; m < remainder; m++) {
-					String[] lines = pasteString.split("\n");
-					pasteMetaboliteValues(m, lines, pasteRows, startIndex, startCol);
-				}
-				// if selected rows for paste <= number of clipboard rows 	
-			} else {
-				String[] lines = pasteString.split("\n");
-				if (startRow + lines.length > metabolitesTable.getRowCount()) {
-					showPasteOutOfRangeError();
+					for (int m = 0; m < remainder; m++) {
+						String[] lines = pasteString.split("\n");
+						pasteMetaboliteValues(m, lines, pasteRows, startIndex, startCol);
+					}
+					// if selected rows for paste <= number of clipboard rows 	
 				} else {
-					for (int i=0 ; i<numberOfClipboardRows(); i++) { 
-						pasteMetaboliteValues(i, lines, pasteRows, startIndex, startCol);
-					} 
+					String[] lines = pasteString.split("\n");
+					if (startRow + lines.length > metabolitesTable.getRowCount()) {
+						showPasteOutOfRangeError();
+					} else {
+						for (int i=0 ; i<numberOfClipboardRows(); i++) { 
+							pasteMetaboliteValues(i, lines, pasteRows, startIndex, startCol);
+						} 
+					}
 				}
-			}
-			// if paste not valid, set old model
-			if (!validPaste) {
-				restoreOldMetabolitesSort();
-				JOptionPane.showMessageDialog(null,                
-						getPasteError(),                
-						"Paste Error",                                
-						JOptionPane.ERROR_MESSAGE);
-				setUpMetabolitesTable(oldMetabolitesModel);
-				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), oldMetabolitesModel);
-				deleteReactionsPasteUndoItem();
-				validPaste = true;
-			} else {
-				DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
-				copyMetabolitesTableModels(newMetabolitesModel); 
-				setUndoNewCollections(undoItem);
-				if (pasteIds.size() > 0) {
-					undoItem.setId(Integer.valueOf(pasteIds.get(0)));
-				}				
-				setUpMetabolitesUndo(undoItem);	
-				// reset sort column and order
-				setMetabolitesSortColumnIndex(getMetabolitesOldSortColumnIndex());
-				setMetabolitesSortOrder(getMetabolitesOldSortOrder());
-				setUpMetabolitesTable(newMetabolitesModel);	
-				if (pasteIds.size() > 0) {
-					scrollToLocation(metabolitesTable, getRowFromMetabolitesId(Integer.valueOf(pasteIds.get(0))), startCol);
-				}				
-			}
+				// if paste not valid, set old model
+				if (!validPaste) {
+					restoreOldMetabolitesSort();
+					JOptionPane.showMessageDialog(null,                
+							getPasteError(),                
+							"Paste Error",                                
+							JOptionPane.ERROR_MESSAGE);
+					setUpMetabolitesTable(oldMetabolitesModel);
+					LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), oldMetabolitesModel);
+					deleteReactionsPasteUndoItem();
+					validPaste = true;
+				} else {
+					DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
+					copyMetabolitesTableModels(newMetabolitesModel); 
+					setUndoNewCollections(undoItem);
+					if (pasteIds.size() > 0) {
+						undoItem.setId(Integer.valueOf(pasteIds.get(0)));
+					}				
+					setUpMetabolitesUndo(undoItem);	
+					// reset sort column and order
+					setMetabolitesSortColumnIndex(getMetabolitesOldSortColumnIndex());
+					setMetabolitesSortOrder(getMetabolitesOldSortOrder());
+					setUpMetabolitesTable(newMetabolitesModel);	
+					if (pasteIds.size() > 0) {
+						scrollToLocation(metabolitesTable, getRowFromMetabolitesId(Integer.valueOf(pasteIds.get(0))), startCol);
+					}				
+				}
+			}					
 		}		
 	}
 	
@@ -6920,60 +6861,64 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void metabolitesClear() {
-		int startRow=(metabolitesTable.getSelectedRows())[0]; 
-		int startCol=(metabolitesTable.getSelectedColumns())[0];
-		// copy model for undo
-		DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
-		copyMetabolitesTableModels(oldMetabolitesModel); 
-		MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.CLEAR_CONTENTS, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-		undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
-		setUndoOldCollections(undoItem);		
-		boolean valid = true;
-		//ArrayList<Integer> rowList = new ArrayList<Integer>();
-		//ArrayList<Integer> metabIdList = new ArrayList<Integer>();
-		//TODO: Clear must throw an error if user attempts to clear
-		//a used metabolite, but should be able to clear an unused
-		//metabolite - see delete, also should not be able to clear boundary		
-		if (startCol == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN || 
-				startCol == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-			JOptionPane.showMessageDialog(null,                
-					"Cannot clear Metab abbreviation or name column, some may be used.",                
-					"Clear Error",                                
-					JOptionPane.ERROR_MESSAGE);
-			valid = false;
-		} else {			
-			for (int r = 0; r < metabolitesTable.getSelectedColumns().length; r++) {
-				if (startCol + r == GraphicalInterfaceConstants.BOUNDARY_COLUMN) {
-					valid = false;
-				} 			
-			}
-			if (valid) {
-				/*
-				for (int r = 0; r < metabolitesTable.getSelectedRows().length; r++) {
-					int row = metabolitesTable.convertRowIndexToModel(startRow + r);
-					rowList.add(row);
-					int metabId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, 0));
-					metabIdList.add(metabId);
-				}
-				*/
-				for(int i=0; i < metabolitesTable.getSelectedRows().length ;i++) { 
-					for(int j=0; j < metabolitesTable.getSelectedColumns().length ;j++) { 					
-						//int viewRow = metabolitesTable.convertRowIndexToView(rowList.get(i));
-						metabolitesTable.setValueAt(" ", startRow + i, startCol + j);
-					} 
-				}
-				DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
-				copyMetabolitesTableModels(newMetabolitesModel); 
-				setUndoNewCollections(undoItem);
-				setUpMetabolitesUndo(undoItem);				
-			} else {
+		// this prevents clear contents menu item from throwing null pointer exception if
+		// pressed when no cell is selected. if this is done, nothing happens. may want to gray out
+		if (metabolitesTable.getSelectedRows().length > 0 && metabolitesTable.getSelectedColumns().length > 0) {
+			int startRow=(metabolitesTable.getSelectedRows())[0]; 
+			int startCol=(metabolitesTable.getSelectedColumns())[0];
+			// copy model for undo
+			DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
+			copyMetabolitesTableModels(oldMetabolitesModel); 
+			MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.CLEAR_CONTENTS, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+			setUndoOldCollections(undoItem);		
+			boolean valid = true;
+			//ArrayList<Integer> rowList = new ArrayList<Integer>();
+			//ArrayList<Integer> metabIdList = new ArrayList<Integer>();
+			//TODO: Clear must throw an error if user attempts to clear
+			//a used metabolite, but should be able to clear an unused
+			//metabolite - see delete, also should not be able to clear boundary		
+			if (startCol == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN || 
+					startCol == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
 				JOptionPane.showMessageDialog(null,                
-						GraphicalInterfaceConstants.CLEAR_ERROR_MESSAGE,                
+						"Cannot clear Metab abbreviation or name column, some may be used.",                
 						"Clear Error",                                
 						JOptionPane.ERROR_MESSAGE);
-				deleteMetabolitesPasteUndoItem();
-			}			
-		} 
+				valid = false;
+			} else {			
+				for (int r = 0; r < metabolitesTable.getSelectedColumns().length; r++) {
+					if (startCol + r == GraphicalInterfaceConstants.BOUNDARY_COLUMN) {
+						valid = false;
+					} 			
+				}
+				if (valid) {
+					/*
+					for (int r = 0; r < metabolitesTable.getSelectedRows().length; r++) {
+						int row = metabolitesTable.convertRowIndexToModel(startRow + r);
+						rowList.add(row);
+						int metabId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, 0));
+						metabIdList.add(metabId);
+					}
+					*/
+					for(int i=0; i < metabolitesTable.getSelectedRows().length ;i++) { 
+						for(int j=0; j < metabolitesTable.getSelectedColumns().length ;j++) { 					
+							//int viewRow = metabolitesTable.convertRowIndexToView(rowList.get(i));
+							metabolitesTable.setValueAt(" ", startRow + i, startCol + j);
+						} 
+					}
+					DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
+					copyMetabolitesTableModels(newMetabolitesModel); 
+					setUndoNewCollections(undoItem);
+					setUpMetabolitesUndo(undoItem);				
+				} else {
+					JOptionPane.showMessageDialog(null,                
+							GraphicalInterfaceConstants.CLEAR_ERROR_MESSAGE,                
+							"Clear Error",                                
+							JOptionPane.ERROR_MESSAGE);
+					deleteMetabolitesPasteUndoItem();
+				}			
+			} 
+		}		
 	}
 
 	/**************************************************************************/
