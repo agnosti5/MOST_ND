@@ -144,56 +144,19 @@ public class GurobiPathInterface  extends JDialog {
 		
 		ActionListener fileButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				/*
-				setAlwaysOnTop(false);
-				if (!fileSelected) {
-					JTextArea output = null;
-					JFileChooser fileChooser = new JFileChooser(); 
-					fileChooser.setDialogTitle("Browse For Gurobi Path");
-					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);				
-					
-					fileChooser.setCurrentDirectory(new File("C:\\"));
-					
-					//... Open a file dialog.
-					int retval = fileChooser.showOpenDialog(output);
-					if (retval == JFileChooser.APPROVE_OPTION) {
-						//... The user selected a file, get it, use it.          	
-						File file = fileChooser.getSelectedFile();
-						String rawPathName = file.getAbsolutePath();
-						textField.setText(rawPathName);	
-						setPath(rawPathName);
-						fileSelected = true;
-					}			
-				}
-				setAlwaysOnTop(true);
-				*/
+				
 			}
 		};
 		
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				/*
-				String lastGurobi_path = GraphicalInterface.curSettings.get("LastGurobi");
-				if (lastGurobi_path == null) {
-					lastGurobi_path = ".";
-				}
-				GraphicalInterface.curSettings.add("LastGurobi", getPath());
-				setVisible(false);
-				dispose();
-				*/
+				
 			}
 		};
 		
 		ActionListener cancelButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				/*
-				JOptionPane.showMessageDialog(null,                
-						GraphicalInterfaceConstants.NO_GUROBI_PATH_ERROR,                
-						"No Gurobi Path",                                
-						JOptionPane.ERROR_MESSAGE);
-				setVisible(false);
-				dispose();
-				*/
+				
 			}
 		}; 
 		

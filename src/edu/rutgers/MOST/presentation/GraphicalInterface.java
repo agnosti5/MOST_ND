@@ -789,9 +789,7 @@ public class GraphicalInterface extends JFrame {
 	public Integer selectedMetabolitesColumnStartIndex;
 	public Integer selectedMetabolitesColumnEndIndex;
 
-	public GraphicalInterface() {
-		System.out.println("max memory " + java.lang.Runtime.getRuntime().freeMemory());
-		
+	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
 		//showIdColumn = true;
 		showIdColumn = false;
@@ -9055,8 +9053,8 @@ public class GraphicalInterface extends JFrame {
 						unusedList.add(id); 
 					} catch (Throwable t) {
 						System.out.println("Error");
-//						Utilities u = new Utilities();
-//						u.showResizableDialog("Error", "Error", "errorMessage");
+						Utilities u = new Utilities();
+						u.showResizableDialog("Error", "Error", "errorMessage");
 					}								
 				}
 			}
@@ -9590,6 +9588,7 @@ public class GraphicalInterface extends JFrame {
 					getGurobiPathInterface().setAlwaysOnTop(true);
 				} else {
 					setGurobiPath(rawPathName);
+					curSettings.add("LastGurobi", rawPathName);
 					gurobiPathSelected = true;
 				}					
 			}

@@ -37,6 +37,7 @@ import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class GurobiSolver extends Solver {
 	
@@ -125,6 +126,10 @@ public class GurobiSolver extends Solver {
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | ClassNotFoundException | MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		} catch (InvocationTargetException e) {
 			try {
 				Class<?> grbExceptionClass = classLoader.loadClass("gurobi.GRBException");
@@ -150,11 +155,19 @@ public class GurobiSolver extends Solver {
 					}
 				}
 				else
-					e.printStackTrace();
+				e.printStackTrace();
+				StringWriter errors = new StringWriter();
+				e.printStackTrace(new PrintWriter(errors));
+				Utilities u = new Utilities();
+				u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | HeadlessException | NoSuchFieldException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				StringWriter errors = new StringWriter();
+				e1.printStackTrace(new PrintWriter(errors));
+				Utilities u = new Utilities();
+				u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			}
 		} 
 	}
@@ -189,6 +202,10 @@ public class GurobiSolver extends Solver {
 		} catch (IllegalAccessException | ClassNotFoundException | InstantiationException | NoSuchMethodException | SecurityException | IllegalArgumentException | NoSuchFieldException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -214,6 +231,10 @@ public class GurobiSolver extends Solver {
 		} catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -291,6 +312,10 @@ public class GurobiSolver extends Solver {
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -306,6 +331,10 @@ public class GurobiSolver extends Solver {
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		}
 	}
 
@@ -352,6 +381,10 @@ public class GurobiSolver extends Solver {
 							} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
+								StringWriter errors = new StringWriter();
+								e.printStackTrace(new PrintWriter(errors));
+								Utilities u = new Utilities();
+								u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 							} catch (InvocationTargetException e) {
 								handleGurobiException();
 							}
@@ -381,6 +414,10 @@ public class GurobiSolver extends Solver {
 						} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | NoSuchMethodException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
+							StringWriter errors = new StringWriter();
+							e.printStackTrace(new PrintWriter(errors));
+							Utilities u = new Utilities();
+							u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 						} catch (InvocationTargetException e) {
 							handleGurobiException();
 						}
@@ -420,7 +457,8 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-			errors.toString();
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -470,6 +508,10 @@ public class GurobiSolver extends Solver {
 		} catch (IllegalAccessException | ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -506,6 +548,10 @@ public class GurobiSolver extends Solver {
 				| SecurityException | NoSuchMethodException | InstantiationException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -536,6 +582,10 @@ public class GurobiSolver extends Solver {
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -559,6 +609,10 @@ public class GurobiSolver extends Solver {
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
