@@ -476,6 +476,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem undoItem = new JMenuItem("Undo");
 	public final JMenuItem redoItem = new JMenuItem("Redo");
 	public final JMenuItem findReplaceItem = new JMenuItem("Find/Replace");	
+	public final JMenuItem selectAllItem = new JMenuItem("SelectAll");	
 	public final JMenuItem addReacRowItem = new JMenuItem("Add Row to Reactions Table");
 	public final JMenuItem addMetabRowItem = new JMenuItem("Add Row to Metabolites Table");
 	public final JMenuItem addReacColumnItem = new JMenuItem("Add Column to Reactions Table");
@@ -1161,6 +1162,7 @@ public class GraphicalInterface extends JFrame {
 
 		modelMenu.add(saveItem);
 		saveItem.setMnemonic(KeyEvent.VK_S);
+		saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		saveItem.addActionListener(new SaveItemAction());
 		
 		modelMenu.add(saveSBMLItem);
@@ -1438,6 +1440,28 @@ public class GraphicalInterface extends JFrame {
 			}    	     
 		});
 
+		editMenu.add(selectAllItem);
+		selectAllItem.setMnemonic(KeyEvent.VK_A);
+		selectAllItem.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+		selectAllItem.setEnabled(true);
+
+		selectAllItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				if (tabbedPane.getSelectedIndex() == 0) {
+					metabolitesTable.clearSelection();
+					includeRxnColumnNames = false;
+					reactionsTable.selectAll();			
+					selectReactionsRows();
+				} else if (tabbedPane.getSelectedIndex() == 1) {
+					reactionsTable.clearSelection();
+					includeMtbColumnNames = false;
+					metabolitesTable.selectAll();			
+					selectMetabolitesRows();
+				}
+			}    	     
+		});
+		
 		editMenu.addSeparator();
 
 		editMenu.add(addReacRowItem);
@@ -1687,7 +1711,7 @@ public class GraphicalInterface extends JFrame {
 		});
 		
 		editMenu.add(unsortMetabMenuItem);
-		unsortMetabMenuItem.setMnemonic(KeyEvent.VK_A);
+		unsortMetabMenuItem.setMnemonic(KeyEvent.VK_B);
 		unsortMetabMenuItem.setEnabled(false);
 		
 		unsortMetabMenuItem.addActionListener(new ActionListener() {
@@ -1790,18 +1814,18 @@ public class GraphicalInterface extends JFrame {
 
 		toolbar.add(savebutton);
 		setUpToolbarButton(savebutton);
-		savebutton.setToolTipText("Save");
+		savebutton.setToolTipText("Save (Ctrl+S)");
 		savebutton.addActionListener(saveButtonActionListener);
 		
 		toolbar.addSeparator();
 		
 		toolbar.add(copybutton);
 		setUpToolbarButton(copybutton);
-		copybutton.setToolTipText("Copy");
+		copybutton.setToolTipText("Copy (Ctrl+C)");
 		copybutton.addActionListener(copyButtonActionListener);
 		toolbar.add(pastebutton);
 		setUpToolbarButton(pastebutton);
-		pastebutton.setToolTipText("Paste");
+		pastebutton.setToolTipText("Paste (Ctrl+V)");
 		pastebutton.addActionListener(pasteButtonActionListener);
 
 		toolbar.addSeparator();
@@ -1822,7 +1846,7 @@ public class GraphicalInterface extends JFrame {
 
 		toolbar.add(findbutton);
 		setUpToolbarButton(findbutton);
-		findbutton.setToolTipText("Find/Replace");
+		findbutton.setToolTipText("Find/Replace (Ctrl+F)");
 		findbutton.addActionListener(findButtonActionListener);
 
 		/**************************************************************************/
@@ -1884,6 +1908,21 @@ public class GraphicalInterface extends JFrame {
 				}				
 			}
 		};
+		
+		ActionListener reactionsSaveActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				saveLoadedFile();				
+			}
+		};
+		
+		ActionListener reactionsSelectAllActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				metabolitesTable.clearSelection();
+				includeRxnColumnNames = false;
+				reactionsTable.selectAll();			
+				selectReactionsRows();
+			}
+		};
 
 		findReplaceDialog.findButton.addActionListener(findReactionsButtonActionListener);
 		findReplaceDialog.findAllButton.addActionListener(findAllReactionsButtonActionListener);
@@ -1902,6 +1941,8 @@ public class GraphicalInterface extends JFrame {
 		KeyStroke reacFind = KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK,false); 
 		KeyStroke reacUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z,ActionEvent.CTRL_MASK,false); 
 		KeyStroke reacRedo = KeyStroke.getKeyStroke(KeyEvent.VK_Y,ActionEvent.CTRL_MASK,false); 
+		KeyStroke reacSave = KeyStroke.getKeyStroke(KeyEvent.VK_S,ActionEvent.CTRL_MASK,false);
+		KeyStroke reacSelectAll = KeyStroke.getKeyStroke(KeyEvent.VK_A,ActionEvent.CTRL_MASK,false);
 
 		DefaultTableModel blankReacModel = createBlankReactionsTableModel();
 		setUpReactionsTable(blankReacModel);
@@ -1919,6 +1960,9 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.registerKeyboardAction(reactionsUndoActionListener,reacUndo,JComponent.WHEN_FOCUSED); 
 		reactionsTable.registerKeyboardAction(reactionsRedoActionListener,reacRedo,JComponent.WHEN_IN_FOCUSED_WINDOW); 
 		reactionsTable.registerKeyboardAction(reactionsRedoActionListener,reacRedo,JComponent.WHEN_FOCUSED); 
+		reactionsTable.registerKeyboardAction(reactionsSaveActionListener,reacSave,JComponent.WHEN_IN_FOCUSED_WINDOW); 
+		reactionsTable.registerKeyboardAction(reactionsSaveActionListener,reacSave,JComponent.WHEN_FOCUSED); 
+		reactionsTable.registerKeyboardAction(reactionsSelectAllActionListener,reacSelectAll,JComponent.WHEN_FOCUSED); 
 
 		ActionListener metabolitesCopyActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -1971,7 +2015,22 @@ public class GraphicalInterface extends JFrame {
 				}
 			}
 		};
+		
+		ActionListener metabolitesSaveActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				saveLoadedFile();
+			}
+		};
 
+		ActionListener metabolitesSelectAllActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				reactionsTable.clearSelection();
+				includeMtbColumnNames = false;
+				metabolitesTable.selectAll();			
+				selectMetabolitesRows();
+			}
+		};
+		
 		findReplaceDialog.findButton.addActionListener(findMetabolitesButtonActionListener);
 		findReplaceDialog.findAllButton.addActionListener(findAllMetabolitesButtonActionListener);
 		findReplaceDialog.replaceButton.addActionListener(replaceMetabolitesButtonActionListener);
@@ -1989,6 +2048,8 @@ public class GraphicalInterface extends JFrame {
 		KeyStroke metabFind = KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK,false);
 		KeyStroke metabUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z,ActionEvent.CTRL_MASK,false);
 		KeyStroke metabRedo = KeyStroke.getKeyStroke(KeyEvent.VK_Y,ActionEvent.CTRL_MASK,false);
+		KeyStroke metabSave = KeyStroke.getKeyStroke(KeyEvent.VK_S,ActionEvent.CTRL_MASK,false);
+		KeyStroke metabSelectAll = KeyStroke.getKeyStroke(KeyEvent.VK_A,ActionEvent.CTRL_MASK,false);
 
 		DefaultTableModel blankMetabModel = createBlankMetabolitesTableModel();
 		setUpMetabolitesTable(blankMetabModel);
@@ -2006,6 +2067,9 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.registerKeyboardAction(metabolitesUndoActionListener,metabUndo,JComponent.WHEN_FOCUSED);
 		metabolitesTable.registerKeyboardAction(metabolitesRedoActionListener,metabRedo,JComponent.WHEN_IN_FOCUSED_WINDOW);
 		metabolitesTable.registerKeyboardAction(metabolitesRedoActionListener,metabRedo,JComponent.WHEN_FOCUSED);
+		metabolitesTable.registerKeyboardAction(metabolitesSaveActionListener,metabSave,JComponent.WHEN_IN_FOCUSED_WINDOW);
+		metabolitesTable.registerKeyboardAction(metabolitesSaveActionListener,metabSave,JComponent.WHEN_FOCUSED);
+		metabolitesTable.registerKeyboardAction(metabolitesSelectAllActionListener,metabSelectAll,JComponent.WHEN_FOCUSED);
 
 		//setTableCellFocused(0, 1, metabolitesTable);
 		//setTableCellFocused(0, 1, reactionsTable);
@@ -5251,7 +5315,7 @@ public class GraphicalInterface extends JFrame {
 		final JRadioButtonMenuItem inclColNamesItem = new JRadioButtonMenuItem(
 				"Include Column Names");
 		final JRadioButtonMenuItem selectCellsOnly = new JRadioButtonMenuItem(
-				"Selected Cells Only");
+				"Select Table Cells Only");
 
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(inclColNamesItem);
@@ -5265,11 +5329,13 @@ public class GraphicalInterface extends JFrame {
 					includeRxnColumnNames = true;
 				} else {
 					includeRxnColumnNames = false;
-				}				
+				}	
+				metabolitesTable.clearSelection();
 				reactionsTable.selectAll();			
 				selectReactionsRows();
 			}
 		});
+		selectCellsOnly.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		selectCellsOnly.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (selectCellsOnly.isSelected()) {
@@ -6266,7 +6332,7 @@ public class GraphicalInterface extends JFrame {
 		final JRadioButtonMenuItem inclColNamesItem = new JRadioButtonMenuItem(
 				"Include Column Names");
 		final JRadioButtonMenuItem selectCellsOnly = new JRadioButtonMenuItem(
-				"Selected Cells Only");
+				"Select Table Cells Only");
 
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(inclColNamesItem);
@@ -6280,11 +6346,13 @@ public class GraphicalInterface extends JFrame {
 					includeMtbColumnNames = true;
 				} else {
 					includeMtbColumnNames = false;
-				}				
+				}
+				reactionsTable.clearSelection();
 				metabolitesTable.selectAll();			
 				selectMetabolitesRows();
 			}
 		});
+		selectCellsOnly.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		selectCellsOnly.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (selectCellsOnly.isSelected()) {
