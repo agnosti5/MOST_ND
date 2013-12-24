@@ -2567,6 +2567,7 @@ public class GraphicalInterface extends JFrame {
 				if (LocalConfig.getInstance().hasReactionsFile) {
 					loadReactionColumnNameInterface();
 				} else {
+					curSettings.add("LastCSVReactions", "none");
 					saveDisabled = false;
 					DefaultTableModel blankReacModel = createBlankReactionsTableModel();
 					setUpReactionsTable(blankReacModel);
@@ -2630,6 +2631,7 @@ public class GraphicalInterface extends JFrame {
 			setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 
 			if (!LocalConfig.getInstance().hasMetabolitesFile) {
+				curSettings.add("LastCSVMetabolites", "none");
 				loadSetUp();
 			}
 			saveDisabled = false;
@@ -2769,18 +2771,34 @@ public class GraphicalInterface extends JFrame {
 				// will need a last csv metabolites and last csv reactions in settings
 				//curSettings.get("LastCSV")
 				if (tabbedPane.getSelectedIndex() == 0) {
-					
+					if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none") && isRoot) {
+						System.out.println(curSettings.get("LastCSVReactions"));
+						LocalConfig.getInstance().reactionsTableChanged = false;
+					} else {
+						saveReactionsTextFileChooser();
+					}
 				} else if (tabbedPane.getSelectedIndex() == 1) {
-					
+					if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none") && isRoot) {
+						System.out.println(curSettings.get("LastCSVMetabolites"));
+						LocalConfig.getInstance().metabolitesTableChanged = false;
+					} else {
+						saveMetabolitesTextFileChooser();
+					}
 				}
 			} 
 		} else {
 			// if "untitled" model name - that is file not saved, save default is csv
 			// since it may be very confusing if the model the user just built is rewritten.
 			// with save as csv the model remains unchanged
-				
-			// show csv file chooser for selected table		
+			saveFile = true;
+			if (tabbedPane.getSelectedIndex() == 0) {
+				saveReactionsTextFileChooser();
+			} else if (tabbedPane.getSelectedIndex() == 1) {				
+				saveMetabolitesTextFileChooser();
+			}			
 		}
+		// fixes bug where if cancel is pressed on file chooser, exit does not work
+		exit = true;
 	}
 	
 	public void saveAsSBML() {
