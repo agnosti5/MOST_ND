@@ -262,10 +262,12 @@ public class GraphicalInterface extends JFrame {
 	public static boolean openFileChooser;
 	public static boolean showMetaboliteRenameInterface;
 	public static boolean addMetabolite;
+	public boolean enterPressed;
+	// save
 	public boolean saveFile;
 	public boolean saveSBML;
-	public boolean enterPressed;
 	public boolean saveDisabled;
+	public static boolean showJSBMLFileChooser;
 	// close
 	public static boolean exit;
 
@@ -2738,23 +2740,47 @@ public class GraphicalInterface extends JFrame {
 	} 
 	
 	public void saveLoadedFile() {
-		if (getFileType().equals(GraphicalInterfaceConstants.SBML_FILE_TYPE)) {
-			if (curSettings.get("LastSBML") != null) {
-				System.out.println(curSettings.get("LastSBML"));
-				// do not show file chooser
-				//saveAsSBML();
-			} else {
-				// show file chooser
-			}
-		} else if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE)) {
-			// will need a last csv metabolites and last csv reactions in settings
-			//curSettings.get("LastCSV")
-			if (tabbedPane.getSelectedIndex() == 0) {
+		if (!LocalConfig.getInstance().getModelName().equals(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME)) {			
+			// if user has loaded an sbml file, lastsbml will not be null, but must check if file exists
+			// since settings file may not be correct
+			if (getFileType().equals(GraphicalInterfaceConstants.SBML_FILE_TYPE)) {
+				LocalConfig.getInstance().reactionsTableChanged = false;
+				LocalConfig.getInstance().metabolitesTableChanged = false;
+				if (curSettings.get("LastSBML") != null && isRoot) {
+					System.out.println(curSettings.get("LastSBML"));
+					File f = new File(curSettings.get("LastSBML"));
+					if (f.exists()) {
+						showJSBMLFileChooser = false;
+						setSBMLFile(f);
+						String modelName = f.getName();
+						if (modelName.endsWith(".xml")) {
+							modelName = modelName.substring(0, modelName.length() - 4);
+						}
+						LocalConfig.getInstance().setModelName(modelName);
+						saveAsSBML();
+						showJSBMLFileChooser = true;
+					} else {
+						saveAsSBML();
+					}										
+				} else {
+					saveAsSBML();
+				}
+			} else if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE)) {
+				// will need a last csv metabolites and last csv reactions in settings
+				//curSettings.get("LastCSV")
+				if (tabbedPane.getSelectedIndex() == 0) {
+					
+				} else if (tabbedPane.getSelectedIndex() == 1) {
+					
+				}
+			} 
+		} else {
+			// if "untitled" model name - that is file not saved, save default is csv
+			// since it may be very confusing if the model the user just built is rewritten.
+			// with save as csv the model remains unchanged
 				
-			} else if (tabbedPane.getSelectedIndex() == 1) {
-				
-			}
-		} 
+			// show csv file chooser for selected table		
+		}
 	}
 	
 	public void saveAsSBML() {
@@ -2766,12 +2792,13 @@ public class GraphicalInterface extends JFrame {
 			jWrite.formConnect(LocalConfig.getInstance());
 			if (jWrite.load) {
 				setSBMLFile(jWrite.getOutFile());
-				String modelName = jWrite.getOutFile().getName();
-				
-				if (modelName.endsWith(".xml")) {
-					modelName = modelName.substring(0, modelName.length() - 4);
-				}
-				LocalConfig.getInstance().setModelName(modelName);
+				if (showJSBMLFileChooser) {
+					String modelName = jWrite.getOutFile().getName();
+					if (modelName.endsWith(".xml")) {
+						modelName = modelName.substring(0, modelName.length() - 4);
+					}
+					LocalConfig.getInstance().setModelName(modelName);
+				}				
 				LocalConfig.getInstance().setProgress(0);
 				progressBar.setVisible(true);
 
@@ -4000,9 +4027,11 @@ public class GraphicalInterface extends JFrame {
 		openFileChooser = true;
 		LocalConfig.getInstance().reactionsTableChanged = false;
 		LocalConfig.getInstance().metabolitesTableChanged = false;
-		LocalConfig.getInstance().includesReactions = true;
-		saveFile = false;
+		LocalConfig.getInstance().includesReactions = true;		
 		enterPressed = false;
+		// save
+		saveFile = false;
+		showJSBMLFileChooser = true;
 	}
 
 	public void clearConfigLists() {

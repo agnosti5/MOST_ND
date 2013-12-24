@@ -126,53 +126,64 @@ public class JSBMLWriter implements TreeModelListener{
 	}
 	
 	public boolean setOutFile(){
-		JTextArea output = null;
-		String lastSaveSBML_path = curSettings.get("LastSaveSBML");
-		
-		Utilities u = new Utilities();
-		JFileChooser chooser = new JFileChooser();
-		// if path is null or does not exist, default used, else last path used
-		chooser.setCurrentDirectory(new File(u.lastPath(lastSaveSBML_path, chooser)));					
-		
-//		if (lastSaveSBML_path == null) {
-//			lastSaveSBML_path = System.getenv("USERPROFILE") ;
-//		}
-//		JFileChooser chooser = new JFileChooser();
-//		chooser.setCurrentDirectory(new File(lastSaveSBML_path));
-		if (GraphicalInterface.saveOptFile) {	
-			String path = getOptFilePath() + ".xml";
-			File theFileToSave = new File(path);
-			chooser.setSelectedFile(theFileToSave);
-			//System.out.println("ch " + chooser.getSelectedFile());
-		} 		
-		chooser.setApproveButtonText("Save");
-		chooser.setDialogTitle("Save to");
-		chooser.setFileFilter(new XMLFileFilter());
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		if (GraphicalInterface.showJSBMLFileChooser) {
+			JTextArea output = null;
+			String lastSBML_path = curSettings.get("LastSBML");
+			
+			Utilities u = new Utilities();
+			JFileChooser chooser = new JFileChooser();
+			// if path is null or does not exist, default used, else last path used
+			chooser.setCurrentDirectory(new File(u.lastPath(lastSBML_path, chooser)));					
+			
+			if (GraphicalInterface.saveOptFile) {	
+				String path = getOptFilePath() + ".xml";
+				File theFileToSave = new File(path);
+				chooser.setSelectedFile(theFileToSave);
+				//System.out.println("ch " + chooser.getSelectedFile());
+			} 		
+			chooser.setApproveButtonText("Save");
+			chooser.setDialogTitle("Save to");
+			chooser.setFileFilter(new XMLFileFilter());
+			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		boolean done = false;
-		boolean cancel = false;
-		while (!done) {
-			//... Open a file dialog.
-			int option = chooser.showOpenDialog(output); 
-			if(option == JFileChooser.CANCEL_OPTION) {
-				cancel = true;
-				done = true;
-				// this should only be false if opt file ?
-//				if (GraphicalInterface.saveOptFile) {
-//					GraphicalInterface.exit = false;
-//				}
-			}
-			if(option == JFileChooser.APPROVE_OPTION){  
-				if(chooser.getSelectedFile()!=null)	{  
-					String path = chooser.getSelectedFile().getPath();
-					if (!path.endsWith(".xml")) {
-						path = path + ".xml";
-					}
-					File theFileToSave = new File(path);
-					if (theFileToSave.exists()) {
-						int confirmDialog = JOptionPane.showConfirmDialog(chooser, "Replace existing file?");
-						if (confirmDialog == JOptionPane.YES_OPTION) {
+			boolean done = false;
+			boolean cancel = false;
+			while (!done) {
+				//... Open a file dialog.
+				int option = chooser.showOpenDialog(output); 
+				if(option == JFileChooser.CANCEL_OPTION) {
+					cancel = true;
+					done = true;
+					// this should only be false if opt file ?
+//					if (GraphicalInterface.saveOptFile) {
+//						GraphicalInterface.exit = false;
+//					}
+				}
+				if(option == JFileChooser.APPROVE_OPTION){  
+					if(chooser.getSelectedFile()!=null)	{  
+						String path = chooser.getSelectedFile().getPath();
+						if (!path.endsWith(".xml")) {
+							path = path + ".xml";
+						}
+						File theFileToSave = new File(path);
+						if (theFileToSave.exists()) {
+							int confirmDialog = JOptionPane.showConfirmDialog(chooser, "Replace existing file?");
+							if (confirmDialog == JOptionPane.YES_OPTION) {
+								done = true;
+								this.setOutFile(theFileToSave);
+
+								String rawPathName = chooser.getSelectedFile().getAbsolutePath();
+								if (!rawPathName.endsWith(".xml")) {
+									rawPathName = rawPathName + ".xml";
+								}
+								curSettings.add("LastSBML", rawPathName);
+							} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
+								done = false;
+							} else if (confirmDialog == JOptionPane.CANCEL_OPTION) { 
+								cancel = true;
+								done = true;							
+							}       		    	  
+						} else {
 							done = true;
 							this.setOutFile(theFileToSave);
 
@@ -180,31 +191,21 @@ public class JSBMLWriter implements TreeModelListener{
 							if (!rawPathName.endsWith(".xml")) {
 								rawPathName = rawPathName + ".xml";
 							}
-							curSettings.add("LastSaveSBML", rawPathName);
-						} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
-							done = false;
-						} else if (confirmDialog == JOptionPane.CANCEL_OPTION) { 
-							cancel = true;
-							done = true;							
-						}       		    	  
-					} else {
-						done = true;
-						this.setOutFile(theFileToSave);
-
-						String rawPathName = chooser.getSelectedFile().getAbsolutePath();
-						if (!rawPathName.endsWith(".xml")) {
-							rawPathName = rawPathName + ".xml";
+							curSettings.add("LastSBML", rawPathName);
 						}
-						curSettings.add("LastSaveSBML", rawPathName);
 					}
-				}
-			}			
-		}
-		
-		if (done && !cancel) {
+				}			
+			}
+			
+			if (done && !cancel) {
+				return true;
+			}
+		} else {
+			File theFileToSave = GraphicalInterface.getSBMLFile();
+			this.setOutFile(theFileToSave);
 			return true;
 		}
-
+		
 		return false;
 	}
 	
