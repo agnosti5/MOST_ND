@@ -2774,6 +2774,12 @@ public class GraphicalInterface extends JFrame {
 					if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none") && isRoot) {
 						System.out.println(curSettings.get("LastCSVReactions"));
 						LocalConfig.getInstance().reactionsTableChanged = false;
+						File f = new File(curSettings.get("LastCSVReactions"));
+						if (f.exists()) {
+							saveReactionsTextFile(f.getPath(), f.getName());
+						} else {
+							saveReactionsTextFileChooser();
+						}
 					} else {
 						saveReactionsTextFileChooser();
 					}
@@ -2781,6 +2787,12 @@ public class GraphicalInterface extends JFrame {
 					if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none") && isRoot) {
 						System.out.println(curSettings.get("LastCSVMetabolites"));
 						LocalConfig.getInstance().metabolitesTableChanged = false;
+						File f = new File(curSettings.get("LastCSVMetabolites"));
+						if (f.exists()) {
+							saveMetabolitesTextFile(f.getPath(), f.getName());
+						} else {
+							saveMetabolitesTextFileChooser();
+						}
 					} else {
 						saveMetabolitesTextFileChooser();
 					}
@@ -2816,6 +2828,7 @@ public class GraphicalInterface extends JFrame {
 						modelName = modelName.substring(0, modelName.length() - 4);
 					}
 					LocalConfig.getInstance().setModelName(modelName);
+					curSettings.add("LastSBML", jWrite.getOutFile().getAbsolutePath());
 				}				
 				LocalConfig.getInstance().setProgress(0);
 				progressBar.setVisible(true);
@@ -2890,6 +2903,7 @@ public class GraphicalInterface extends JFrame {
 					rawPathName = rawPathName + ".csv";
 				}
 				curSettings.add("LastCSV", rawPathName);
+				curSettings.add("LastCSVMetabolites", rawPathName);
 
 				LocalConfig.getInstance().hasMetabolitesFile = true;
 
@@ -3004,6 +3018,7 @@ public class GraphicalInterface extends JFrame {
 					rawPathName = rawPathName + ".csv";
 				}
 				curSettings.add("LastCSV", rawPathName);
+				curSettings.add("LastCSVReactions", rawPathName);
 
 				LocalConfig.getInstance().hasReactionsFile = true;
 
