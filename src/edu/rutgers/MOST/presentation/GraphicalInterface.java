@@ -249,7 +249,6 @@ public class GraphicalInterface extends JFrame {
 	public static boolean duplicatePromptShown;		  // ensures "Duplicate Metabolite" prompt displayed once per event
 	public static boolean renameMetabolite;           // if Rename menu action determines used, is set to true to for OK button action          
 	public static boolean reactionsTableEditable;	  
-	public static boolean modelCollectionOKButtonClicked;
 	public static boolean reactionCancelLoad;
 	public static boolean isRoot;
 	public static boolean hasGurobiPath;
@@ -910,6 +909,24 @@ public class GraphicalInterface extends JFrame {
 		});			
 		csvLoadInterface.okButton.addActionListener(okButtonCSVLoadActionListener);
 		csvLoadInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
+		
+		File f = new File("ModelCollection.csv");
+		ModelCollectionTable mcTable = new ModelCollectionTable(f);
+		mcTable.setIconImages(icons);
+		mcTable.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		mcTable.setAlwaysOnTop(true);				
+		mcTable.setLocationRelativeTo(null);
+		mcTable.setVisible(false);
+		setModelCollectionTable(mcTable);
+		ModelCollectionTable.okButton.addActionListener(modelCollectionOKButtonActionListener);
+		ModelCollectionTable.cancelButton.addActionListener(modelCollectionCancelButtonActionListener);
+		mcTable.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				loadExistingItem.setEnabled(true);
+				getModelCollectionTable().setVisible(false);
+				getModelCollectionTable().dispose();
+			}
+		});	
 		
 		setTitle(GraphicalInterfaceConstants.TITLE);
 		LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
@@ -2661,24 +2678,8 @@ public class GraphicalInterface extends JFrame {
 			SaveChangesPrompt();
 			saveFile = false;
 			if (openFileChooser) {
-				File f = new File("ModelCollection.csv");
-				ModelCollectionTable mcTable = new ModelCollectionTable(f);
-				mcTable.setIconImages(icons);
-				mcTable.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-				mcTable.setAlwaysOnTop(true);				
-				mcTable.setLocationRelativeTo(null);
-				mcTable.setVisible(true);
-				setModelCollectionTable(mcTable);
-				ModelCollectionTable.okButton.addActionListener(modelCollectionOKButtonActionListener);
-				ModelCollectionTable.cancelButton.addActionListener(modelCollectionCancelButtonActionListener);
+				getModelCollectionTable().setVisible(true);
 				loadExistingItem.setEnabled(false);
-				mcTable.addWindowListener(new WindowAdapter() {
-					public void windowClosing(WindowEvent evt) {
-						loadExistingItem.setEnabled(true);
-						getModelCollectionTable().setVisible(false);
-						getModelCollectionTable().dispose();
-					}
-				});	
 			}			
 		}
 	}
@@ -2686,37 +2687,33 @@ public class GraphicalInterface extends JFrame {
 	// need path in settings to prevent overwriting
 	ActionListener modelCollectionOKButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {			
-			if (!modelCollectionOKButtonClicked) {
-				if (openFileChooser) {
-					loadSetUp();
-					listModel.clear();
-					DynamicTreePanel.treePanel.clear();
-					saveDisabled = true;
-					saveItem.setEnabled(false);
-					savebutton.setEnabled(false);
-					if (getModelCollectionTable().getFileType().equals(GraphicalInterfaceConstants.SBML_FILE_TYPE)) {
-						setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
-						String path = getModelCollectionTable().getPath();
-						File file = new File(path);
-						setSBMLFile(file);
-						LocalConfig.getInstance().setModelName(getModelCollectionTable().getFileName());
-						LocalConfig.getInstance().setProgress(0);
-						progressBar.setVisible(true);
+			if (openFileChooser) {
+				loadSetUp();
+				listModel.clear();
+				DynamicTreePanel.treePanel.clear();
+				saveDisabled = true;
+				saveItem.setEnabled(false);
+				savebutton.setEnabled(false);
+				if (getModelCollectionTable().getFileType().equals(GraphicalInterfaceConstants.SBML_FILE_TYPE)) {
+					setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
+					String path = getModelCollectionTable().getPath();
+					File file = new File(path);
+					setSBMLFile(file);
+					LocalConfig.getInstance().setModelName(getModelCollectionTable().getFileName());
+					LocalConfig.getInstance().setProgress(0);
+					progressBar.setVisible(true);
 
-						timer.start();
+					timer.start();
 
-						task = new Task();
-						task.execute();
-					} else if (getModelCollectionTable().getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE)) {
-						setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
-						// currently there are no csv files in the table, but if added in the future
-						// add loading code here
-					}
-					
-					loadExistingItem.setEnabled(true);
+					task = new Task();
+					task.execute();
+				} else if (getModelCollectionTable().getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE)) {
+					setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
+					// currently there are no csv files in the table, but if added in the future
+					// add loading code here
+				}
 
-					modelCollectionOKButtonClicked = true;					
-				}				
+				loadExistingItem.setEnabled(true);					
 			}			
 		}
 	};
@@ -4015,7 +4012,6 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void setBooleanDefaults() {
-		modelCollectionOKButtonClicked = false;
 		// listener values
 		selectedCellChanged = false;
 		formulaBarFocusGained = false;
@@ -9369,15 +9365,14 @@ public class GraphicalInterface extends JFrame {
 				doc = reader.readSBML(getSBMLFile());
 				SBMLModelReader modelReader = new SBMLModelReader(doc);
 				modelReader.load();
-			} catch (FileNotFoundException e) {				
+			} catch (FileNotFoundException e) {	
 				JOptionPane.showMessageDialog(null,                
 						"File does not exist.",                
 						"File does not exist.",                                
 						JOptionPane.ERROR_MESSAGE);					
 				//e.printStackTrace();					
 				progress = 100;
-				progressBar.setVisible(false);
-				modelCollectionOKButtonClicked = false;
+				progressBar.setVisible(false);		
 			} catch (XMLStreamException e) {
 				JOptionPane.showMessageDialog(null,                
 						"This File is not a Valid SBML File.",                
@@ -9387,7 +9382,6 @@ public class GraphicalInterface extends JFrame {
 				//e.printStackTrace();
 				progress = 100;
 				progressBar.setVisible(false);
-				modelCollectionOKButtonClicked = false;
 			}	
 			while (progress < 100) {
 				try {
@@ -9648,7 +9642,6 @@ public class GraphicalInterface extends JFrame {
 				setUpMetabolitesTable(SBMLModelReader.getMetabolitesTableModel());
 				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), SBMLModelReader.getMetabolitesTableModel());	
 				setUpTables();
-				modelCollectionOKButtonClicked = false;
 				progressBar.setVisible(false);		
 				timer.stop();
 				// This appears redundant, but is the only way to not have an extra progress bar on screen

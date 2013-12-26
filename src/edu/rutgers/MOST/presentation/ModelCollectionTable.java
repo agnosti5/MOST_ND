@@ -103,17 +103,6 @@ class ModelCollectionTable
 		topPanel.setLayout( new BorderLayout() );
 		getContentPane().add( topPanel );
 		
-		/*
-		// Create columns names
-		String columnNames[] = { "Column 1", "Column 2", "Column 3",  "Column 4", "Column 5", 
-				"Column 6", "Column 7", "Column 8", "Column 9",};		
-		
-		for (int i = 0; i < columnNames.length; i++) {
-			model.addColumn(columnNames[i]);
-		}		
-		
-		table.setModel(model);
-		*/
 		int count = 0;
 		Vector<String> columnNames = new Vector<String>();
 		
@@ -190,7 +179,7 @@ class ModelCollectionTable
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				setVisible(false);
-				dispose();				
+				//dispose();				
 			}
 		};
 
@@ -199,7 +188,7 @@ class ModelCollectionTable
 		ActionListener cancelButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				setVisible(false);
-				dispose();				
+				//dispose();				
 			}
 		};
 
@@ -235,7 +224,7 @@ class ModelCollectionTable
 	
 	public static void main( String args[] )
 	{
-		File f = new File("ModelCollection2.csv");
+		File f = new File("ModelCollection.csv");
 		ModelCollectionTable mainFrame	= new ModelCollectionTable(f);
 		mainFrame.setVisible( true );
 	}
