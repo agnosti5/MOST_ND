@@ -3,13 +3,25 @@ package edu.rutgers.MOST.presentation;
 import javax.swing.*;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.swing.JFrame;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import edu.rutgers.MOST.data.MetaboliteFactory;
 import edu.rutgers.MOST.data.SBMLProduct;
 import edu.rutgers.MOST.data.SBMLReactant;
@@ -25,6 +37,8 @@ public class ReactionEditor extends JFrame {
 	public JButton cancelButton = new JButton("Cancel");
 	public JButton clearButton = new JButton(" Clear ");
 	public final JTextArea reactionArea = new JTextArea();
+	private final JMenuItem copyItem = new JMenuItem("Copy");
+	private final JMenuItem selectAllItem = new JMenuItem("Select All");
 
 	private String reactantString;
 	private int numReactantFields;
@@ -671,6 +685,97 @@ public class ReactionEditor extends JFrame {
 		clearButton.addActionListener(clearButtonActionListener);
 		cancelButton.addActionListener(cancelButtonActionListener);	
 		
+		final JPopupMenu popupMenu = new JPopupMenu();
+		copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		selectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+		popupMenu.add(copyItem);
+		copyItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 	
+				setClipboardContents(reactionArea.getSelectedText());							
+			}
+		});
+		
+		popupMenu.add(selectAllItem);
+		selectAllItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				reactionArea.selectAll();							
+			}
+		});
+		
+		reactionArea.addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e)  {check(e);}
+			public void mouseReleased(MouseEvent e) {check(e);}
+
+			public void check(MouseEvent e) {
+				if (e.isPopupTrigger()) { //if the event shows the menu
+					popupMenu.show(reactionArea, e.getX(), e.getY()); 
+				}
+			}
+		});	
+
+		reactionArea.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				fieldChangeAction();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				fieldChangeAction();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				fieldChangeAction();
+			}
+			public void fieldChangeAction() {
+				if (reactionArea.getText().length() > 0) {
+					copyItem.setEnabled(true);
+					selectAllItem.setEnabled(true);
+				} else {
+					copyItem.setEnabled(false);
+					selectAllItem.setEnabled(false);
+				}
+			}
+		});
+		
+	}	
+
+	//from http://www.javakb.com/Uwe/Forum.aspx/java-programmer/21291/popupmenu-for-a-cell-in-a-JXTable
+	private static String getClipboardContents(Object requestor) {
+		Transferable t = Toolkit.getDefaultToolkit()
+				.getSystemClipboard().getContents(requestor);
+		if (t != null) {
+			DataFlavor df = DataFlavor.stringFlavor;
+			if (df != null) {
+				try {
+					Reader r = df.getReaderForText(t);
+					char[] charBuf = new char[512];
+					StringBuffer buf = new StringBuffer();
+					int n;
+					while ((n = r.read(charBuf, 0, charBuf.length)) > 0) {
+						buf.append(charBuf, 0, n);
+					}
+					r.close();
+					return (buf.toString());
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				} catch (UnsupportedFlavorException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
+	private static boolean isClipboardContainingText(Object requestor) {
+		Transferable t = Toolkit.getDefaultToolkit()
+				.getSystemClipboard().getContents(requestor);
+		return t != null
+				&& (t.isDataFlavorSupported(DataFlavor.stringFlavor) || t
+						.isDataFlavorSupported(DataFlavor.plainTextFlavor));
+	}
+
+	private static void setClipboardContents(String s) {
+		StringSelection selection = new StringSelection(s);
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
+				selection, selection);
 	}
 
 }
