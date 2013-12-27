@@ -115,7 +115,7 @@ class ModelCollectionTable
 	public ModelCollectionTable(File file)
 	{
 		// Set the frame characteristics
-		setTitle( GraphicalInterfaceConstants.TITLE + " - " + "Model Collection" );
+		setTitle(ModelCollectionConstants.TITLE);
 		setSize( 700, 500 );
 		setBackground( Color.gray );
 		
@@ -228,14 +228,22 @@ class ModelCollectionTable
 			ModelCollectionCellRenderer renderer = new ModelCollectionCellRenderer();			
 			TableColumn column = table.getColumnModel().getColumn(i);
             column.setCellRenderer(renderer);
-            // Column widths can be changed here
-            if (i == 1) {
-            	column.setPreferredWidth(200);
+            // Column widths can be changed here           
+            if (i == ModelCollectionConstants.MODEL_VERSION_COLUMN) {
+            	column.setPreferredWidth(ModelCollectionConstants.MODEL_VERSION_WIDTH);
             }
-            if (i == 6) {
-            	column.setPreferredWidth(150);
+            if (i == ModelCollectionConstants.ORGANISM_NAME_COLUMN) {
+            	column.setPreferredWidth(ModelCollectionConstants.ORGANISM_NAME_WIDTH);
             }
-            if (i == 7 || i == 8) {
+            if (i == ModelCollectionConstants.REFERENCE_COLUMN) {
+            	column.setPreferredWidth(ModelCollectionConstants.REFERENCE_WIDTH);
+            }
+            if (i == ModelCollectionConstants.YEAR_COLUMN || i == ModelCollectionConstants.GENES_COLUMN ||
+            		i == ModelCollectionConstants.REACTIONS_COLUMN || i == ModelCollectionConstants.METABOLITES_COLUMN) {
+            	column.setPreferredWidth(ModelCollectionConstants.DEFAULT_WIDTH);
+            	renderer.setHorizontalAlignment(JLabel.RIGHT);
+            }
+            if (i >= ModelCollectionConstants.VISIBLE_COLUMN_NAMES.length) {
             	//sets column not visible
     			column.setMaxWidth(0);
     			column.setMinWidth(0); 
@@ -482,7 +490,7 @@ class ModelCollectionTable
     }
 	
 	public boolean isColumnVisible(int col) {
-		if (col < 7) {
+		if (col < ModelCollectionConstants.VISIBLE_COLUMN_NAMES.length) {
 			return true;
 		}
 		return false;
