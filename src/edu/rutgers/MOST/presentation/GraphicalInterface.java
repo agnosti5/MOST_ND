@@ -9417,7 +9417,7 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getOptimizationFilesList().add(getOptimizeName());
 			rFactory = new ReactionFactory("SBML");
 			uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
-
+ 
 			outputText = new StringBuffer();
 
 			//                log.debug("create an optimize");
@@ -9448,8 +9448,6 @@ public class GraphicalInterface extends JFrame {
 					index += 1;
 					publish(solution);
 					
-					DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
-					
 					// copy models, run optimization on these model
 					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
 					DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
@@ -9459,6 +9457,42 @@ public class GraphicalInterface extends JFrame {
 					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
 					LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
 					
+					DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
+					writer = null;
+					try {
+						String synObjString = "";
+						for (int i = 0; i < getrFactory().getSyntheticObjectiveVector().size(); i ++) {
+							if (getrFactory().getSyntheticObjectiveVector().get(i) > 0) {
+								synObjString += "Reaction '" + getrFactory().getReactionAbbreviations().get(i) + "' Synthetic Objective = " + getrFactory().getSyntheticObjectiveVector().get(i) + "\n";
+								
+							}
+						}
+						StringBuffer text = new StringBuffer();
+						text.append("GDBB" + "\n");
+						text.append(synObjString);
+						text.append("Number of Knockouts = " + model.getC() + "\n");
+						//                                outputText.append(getDatabaseName() + "\n");
+						text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
+						text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
+						text.append("Knockouts:");
+						text.append(kString);
+
+						File file = new File(solution.getSolutionName() + ".log");
+						writer = new BufferedWriter(new FileWriter(file));
+						writer.write(text.toString());  
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							if (writer != null) {
+								writer.close();
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}					
 //					System.out.println("opt " + LocalConfig.getInstance().getOptimizationFilesList());
 //					System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
 				}
@@ -9499,7 +9533,7 @@ public class GraphicalInterface extends JFrame {
 			rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
 
 			//DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
-			GraphicalInterface.outputTextArea.append("\n\n" + model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n" + "Maximum synthetic objective: " + objectiveValue + "\nKnockouts:" + kString);
+			//GraphicalInterface.outputTextArea.append("\n\n" + model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n" + "Maximum synthetic objective: " + objectiveValue + "\nKnockouts:" + kString);
 			//DynamicTreePanel.treePanel.setNodeSelected(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1);
 			DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 			//System.out.println("lm " + listModel);
@@ -9518,8 +9552,6 @@ public class GraphicalInterface extends JFrame {
 			textInput.enableStart();
 			textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			
-			writer = null;
-			//if (optimizeName.contains(ConfigConstants.DEFAULT_DATABASE_NAME)) {
 			setrFactory(new ReactionFactory("SBML"));
 			getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 			getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
@@ -9558,12 +9590,10 @@ public class GraphicalInterface extends JFrame {
 					e.printStackTrace();
 				}
 			}
-			loadOutputPane(getOptimizeName() + ".log");
-			//}
-			//                loadOutputPane(getOptimizePath() + ".log");
+			outputTextArea.setText(outputText.toString());
 			if (getPopout() != null) {
-				getPopout().load(getOptimizeName() + ".log");
-			}                                
+				getPopout().setOutputText(outputText.toString());
+			} 
 
 			textInput.setVisible(false);
 			//DynamicTreePanel.treePanel.getTree().setSelectionPath(DynamicTreePanel.treePanel.getTree().getPathForRow(DynamicTreePanel.treePanel.getTree().getRowCount() - 1));

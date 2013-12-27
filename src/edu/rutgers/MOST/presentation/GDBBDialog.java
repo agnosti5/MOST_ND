@@ -275,6 +275,7 @@ public class GDBBDialog extends JDialog
 			//We can't just setText on the formatted text
 			//field, since its value will remain set.
 		} else if ("Start".equals(e.getActionCommand())) {
+			System.out.println("start");
 			count = 0;
 			timer.restart();
 			startButton.setEnabled(false);

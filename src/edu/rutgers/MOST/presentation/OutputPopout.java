@@ -286,6 +286,10 @@ public class OutputPopout extends JFrame {
 		}
 	}
 	
+	public void setOutputText(String text) {
+		textArea.setText(text);
+	}
+	
 	public static void main(String[] args) {
 		new OutputPopout();
 		//loadOutputPane("C://CMakeCache.txt");

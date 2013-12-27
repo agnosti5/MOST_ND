@@ -113,7 +113,6 @@ public class Utilities {
 		ResizableDialog r = new ResizableDialog(errorTitle, errorDescription, errorMessage);
 		
 		r.setIconImages(icons);
-    	//r.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     	r.setLocationRelativeTo(null);
     	r.setVisible(true);
 	}

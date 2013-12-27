@@ -27,7 +27,7 @@ public class ResizableDialog extends JDialog
 	 
 	private JPanel LabelPanel;
     private JPanel ButtonPanel;  
-    private JButton OKButton;  
+    public JButton OKButton;  
     private JButton DetailsButton;
     private JPanel MessagePanel;  
     private JLabel Label;
@@ -69,7 +69,7 @@ public class ResizableDialog extends JDialog
 
 	private static final long serialVersionUID = 1L;
 	public ResizableDialog(String errorTitle, String errorDescription, String errorMessage) 
-    {   
+    {		
         initComponents(errorTitle, errorDescription, errorMessage); 
     }  
                            
@@ -91,7 +91,7 @@ public class ResizableDialog extends JDialog
         setTitle(errorTitle);
         Label.setText(errorDescription);
    
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);  
+        //setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);  
         
         LabelPanel.add(Label);
         getContentPane().add(LabelPanel, java.awt.BorderLayout.NORTH); 
