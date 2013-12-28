@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,6 +20,7 @@ import java.awt.event.WindowFocusListener;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -84,6 +86,26 @@ public class FindReplaceDialog extends JDialog {
 		return replaceText;
 	}
 	
+	private String oldFindValue;
+	
+	public String getOldFindValue() {
+		return oldFindValue;
+	}
+
+	public void setOldFindValue(String oldFindValue) {
+		this.oldFindValue = oldFindValue;
+	}
+
+	private String oldReplaceValue;
+	
+	public String getOldReplaceValue() {
+		return oldReplaceValue;
+	}
+
+	public void setOldReplaceValue(String oldReplaceValue) {
+		this.oldReplaceValue = oldReplaceValue;
+	}
+
 	private WindowFocusListener windowFocusListener;
 	
     public FindReplaceDialog() {
@@ -123,7 +145,7 @@ public class FindReplaceDialog extends JDialog {
 					findPopupMenu.show(findField, e.getX(), e.getY()); 
 				}
 			}
-		});
+		});     
         
         findCutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
@@ -417,6 +439,20 @@ public class FindReplaceDialog extends JDialog {
 			}
 		});
         
+        findField.addKeyListener(new KeyAdapter() {
+        	public void keyPressed(KeyEvent e) {
+        		int key = e.getKeyCode();
+        		if (key == KeyEvent.VK_ENTER) { 
+        			String value = findField.getText(); 
+        			if (value.trim().length() > 0) {
+        				updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
+            			findField.setText(value); 
+        			}       			
+        		}
+        	}
+        }
+        		);  
+        
         replaceField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				enableReplaceButtons();
@@ -450,6 +486,20 @@ public class FindReplaceDialog extends JDialog {
 				}
 			}
 		});
+        
+        replaceField.addKeyListener(new KeyAdapter() {
+        	public void keyPressed(KeyEvent e) {
+        		int key = e.getKeyCode();
+        		if (key == KeyEvent.VK_ENTER) { 
+        			String value = replaceField.getText(); 
+        			if (value.trim().length() > 0) {
+        				updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), value); 
+            			replaceField.setText(value);
+        			}       			
+        		}
+        	}
+        }
+        		); 
         
         ActionListener findButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
