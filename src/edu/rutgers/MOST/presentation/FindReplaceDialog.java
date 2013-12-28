@@ -30,6 +30,7 @@ import edu.rutgers.MOST.config.LocalConfig;
 //import edu.rutgers.MOST.data.ReactionUndoItem;
 //import edu.rutgers.MOST.data.UndoConstants;
 
+import edu.rutgers.MOST.data.TextFieldUndoItem;
 import static javax.swing.GroupLayout.Alignment.*;
  
 public class FindReplaceDialog extends JDialog {
@@ -63,8 +64,7 @@ public class FindReplaceDialog extends JDialog {
 	public static final JMenuItem replaceDeleteItem = new JMenuItem("Delete");
 	public static final JMenuItem replaceSelectAllItem = new JMenuItem("Select All");
 	public static final JLabel placeholder = new JLabel("     ");
-	//public static final SizedComboBox cb = new SizedComboBox();
-	//public static final JComboBox<String> cb = new JComboBox<String>();
+	public static final TextFieldUndoItem findUndoItem = new TextFieldUndoItem();
 		
 	private String findText;
 
@@ -96,6 +96,16 @@ public class FindReplaceDialog extends JDialog {
 		this.oldFindValue = oldFindValue;
 	}
 
+	private String newFindValue;
+	
+	public String getNewFindValue() {
+		return newFindValue;
+	}
+
+	public void setNewFindValue(String newFindValue) {
+		this.newFindValue = newFindValue;
+	}
+
 	private String oldReplaceValue;
 	
 	public String getOldReplaceValue() {
@@ -104,6 +114,16 @@ public class FindReplaceDialog extends JDialog {
 
 	public void setOldReplaceValue(String oldReplaceValue) {
 		this.oldReplaceValue = oldReplaceValue;
+	}
+	
+	private String newReplaceValue;
+
+	public String getNewReplaceValue() {
+		return newReplaceValue;
+	}
+
+	public void setNewReplaceValue(String newReplaceValue) {
+		this.newReplaceValue = newReplaceValue;
 	}
 
 	private WindowFocusListener windowFocusListener;
@@ -134,6 +154,9 @@ public class FindReplaceDialog extends JDialog {
         findPopupMenu.addSeparator();
         findPopupMenu.add(findSelectAllItem);
         findBox.add(findPopupMenu);
+        
+        setOldFindValue("");
+        setOldReplaceValue("");
         
         findField.addMouseListener(new MouseAdapter() {
 
@@ -444,10 +467,20 @@ public class FindReplaceDialog extends JDialog {
         		int key = e.getKeyCode();
         		if (key == KeyEvent.VK_ENTER) { 
         			String value = findField.getText(); 
+        			setNewFindValue(value);
+        			findUndoItem.setNewValue(value);
+        			if (!getOldFindValue().equals(value)) {
+        				System.out.println("old = " + getOldFindValue());
+        				findUndoItem.setOldValue(getOldFindValue());
+        				setOldFindValue(value);
+        			}
         			if (value.trim().length() > 0) {
         				updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
-            			findField.setText(value); 
-        			}       			
+        				findField.setText(value);             			
+        			} 
+        			//findField.setText(value); 
+        			System.out.println("undo old = " + findUndoItem.getOldValue());
+        			System.out.println("undo new = " + findUndoItem.getNewValue());
         		}
         	}
         }
