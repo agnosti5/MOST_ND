@@ -59,6 +59,7 @@ public class FindReplaceDialog extends JDialog {
 	public static final JMenuItem findPasteItem = new JMenuItem("Paste");
 	public static final JMenuItem findDeleteItem = new JMenuItem("Delete");
 	public static final JMenuItem findSelectAllItem = new JMenuItem("Select All");
+	public static final JMenuItem replaceUndoMenuItem = new JMenuItem("Undo");
 	public static final JMenuItem replaceCutItem = new JMenuItem("Cut");
 	public static final JMenuItem replaceCopyItem = new JMenuItem("Copy");
 	public static final JMenuItem replacePasteItem = new JMenuItem("Paste");
@@ -222,10 +223,13 @@ public class FindReplaceDialog extends JDialog {
         replaceBox.setEditable(true);
         final JTextField replaceField = (JTextField)replaceBox.getEditor().getEditorComponent();
         final JPopupMenu replacePopupMenu = new JPopupMenu();
+        replaceUndoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
         replaceCutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         replaceCopyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
         replacePasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
         replaceSelectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+        replacePopupMenu.add(replaceUndoMenuItem);
+        replacePopupMenu.addSeparator();
         replacePopupMenu.add(replaceCutItem);
         replacePopupMenu.add(replaceCopyItem);
         replacePopupMenu.add(replacePasteItem);
@@ -246,6 +250,14 @@ public class FindReplaceDialog extends JDialog {
 			}
 		});
         
+        replaceUndoMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+	            replaceField.setText(replaceUndoItem.getOldValue());	
+	            String temp = replaceUndoItem.getOldValue();
+	            replaceUndoItem.setOldValue(replaceUndoItem.getNewValue());
+	            replaceUndoItem.setNewValue(temp);
+			}
+		});
         replaceCutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				setClipboardContents(replaceField.getSelectedText());
@@ -517,10 +529,17 @@ public class FindReplaceDialog extends JDialog {
         		int key = e.getKeyCode();
         		if (key == KeyEvent.VK_ENTER) { 
         			String value = replaceField.getText(); 
+        			replaceUndoItem.setNewValue(value);
+        			if (!getOldReplaceValue().equals(value)) {
+        				replaceUndoItem.setOldValue(getOldReplaceValue());
+        				setOldReplaceValue(value);
+        			}
         			if (value.trim().length() > 0) {
-        				updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), value); 
-            			replaceField.setText(value);
-        			}       			
+        				updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText()); 
+        				replaceField.setText(value);             			
+        			} 
+        			System.out.println("undo old = " + replaceUndoItem.getOldValue());
+        			System.out.println("undo new = " + replaceUndoItem.getNewValue());     			
         		}
         	}
         }
@@ -571,7 +590,14 @@ public class FindReplaceDialog extends JDialog {
     	ActionListener replaceButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			setReplaceText(replaceField.getText());
-    			updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText());  
+    			replaceUndoItem.setNewValue(replaceField.getText());
+    			if (!getOldReplaceValue().equals(replaceField.getText())) {
+    				replaceUndoItem.setOldValue(getOldReplaceValue());
+    				setOldReplaceValue(replaceField.getText());
+    			}
+    			updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText());
+    			System.out.println("undo old = " + replaceUndoItem.getOldValue());
+    			System.out.println("undo new = " + replaceUndoItem.getNewValue());
     		}
     	};
 
@@ -580,7 +606,14 @@ public class FindReplaceDialog extends JDialog {
         ActionListener replaceAllButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			setReplaceText(replaceField.getText());	
+    			replaceUndoItem.setNewValue(replaceField.getText());
+    			if (!getOldReplaceValue().equals(replaceField.getText())) {
+    				replaceUndoItem.setOldValue(getOldReplaceValue());
+    				setOldReplaceValue(replaceField.getText());
+    			}
     			updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText());  
+    			System.out.println("undo old = " + replaceUndoItem.getOldValue());
+    			System.out.println("undo new = " + replaceUndoItem.getNewValue());
     		}
     	};
 
