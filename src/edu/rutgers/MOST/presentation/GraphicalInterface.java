@@ -9479,7 +9479,9 @@ public class GraphicalInterface extends JFrame {
 						text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
 						text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
 						text.append("Knockouts:");
-						text.append(kString);
+						if (kString != null) {
+							text.append(kString);
+						}						
 
 						File file = new File(solution.getSolutionName() + ".log");
 						writer = new BufferedWriter(new FileWriter(file));
