@@ -95,16 +95,16 @@ public class FindReplaceDialog extends JDialog {
 	public void setOldFindValue(String oldFindValue) {
 		this.oldFindValue = oldFindValue;
 	}
-
-	private String newFindValue;
-	
-	public String getNewFindValue() {
-		return newFindValue;
-	}
-
-	public void setNewFindValue(String newFindValue) {
-		this.newFindValue = newFindValue;
-	}
+//
+//	private String newFindValue;
+//	
+//	public String getNewFindValue() {
+//		return newFindValue;
+//	}
+//
+//	public void setNewFindValue(String newFindValue) {
+//		this.newFindValue = newFindValue;
+//	}
 
 	private String oldReplaceValue;
 	
@@ -115,16 +115,16 @@ public class FindReplaceDialog extends JDialog {
 	public void setOldReplaceValue(String oldReplaceValue) {
 		this.oldReplaceValue = oldReplaceValue;
 	}
-	
-	private String newReplaceValue;
-
-	public String getNewReplaceValue() {
-		return newReplaceValue;
-	}
-
-	public void setNewReplaceValue(String newReplaceValue) {
-		this.newReplaceValue = newReplaceValue;
-	}
+//	
+//	private String newReplaceValue;
+//
+//	public String getNewReplaceValue() {
+//		return newReplaceValue;
+//	}
+//
+//	public void setNewReplaceValue(String newReplaceValue) {
+//		this.newReplaceValue = newReplaceValue;
+//	}
 
 	private WindowFocusListener windowFocusListener;
 	
@@ -467,10 +467,8 @@ public class FindReplaceDialog extends JDialog {
         		int key = e.getKeyCode();
         		if (key == KeyEvent.VK_ENTER) { 
         			String value = findField.getText(); 
-        			setNewFindValue(value);
         			findUndoItem.setNewValue(value);
         			if (!getOldFindValue().equals(value)) {
-        				System.out.println("old = " + getOldFindValue());
         				findUndoItem.setOldValue(getOldFindValue());
         				setOldFindValue(value);
         			}
@@ -478,7 +476,6 @@ public class FindReplaceDialog extends JDialog {
         				updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
         				findField.setText(value);             			
         			} 
-        			//findField.setText(value); 
         			System.out.println("undo old = " + findUndoItem.getOldValue());
         			System.out.println("undo new = " + findUndoItem.getNewValue());
         		}
@@ -537,12 +534,19 @@ public class FindReplaceDialog extends JDialog {
         ActionListener findButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			setFindText(findField.getText());
+    			findUndoItem.setNewValue(findField.getText());
+    			if (!getOldFindValue().equals(findField.getText())) {
+    				findUndoItem.setOldValue(getOldFindValue());
+    				setOldFindValue(findField.getText());
+    			}
     			if (GraphicalInterface.isRoot) {
     				replaceButton.setEnabled(true);
         			//replaceFindButton.setEnabled(true);
     			} 
     			replaceAllButton.setEnabled(false);
     			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
+    			System.out.println("undo old = " + findUndoItem.getOldValue());
+    			System.out.println("undo new = " + findUndoItem.getNewValue());
     		}
     	};
 
@@ -551,12 +555,19 @@ public class FindReplaceDialog extends JDialog {
         ActionListener findAllButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			setFindText(findField.getText());
+    			findUndoItem.setNewValue(findField.getText());
+    			if (!getOldFindValue().equals(findField.getText())) {
+    				findUndoItem.setOldValue(getOldFindValue());
+    				setOldFindValue(findField.getText());
+    			}
     			replaceButton.setEnabled(false);
     			if (GraphicalInterface.isRoot) {
     				replaceAllButton.setEnabled(true);
     			}    			
     			//replaceFindButton.setEnabled(false);
-    			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
+    			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText());
+    			System.out.println("undo old = " + findUndoItem.getOldValue());
+    			System.out.println("undo new = " + findUndoItem.getNewValue());
     		}
     	};
 
