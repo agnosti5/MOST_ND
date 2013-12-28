@@ -53,6 +53,7 @@ public class FindReplaceDialog extends JDialog {
 	public static final JCheckBox wrapCheckBox = new JCheckBox("Wrap Around");
 	public static final JCheckBox selectedAreaCheckBox = new JCheckBox("Selected Area  ");
 	public static final JCheckBox backwardsCheckBox = new JCheckBox("Backwards");
+	public static final JMenuItem findUndoMenuItem = new JMenuItem("Undo");
 	public static final JMenuItem findCutItem = new JMenuItem("Cut");
 	public static final JMenuItem findCopyItem = new JMenuItem("Copy");
 	public static final JMenuItem findPasteItem = new JMenuItem("Paste");
@@ -64,7 +65,10 @@ public class FindReplaceDialog extends JDialog {
 	public static final JMenuItem replaceDeleteItem = new JMenuItem("Delete");
 	public static final JMenuItem replaceSelectAllItem = new JMenuItem("Select All");
 	public static final JLabel placeholder = new JLabel("     ");
+	
+	// undo changes in find, replace text fields
 	public static final TextFieldUndoItem findUndoItem = new TextFieldUndoItem();
+	public static final TextFieldUndoItem replaceUndoItem = new TextFieldUndoItem();
 		
 	private String findText;
 
@@ -95,16 +99,6 @@ public class FindReplaceDialog extends JDialog {
 	public void setOldFindValue(String oldFindValue) {
 		this.oldFindValue = oldFindValue;
 	}
-//
-//	private String newFindValue;
-//	
-//	public String getNewFindValue() {
-//		return newFindValue;
-//	}
-//
-//	public void setNewFindValue(String newFindValue) {
-//		this.newFindValue = newFindValue;
-//	}
 
 	private String oldReplaceValue;
 	
@@ -115,16 +109,6 @@ public class FindReplaceDialog extends JDialog {
 	public void setOldReplaceValue(String oldReplaceValue) {
 		this.oldReplaceValue = oldReplaceValue;
 	}
-//	
-//	private String newReplaceValue;
-//
-//	public String getNewReplaceValue() {
-//		return newReplaceValue;
-//	}
-//
-//	public void setNewReplaceValue(String newReplaceValue) {
-//		this.newReplaceValue = newReplaceValue;
-//	}
 
 	private WindowFocusListener windowFocusListener;
 	
@@ -143,10 +127,13 @@ public class FindReplaceDialog extends JDialog {
         findBox.setEditable(true);
         final JTextField findField = (JTextField)findBox.getEditor().getEditorComponent();
         final JPopupMenu findPopupMenu = new JPopupMenu();
+        findUndoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
         findCutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         findCopyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
         findPasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
         findSelectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+        findPopupMenu.add(findUndoMenuItem);
+        findPopupMenu.addSeparator();
         findPopupMenu.add(findCutItem);
         findPopupMenu.add(findCopyItem);
         findPopupMenu.add(findPasteItem);
@@ -168,8 +155,16 @@ public class FindReplaceDialog extends JDialog {
 					findPopupMenu.show(findField, e.getX(), e.getY()); 
 				}
 			}
-		});     
+		});  
         
+        findUndoMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+	            findField.setText(findUndoItem.getOldValue());	
+	            String temp = findUndoItem.getOldValue();
+	            findUndoItem.setOldValue(findUndoItem.getNewValue());
+	            findUndoItem.setNewValue(temp);
+			}
+		});
         findCutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				setClipboardContents(findField.getSelectedText());
