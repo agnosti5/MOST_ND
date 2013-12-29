@@ -54,4 +54,20 @@ public class EntryValidator {
 		
 	}
 	
+	public boolean validTrueValue(String value) {
+		if (value.toLowerCase().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
+			return true;
+		}
+		return false;
+		
+	}
+	
+	public boolean validFalseValue(String value) {
+		if (value.toLowerCase().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+			return true;
+		}
+		return false;
+		
+	}
+	
 }

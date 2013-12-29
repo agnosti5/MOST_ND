@@ -408,6 +408,6 @@ public class GraphicalInterfaceConstants {
     public static final String CSV_FILE_TYPE = "csv";
     public static final String DEFAULT_FILE_TYPE = "csv";
 
-	public static final String GDBB_PREFIX = "GDBB_";
+    public static final String GDBB_PREFIX = "GDBB_";
 }
 

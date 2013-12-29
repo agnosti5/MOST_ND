@@ -483,8 +483,8 @@ public class FindReplaceDialog extends JDialog {
         				updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
         				findField.setText(value);             			
         			} 
-        			System.out.println("undo old = " + findUndoItem.getOldValue());
-        			System.out.println("undo new = " + findUndoItem.getNewValue());
+//        			System.out.println("undo old = " + findUndoItem.getOldValue());
+//        			System.out.println("undo new = " + findUndoItem.getNewValue());
         		}
         	}
         }
@@ -538,8 +538,8 @@ public class FindReplaceDialog extends JDialog {
         				updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText()); 
         				replaceField.setText(value);             			
         			} 
-        			System.out.println("undo old = " + replaceUndoItem.getOldValue());
-        			System.out.println("undo new = " + replaceUndoItem.getNewValue());     			
+//        			System.out.println("undo old = " + replaceUndoItem.getOldValue());
+//        			System.out.println("undo new = " + replaceUndoItem.getNewValue());     			
         		}
         	}
         }
@@ -559,8 +559,8 @@ public class FindReplaceDialog extends JDialog {
     			} 
     			replaceAllButton.setEnabled(false);
     			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
-    			System.out.println("undo old = " + findUndoItem.getOldValue());
-    			System.out.println("undo new = " + findUndoItem.getNewValue());
+//    			System.out.println("undo old = " + findUndoItem.getOldValue());
+//    			System.out.println("undo new = " + findUndoItem.getNewValue());
     		}
     	};
 
@@ -580,8 +580,8 @@ public class FindReplaceDialog extends JDialog {
     			}    			
     			//replaceFindButton.setEnabled(false);
     			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText());
-    			System.out.println("undo old = " + findUndoItem.getOldValue());
-    			System.out.println("undo new = " + findUndoItem.getNewValue());
+//    			System.out.println("undo old = " + findUndoItem.getOldValue());
+//    			System.out.println("undo new = " + findUndoItem.getNewValue());
     		}
     	};
 
@@ -596,8 +596,8 @@ public class FindReplaceDialog extends JDialog {
     				setOldReplaceValue(replaceField.getText());
     			}
     			updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText());
-    			System.out.println("undo old = " + replaceUndoItem.getOldValue());
-    			System.out.println("undo new = " + replaceUndoItem.getNewValue());
+//    			System.out.println("undo old = " + replaceUndoItem.getOldValue());
+//    			System.out.println("undo new = " + replaceUndoItem.getNewValue());
     		}
     	};
 
@@ -612,8 +612,8 @@ public class FindReplaceDialog extends JDialog {
     				setOldReplaceValue(replaceField.getText());
     			}
     			updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText());  
-    			System.out.println("undo old = " + replaceUndoItem.getOldValue());
-    			System.out.println("undo new = " + replaceUndoItem.getNewValue());
+//    			System.out.println("undo old = " + replaceUndoItem.getOldValue());
+//    			System.out.println("undo new = " + replaceUndoItem.getNewValue());
     		}
     	};
 
