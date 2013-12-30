@@ -25,7 +25,7 @@ public class GDBBDialog1  extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField numKnockouts = new JTextField();
+	private JTextField numKnockoutsField = new JTextField();
 	private JComboBox<String> cbNumThreads = new JComboBox<String>();
 	private SizedComboBox cbSynObj = new SizedComboBox();
 	private SizedComboBox cbSynObj1 = new SizedComboBox();
@@ -57,9 +57,9 @@ public class GDBBDialog1  extends JDialog {
 		cbSynObj.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
 		cbSynObj.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]);		
 
-		numKnockouts.setPreferredSize(new Dimension(150, 25));
-		numKnockouts.setMaximumSize(new Dimension(150, 25));
-		numKnockouts.setMinimumSize(new Dimension(150, 25));
+		numKnockoutsField.setPreferredSize(new Dimension(150, 25));
+		numKnockoutsField.setMaximumSize(new Dimension(150, 25));
+		numKnockoutsField.setMinimumSize(new Dimension(150, 25));
 
 		cbNumThreads.setPreferredSize(new Dimension(150, 25));
 		cbNumThreads.setMaximumSize(new Dimension(150, 25));
@@ -69,13 +69,13 @@ public class GDBBDialog1  extends JDialog {
 		cbSynObj.setMaximumSize(new Dimension(150, 25));
 		cbSynObj.setMinimumSize(new Dimension(150, 25));
 		
-		cbSynObj1.setPreferredSize(new Dimension(150, 25));
-		cbSynObj1.setMaximumSize(new Dimension(150, 25));
-		cbSynObj1.setMinimumSize(new Dimension(150, 25));
+		blankLabel.setPreferredSize(new Dimension(150, 25));
+		blankLabel.setMaximumSize(new Dimension(150, 25));
+		blankLabel.setMinimumSize(new Dimension(150, 25));
 		
-		cbSynObj2.setPreferredSize(new Dimension(150, 25));
-		cbSynObj2.setMaximumSize(new Dimension(150, 25));
-		cbSynObj2.setMinimumSize(new Dimension(150, 25));
+		finiteTimeField.setPreferredSize(new Dimension(150, 25));
+		finiteTimeField.setMaximumSize(new Dimension(150, 25));
+		finiteTimeField.setMinimumSize(new Dimension(150, 25));
 		
 		//box layout
 		Box vb = Box.createVerticalBox();
@@ -89,13 +89,12 @@ public class GDBBDialog1  extends JDialog {
 		Box hbSynObjLabel = Box.createHorizontalBox();	    
 		Box hbSynObj = Box.createHorizontalBox();
 		Box hbSynObjLabel1 = Box.createHorizontalBox();	    
-		Box hbSynObj1 = Box.createHorizontalBox();
+//		Box hbSynObj1 = Box.createHorizontalBox();
 		Box hbSynObjLabel2 = Box.createHorizontalBox();	    
-		Box hbSynObj2 = Box.createHorizontalBox();
 //		Box hbIndefiniteTime = Box.createHorizontalBox();	    
-//		Box hbBlankLabel = Box.createHorizontalBox();
+		Box hbBlankLabel = Box.createHorizontalBox();
 //		Box hbFiniteTime = Box.createHorizontalBox();	    
-//		Box hbFiniteTimeField = Box.createHorizontalBox();
+		Box hbFiniteTimeField = Box.createHorizontalBox();
 		
 		Box vbLabels = Box.createVerticalBox();
 		Box vbCombos = Box.createVerticalBox();
@@ -136,7 +135,7 @@ public class GDBBDialog1  extends JDialog {
 
 		JPanel panelNumKnockouts = new JPanel();
 		panelNumKnockouts.setLayout(new BoxLayout(panelNumKnockouts, BoxLayout.X_AXIS));
-		panelNumKnockouts.add(numKnockouts);
+		panelNumKnockouts.add(numKnockoutsField);
 		panelNumKnockouts.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
 		panelNumKnockouts.setAlignmentX(RIGHT_ALIGNMENT);
 
@@ -227,19 +226,19 @@ public class GDBBDialog1  extends JDialog {
 		hbSynObjLabel1.add(panelSynObjLabel1);
 		hbSynObjLabel1.setAlignmentX(LEFT_ALIGNMENT);
 
-		JPanel panelSynObj1 = new JPanel();
-		panelSynObj1.setLayout(new BoxLayout(panelSynObj1, BoxLayout.X_AXIS));
-		panelSynObj1.add(cbSynObj1);
-		panelSynObj1.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-		panelSynObj1.setAlignmentX(RIGHT_ALIGNMENT);
+		JPanel panelBlankLabel = new JPanel();
+		panelBlankLabel.setLayout(new BoxLayout(panelBlankLabel, BoxLayout.X_AXIS));
+		panelBlankLabel.add(blankLabel);
+		panelBlankLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelBlankLabel.setAlignmentX(RIGHT_ALIGNMENT);
 
-		hbSynObj1.add(panelSynObj1);
-		hbSynObj1.setAlignmentX(RIGHT_ALIGNMENT);
+		hbBlankLabel.add(panelBlankLabel);
+		hbBlankLabel.setAlignmentX(RIGHT_ALIGNMENT);
 
 		vbLabels.add(hbSynObjLabel1);
 		JLabel blankLabel4 = new JLabel("");
 		vbLabels.add(blankLabel4);
-		vbCombos.add(hbSynObj1);
+		vbCombos.add(hbBlankLabel);
 		
 		//synObj2 label and combo
 		JLabel synObjLabel2 = new JLabel();
@@ -258,19 +257,19 @@ public class GDBBDialog1  extends JDialog {
 		hbSynObjLabel2.add(panelSynObjLabel2);
 		hbSynObjLabel2.setAlignmentX(LEFT_ALIGNMENT);
 
-		JPanel panelSynObj2 = new JPanel();
-		panelSynObj2.setLayout(new BoxLayout(panelSynObj2, BoxLayout.X_AXIS));
-		panelSynObj2.add(cbSynObj2);
-		panelSynObj2.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-		panelSynObj2.setAlignmentX(RIGHT_ALIGNMENT);
+		JPanel panelFiniteTimeField = new JPanel();
+		panelFiniteTimeField.setLayout(new BoxLayout(panelFiniteTimeField, BoxLayout.X_AXIS));
+		panelFiniteTimeField.add(finiteTimeField);
+		panelFiniteTimeField.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelFiniteTimeField.setAlignmentX(RIGHT_ALIGNMENT);
 
-		hbSynObj2.add(panelSynObj2);
-		hbSynObj2.setAlignmentX(RIGHT_ALIGNMENT);
+		hbFiniteTimeField.add(panelFiniteTimeField);
+		hbFiniteTimeField.setAlignmentX(RIGHT_ALIGNMENT);
 
 		vbLabels.add(hbSynObjLabel2);
 		JLabel blankLabel5 = new JLabel("");
 		vbLabels.add(blankLabel5);
-		vbCombos.add(hbSynObj2);
+		vbCombos.add(hbFiniteTimeField);
 		
 		startButton.setMnemonic(KeyEvent.VK_S);
 		JLabel blank = new JLabel("    "); 
