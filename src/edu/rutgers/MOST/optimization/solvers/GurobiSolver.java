@@ -44,7 +44,6 @@ import edu.rutgers.MOST.optimization.GDBB.GDBB;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ResizableDialog;
-import edu.rutgers.MOST.presentation.Utilities;
 
 public class GurobiSolver extends Solver {
 	
@@ -152,8 +151,6 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
 			dialog.setErrorMessage(errorText.toString());
@@ -169,15 +166,13 @@ public class GurobiSolver extends Solver {
 						//					GraphicalInterface.getTextInput().setVisible(false);
 						LocalConfig.getInstance().hasValidGurobiKey = false;
 						GraphicalInterface.getTextInput().setVisible(false);
-						dialog.setErrorDescription("Error: No validation file - run 'grbgetkey' to refresh it.");
-						dialog.setVisible(true);
-//						Object[] options = {"    OK    "};
-//						int choice = JOptionPane.showOptionDialog(null, 
-//								"Error: No validation file - run 'grbgetkey' to refresh it.", 
-//								GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE, 
-//								JOptionPane.YES_NO_OPTION, 
-//								JOptionPane.QUESTION_MESSAGE, 
-//								null, options, options[0]);
+						Object[] options = {"    OK    "};
+						int choice = JOptionPane.showOptionDialog(null, 
+								"Error: No validation file - run 'grbgetkey' to refresh it.", 
+								GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE, 
+								JOptionPane.YES_NO_OPTION, 
+								JOptionPane.QUESTION_MESSAGE, 
+								null, options, options[0]);
 						LocalConfig.getInstance().getOptimizationFilesList().clear();
 					}
 					else {
@@ -188,23 +183,23 @@ public class GurobiSolver extends Solver {
 				e.printStackTrace();
 				StringWriter errors = new StringWriter();
 				e.printStackTrace(new PrintWriter(errors));
-//				Utilities u = new Utilities();
-//				u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 				outputText.append(errors.toString());
 				errorText.append(errors.toString());
-				dialog.setErrorMessage(errorText.toString());
-				dialog.setVisible(true);
+				if (LocalConfig.getInstance().hasValidGurobiKey) {
+					dialog.setErrorMessage(errorText.toString());
+					dialog.setVisible(true);
+				}				
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | HeadlessException | NoSuchFieldException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				StringWriter errors = new StringWriter();
 				e1.printStackTrace(new PrintWriter(errors));
-//				Utilities u = new Utilities();
-//				u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 				outputText.append(errors.toString());
 				errorText.append(errors.toString());
-				dialog.setErrorMessage(errorText.toString());
-				dialog.setVisible(true);
+				if (LocalConfig.getInstance().hasValidGurobiKey) {
+					dialog.setErrorMessage(errorText.toString());
+					dialog.setVisible(true);
+				}
 			}
 		} 
 	}
@@ -241,12 +236,12 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
-			dialog.setErrorMessage(errorText.toString());
-			dialog.setVisible(true);
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -274,12 +269,12 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
-			dialog.setErrorMessage(errorText.toString());
-			dialog.setVisible(true);
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -359,12 +354,12 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
-			dialog.setErrorMessage(errorText.toString());
-			dialog.setVisible(true);
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -382,12 +377,12 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
-			dialog.setErrorMessage(errorText.toString());
-			dialog.setVisible(true);
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		}
 	}
 
@@ -436,12 +431,12 @@ public class GurobiSolver extends Solver {
 								e.printStackTrace();
 								StringWriter errors = new StringWriter();
 								e.printStackTrace(new PrintWriter(errors));
-//								Utilities u = new Utilities();
-//								u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 								outputText.append(errors.toString());
 								errorText.append(errors.toString());
-								dialog.setErrorMessage(errorText.toString());
-								dialog.setVisible(true);
+								if (LocalConfig.getInstance().hasValidGurobiKey) {
+									dialog.setErrorMessage(errorText.toString());
+									dialog.setVisible(true);
+								}
 							} catch (InvocationTargetException e) {
 								handleGurobiException();
 							}
@@ -473,12 +468,12 @@ public class GurobiSolver extends Solver {
 							e.printStackTrace();
 							StringWriter errors = new StringWriter();
 							e.printStackTrace(new PrintWriter(errors));
-//							Utilities u = new Utilities();
-//							u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 							outputText.append(errors.toString());
 							errorText.append(errors.toString());
-							dialog.setErrorMessage(errorText.toString());
-							dialog.setVisible(true);
+							if (LocalConfig.getInstance().hasValidGurobiKey) {
+								dialog.setErrorMessage(errorText.toString());
+								dialog.setVisible(true);
+							}
 						} catch (InvocationTargetException e) {
 							handleGurobiException();
 						}
@@ -518,12 +513,12 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
-			dialog.setErrorMessage(errorText.toString());
-			dialog.setVisible(true);
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -575,12 +570,12 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
-			dialog.setErrorMessage(errorText.toString());
-			dialog.setVisible(true);
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -619,12 +614,12 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
-			dialog.setErrorMessage(errorText.toString());
-			dialog.setVisible(true);
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -657,12 +652,12 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
-			dialog.setErrorMessage(errorText.toString());
-			dialog.setVisible(true);
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -688,12 +683,12 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-//			Utilities u = new Utilities();
-//			u.showResizableDialog("Error", "Gurobi Solver Error", errors.toString());
 			outputText.append(errors.toString());
 			errorText.append(errors.toString());
-			dialog.setErrorMessage(errorText.toString());
-			dialog.setVisible(true);
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
