@@ -12,4 +12,17 @@ public class GDBBConstants {
 	public static final String COUNTER_LABEL_PREFIX = "Time Elapsed: ";
 	public static final String COUNTER_LABEL_SUFFIX = " s";
 	
+	public static final int MAX_NUM_THREADS = 4;
+	
+	// layout constants
+	public static final int COMPONENT_WIDTH = 150;
+	public static final int COMPONENT_HEIGHT = 25;
+	public static final int LABEL_WIDTH = 200;
+	public static final int LABEL_HEIGHT = 25;
+	public static final int LABELED_BUTTON_WIDTH = 200;
+	public static final int LABELED_BUTTON_HEIGHT = 25;
+	
+	public static final int LABELED_BUTTON_TOP_GAP = 20;
+	public static final int LABELED_BUTTON_BOTTOM_GAP = 30;
+	
 }

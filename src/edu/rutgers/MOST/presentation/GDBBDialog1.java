@@ -26,10 +26,8 @@ public class GDBBDialog1  extends JDialog {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField numKnockoutsField = new JTextField();
-	private JComboBox<String> cbNumThreads = new JComboBox<String>();
+	private JComboBox<Integer> cbNumThreads = new JComboBox<Integer>();
 	private SizedComboBox cbSynObj = new SizedComboBox();
-	private SizedComboBox cbSynObj1 = new SizedComboBox();
-	private SizedComboBox cbSynObj2 = new SizedComboBox();
 
 	private JButton startButton = new JButton("Start");
 	private JButton stopButton = new JButton("Stop");
@@ -37,8 +35,9 @@ public class GDBBDialog1  extends JDialog {
 	private JRadioButton finiteTimeButton = new JRadioButton(GDBBConstants.FINITE_TIME_LABEL);
 	private JLabel blankLabel = new JLabel("");
 	private JTextField finiteTimeField = new JTextField();
-	private JLabel counterLabel = new JLabel();
+	private JLabel counterLabel = new JLabel(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
 
+	@SuppressWarnings("unchecked")
 	public GDBBDialog1() {
 		
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
@@ -54,28 +53,42 @@ public class GDBBDialog1  extends JDialog {
 		cbNumThreads.setEditable(false);
 		cbSynObj.setEditable(false);
 		
+		for (int i = 1; i <= GDBBConstants.MAX_NUM_THREADS; i++) {
+			cbNumThreads.addItem(i);
+		}
+		
 		cbSynObj.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
 		cbSynObj.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]);		
 
-		numKnockoutsField.setPreferredSize(new Dimension(150, 25));
-		numKnockoutsField.setMaximumSize(new Dimension(150, 25));
-		numKnockoutsField.setMinimumSize(new Dimension(150, 25));
+		numKnockoutsField.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		numKnockoutsField.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		numKnockoutsField.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 
-		cbNumThreads.setPreferredSize(new Dimension(150, 25));
-		cbNumThreads.setMaximumSize(new Dimension(150, 25));
-		cbNumThreads.setMinimumSize(new Dimension(150, 25));
+		cbNumThreads.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		cbNumThreads.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		cbNumThreads.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 
-		cbSynObj.setPreferredSize(new Dimension(150, 25));
-		cbSynObj.setMaximumSize(new Dimension(150, 25));
-		cbSynObj.setMinimumSize(new Dimension(150, 25));
+		cbSynObj.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		cbSynObj.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		cbSynObj.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		
-		blankLabel.setPreferredSize(new Dimension(150, 25));
-		blankLabel.setMaximumSize(new Dimension(150, 25));
-		blankLabel.setMinimumSize(new Dimension(150, 25));
+		blankLabel.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		blankLabel.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		blankLabel.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		
-		finiteTimeField.setPreferredSize(new Dimension(150, 25));
-		finiteTimeField.setMaximumSize(new Dimension(150, 25));
-		finiteTimeField.setMinimumSize(new Dimension(150, 25));
+		finiteTimeField.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		finiteTimeField.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		finiteTimeField.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		finiteTimeButton.setMnemonic(KeyEvent.VK_F);
+		
+		indefiniteTimeButton.setPreferredSize(new Dimension(GDBBConstants.LABELED_BUTTON_WIDTH, GDBBConstants.LABELED_BUTTON_HEIGHT));
+		indefiniteTimeButton.setMaximumSize(new Dimension(GDBBConstants.LABELED_BUTTON_WIDTH, GDBBConstants.LABELED_BUTTON_HEIGHT));
+		indefiniteTimeButton.setMinimumSize(new Dimension(GDBBConstants.LABELED_BUTTON_WIDTH, GDBBConstants.LABELED_BUTTON_HEIGHT));
+		indefiniteTimeButton.setMnemonic(KeyEvent.VK_I);
+		
+		finiteTimeButton.setPreferredSize(new Dimension(GDBBConstants.LABELED_BUTTON_WIDTH, GDBBConstants.LABELED_BUTTON_HEIGHT));
+		finiteTimeButton.setMaximumSize(new Dimension(GDBBConstants.LABELED_BUTTON_WIDTH, GDBBConstants.LABELED_BUTTON_HEIGHT));
+		finiteTimeButton.setMinimumSize(new Dimension(GDBBConstants.LABELED_BUTTON_WIDTH, GDBBConstants.LABELED_BUTTON_HEIGHT));
 		
 		//box layout
 		Box vb = Box.createVerticalBox();
@@ -87,13 +100,10 @@ public class GDBBDialog1  extends JDialog {
 		Box hbNumThreadsLabel = Box.createHorizontalBox();	    
 		Box hbMetabolite = Box.createHorizontalBox();
 		Box hbSynObjLabel = Box.createHorizontalBox();	    
-		Box hbSynObj = Box.createHorizontalBox();
-		Box hbSynObjLabel1 = Box.createHorizontalBox();	    
-//		Box hbSynObj1 = Box.createHorizontalBox();
-		Box hbSynObjLabel2 = Box.createHorizontalBox();	    
-//		Box hbIndefiniteTime = Box.createHorizontalBox();	    
+		Box hbSynObj = Box.createHorizontalBox();   
+		Box hbIndefiniteTime = Box.createHorizontalBox();	    
 		Box hbBlankLabel = Box.createHorizontalBox();
-//		Box hbFiniteTime = Box.createHorizontalBox();	    
+		Box hbFiniteTime = Box.createHorizontalBox();	    
 		Box hbFiniteTimeField = Box.createHorizontalBox();
 		
 		Box vbLabels = Box.createVerticalBox();
@@ -118,12 +128,14 @@ public class GDBBDialog1  extends JDialog {
 		//Number of Knockouts Label and combo
 		JLabel numKnockoutsLabel = new JLabel();
 		numKnockoutsLabel.setText(GDBBConstants.NUM_KNOCKOUTS_LABEL);
-		numKnockoutsLabel.setPreferredSize(new Dimension(200, 25));
-		numKnockoutsLabel.setMaximumSize(new Dimension(200, 25));
-		numKnockoutsLabel.setMinimumSize(new Dimension(200, 25));
+		numKnockoutsLabel.setPreferredSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
+		numKnockoutsLabel.setMaximumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
+		numKnockoutsLabel.setMinimumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
 		numKnockoutsLabel.setBorder(BorderFactory.createEmptyBorder(10,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		numKnockoutsLabel.setAlignmentX(LEFT_ALIGNMENT);
-		//numKnockoutsLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
+		//numKnockoutsLabel.setAlignmentY(TOP_ALIGNMENT);
+		numKnockoutsLabel.setDisplayedMnemonic('K');
+		numKnockoutsLabel.setLabelFor(numKnockoutsField);
 
 		JPanel panelNumKnockoutsLabel = new JPanel();
 		panelNumKnockoutsLabel.setLayout(new BoxLayout(panelNumKnockoutsLabel, BoxLayout.X_AXIS));
@@ -150,11 +162,13 @@ public class GDBBDialog1  extends JDialog {
 		//Number of Threads Label and combo
 		JLabel numThreadsLabel = new JLabel();
 		numThreadsLabel.setText(GDBBConstants.NUM_THREADS_LABEL);
-		numThreadsLabel.setPreferredSize(new Dimension(200, 25));
-		numThreadsLabel.setMaximumSize(new Dimension(200, 25));
-		numThreadsLabel.setMinimumSize(new Dimension(200, 25));
+		numThreadsLabel.setPreferredSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
+		numThreadsLabel.setMaximumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
+		numThreadsLabel.setMinimumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
 		numThreadsLabel.setBorder(BorderFactory.createEmptyBorder(ColumnInterfaceConstants.LABEL_TOP_BORDER_SIZE,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		numThreadsLabel.setAlignmentX(LEFT_ALIGNMENT);
+		numThreadsLabel.setDisplayedMnemonic('T');
+		numThreadsLabel.setLabelFor(cbNumThreads);
 
 		JPanel panelNumThreadsLabel = new JPanel();
 		panelNumThreadsLabel.setLayout(new BoxLayout(panelNumThreadsLabel, BoxLayout.X_AXIS));
@@ -181,11 +195,13 @@ public class GDBBDialog1  extends JDialog {
 		//synObj label and combo
 		JLabel synObjLabel = new JLabel();
 		synObjLabel.setText(GDBBConstants.SYN_OBJ_COLUMN_LABEL);
-		synObjLabel.setPreferredSize(new Dimension(200, 25));
-		synObjLabel.setMaximumSize(new Dimension(200, 25));
-		synObjLabel.setMinimumSize(new Dimension(200, 25));
+		synObjLabel.setPreferredSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
+		synObjLabel.setMaximumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
+		synObjLabel.setMinimumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
 		synObjLabel.setBorder(BorderFactory.createEmptyBorder(ColumnInterfaceConstants.LABEL_TOP_BORDER_SIZE,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		synObjLabel.setAlignmentX(LEFT_ALIGNMENT);
+		synObjLabel.setDisplayedMnemonic('O');
+		synObjLabel.setLabelFor(cbSynObj);
 
 		JPanel panelSynObjLabel = new JPanel();
 		panelSynObjLabel.setLayout(new BoxLayout(panelSynObjLabel, BoxLayout.X_AXIS));
@@ -209,71 +225,52 @@ public class GDBBDialog1  extends JDialog {
 		vbLabels.add(blankLabel3);
 		vbCombos.add(hbSynObj);
 		
-		//synObj1 label and combo
-		JLabel synObjLabel1 = new JLabel();
-		synObjLabel1.setText("test");
-		synObjLabel1.setPreferredSize(new Dimension(200, 25));
-		synObjLabel1.setMaximumSize(new Dimension(200, 25));
-		synObjLabel1.setMinimumSize(new Dimension(200, 25));
-		synObjLabel1.setBorder(BorderFactory.createEmptyBorder(ColumnInterfaceConstants.LABEL_TOP_BORDER_SIZE,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
-		synObjLabel1.setAlignmentX(LEFT_ALIGNMENT);
+		// indefinite time button and blank label
+		JPanel panelIndefiniteTime = new JPanel();
+		panelIndefiniteTime.setLayout(new BoxLayout(panelIndefiniteTime, BoxLayout.X_AXIS));
+		panelIndefiniteTime.add(indefiniteTimeButton);
+		panelIndefiniteTime.setBorder(BorderFactory.createEmptyBorder(GDBBConstants.LABELED_BUTTON_TOP_GAP,0,10,0));
 
-		JPanel panelSynObjLabel1 = new JPanel();
-		panelSynObjLabel1.setLayout(new BoxLayout(panelSynObjLabel1, BoxLayout.X_AXIS));
-		panelSynObjLabel1.add(synObjLabel1);
-		panelSynObjLabel1.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-
-		hbSynObjLabel1.add(panelSynObjLabel1);
-		hbSynObjLabel1.setAlignmentX(LEFT_ALIGNMENT);
+		hbIndefiniteTime.add(panelIndefiniteTime);
+		hbIndefiniteTime.setAlignmentX(LEFT_ALIGNMENT);
 
 		JPanel panelBlankLabel = new JPanel();
 		panelBlankLabel.setLayout(new BoxLayout(panelBlankLabel, BoxLayout.X_AXIS));
 		panelBlankLabel.add(blankLabel);
-		panelBlankLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelBlankLabel.setBorder(BorderFactory.createEmptyBorder(GDBBConstants.LABELED_BUTTON_TOP_GAP,0,10,0));
 		panelBlankLabel.setAlignmentX(RIGHT_ALIGNMENT);
 
 		hbBlankLabel.add(panelBlankLabel);
 		hbBlankLabel.setAlignmentX(RIGHT_ALIGNMENT);
 
-		vbLabels.add(hbSynObjLabel1);
-		JLabel blankLabel4 = new JLabel("");
-		vbLabels.add(blankLabel4);
+		vbLabels.add(hbIndefiniteTime);
 		vbCombos.add(hbBlankLabel);
 		
-		//synObj2 label and combo
-		JLabel synObjLabel2 = new JLabel();
-		synObjLabel2.setText("test");
-		synObjLabel2.setPreferredSize(new Dimension(200, 25));
-		synObjLabel2.setMaximumSize(new Dimension(200, 25));
-		synObjLabel2.setMinimumSize(new Dimension(200, 25));
-		synObjLabel2.setBorder(BorderFactory.createEmptyBorder(ColumnInterfaceConstants.LABEL_TOP_BORDER_SIZE,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
-		synObjLabel2.setAlignmentX(LEFT_ALIGNMENT);
+		// finite time button and text field
+		JPanel panelFiniteTime = new JPanel();
+		panelFiniteTime.setLayout(new BoxLayout(panelFiniteTime, BoxLayout.X_AXIS));
+		panelFiniteTime.add(finiteTimeButton);
+		//top, left, bottom. right
+		panelFiniteTime.setBorder(BorderFactory.createEmptyBorder(0,0,GDBBConstants.LABELED_BUTTON_BOTTOM_GAP,0));
 
-		JPanel panelSynObjLabel2 = new JPanel();
-		panelSynObjLabel2.setLayout(new BoxLayout(panelSynObjLabel2, BoxLayout.X_AXIS));
-		panelSynObjLabel2.add(synObjLabel2);
-		panelSynObjLabel2.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-
-		hbSynObjLabel2.add(panelSynObjLabel2);
-		hbSynObjLabel2.setAlignmentX(LEFT_ALIGNMENT);
+		hbFiniteTime.add(panelFiniteTime);
+		hbFiniteTime.setAlignmentX(LEFT_ALIGNMENT);
 
 		JPanel panelFiniteTimeField = new JPanel();
 		panelFiniteTimeField.setLayout(new BoxLayout(panelFiniteTimeField, BoxLayout.X_AXIS));
 		panelFiniteTimeField.add(finiteTimeField);
-		panelFiniteTimeField.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelFiniteTimeField.setBorder(BorderFactory.createEmptyBorder(0,0,GDBBConstants.LABELED_BUTTON_BOTTOM_GAP,0));
 		panelFiniteTimeField.setAlignmentX(RIGHT_ALIGNMENT);
 
 		hbFiniteTimeField.add(panelFiniteTimeField);
 		hbFiniteTimeField.setAlignmentX(RIGHT_ALIGNMENT);
 
-		vbLabels.add(hbSynObjLabel2);
-		JLabel blankLabel5 = new JLabel("");
-		vbLabels.add(blankLabel5);
+		vbLabels.add(hbFiniteTime);
 		vbCombos.add(hbFiniteTimeField);
 		
 		startButton.setMnemonic(KeyEvent.VK_S);
 		JLabel blank = new JLabel("    "); 
-		stopButton.setMnemonic(KeyEvent.VK_T);
+		stopButton.setMnemonic(KeyEvent.VK_P);
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -284,7 +281,6 @@ public class GDBBDialog1  extends JDialog {
 
 		hbButton.add(buttonPanel);
 		
-		JLabel counterLabel = new JLabel(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
 		hbCounterLabel.add(counterLabel);
 
 		vb.add(hbTopLabel);
@@ -324,7 +320,7 @@ public class GDBBDialog1  extends JDialog {
 		
 		d.setIconImages(icons);
     	d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-    	d.setSize(400, 320);
+    	d.setSize(400, 350);
     	d.setLocationRelativeTo(null);
     	d.setVisible(true);
 
