@@ -69,9 +69,6 @@ public class ReactionParser {
 				createSBMLReactionEquation(rawProducts, "product");
 			}		
 		}
-		//System.out.println("eq" + getEquation().getReactants());
-		//System.out.println("eq" + getEquation().getProducts());
-		//System.out.println(getEquation().toString());
 		hasPrefix = false;		
 	}
 	
@@ -112,13 +109,9 @@ public class ReactionParser {
 				products.add(prod);
 			}
 		}
-		//System.out.println(reactants);
-		//System.out.println(products);
 		if (type == "reactant") {
-			//setReactants(reactants);
 			getEquation().setReactants(reactants);
 		} else if (type == "product") {
-			//setProducts(products);
 			getEquation().setProducts(products);
 		} 
 	}

@@ -3294,9 +3294,6 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					updateReactionEquation(rowIndex, id, oldValue, newValue);
 					LocalConfig.getInstance().getReactionEquationMap().remove(id);
-					System.out.println("b " + LocalConfig.getInstance().getReactionEquationMap());
-					System.out.println("b " + LocalConfig.getInstance().getMetaboliteIdNameMap());
-					System.out.println("b " + LocalConfig.getInstance().getMetaboliteUsedMap());					
 				}
 			} else {
 //				ReactionEquationUpdater updater = new ReactionEquationUpdater();
@@ -3350,6 +3347,8 @@ public class GraphicalInterface extends JFrame {
 					}
 				} 
 				maybeDisplaySuspiciousMetabMessage(statusBarRow());
+				System.out.println("b " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+				System.out.println("b " + LocalConfig.getInstance().getMetaboliteUsedMap());					
 				//System.out.println("update if valid " + LocalConfig.getInstance().getReactionEquationMap());
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
@@ -7528,8 +7527,18 @@ public class GraphicalInterface extends JFrame {
 									}
 									if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.TYPING) || 
 											((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.REPLACE)) {
-										if (((ReactionUndoItem) undoMap.get(i)).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+										if (((ReactionUndoItem) undoMap.get(i)).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {											
 											updateReactionEquation(((ReactionUndoItem) undoMap.get(i)).getRow(), ((ReactionUndoItem) undoMap.get(i)).getId(), ((ReactionUndoItem) undoMap.get(i)).getOldValue(), ((ReactionUndoItem) undoMap.get(i)).getNewValue());
+											ReactionParser parser = new ReactionParser();
+											parser.reactionList(((ReactionUndoItem) undoMap.get(i)).getOldValue().trim());
+											SBMLReactionEquation oldEqun = parser.getEquation();
+											ReactionEquationUpdater updater = new ReactionEquationUpdater();
+											for (int r = 0; r < oldEqun.getReactants().size() ; r++) {
+												updater.updateMetaboliteUsedMap(oldEqun.getReactants().get(r).getMetaboliteAbbreviation(), "old");
+											}
+											for (int p = 0; p < oldEqun.getProducts().size() ; p++) {
+												updater.updateMetaboliteUsedMap(oldEqun.getProducts().get(p).getMetaboliteAbbreviation(), "old");
+											}
 										}	
 									}
 									reactionRedoAction(i);
@@ -7927,6 +7936,16 @@ public class GraphicalInterface extends JFrame {
 				((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.REPLACE)) {
 			if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 				updateReactionEquation(((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow(), ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getId(), ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getOldValue(), ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getNewValue());
+				ReactionParser parser = new ReactionParser();
+				parser.reactionList(((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getOldValue().trim());
+				SBMLReactionEquation oldEqun = parser.getEquation();
+				ReactionEquationUpdater updater = new ReactionEquationUpdater();
+				for (int r = 0; r < oldEqun.getReactants().size() ; r++) {
+					updater.updateMetaboliteUsedMap(oldEqun.getReactants().get(r).getMetaboliteAbbreviation(), "old");
+				}
+				for (int p = 0; p < oldEqun.getProducts().size() ; p++) {
+					updater.updateMetaboliteUsedMap(oldEqun.getProducts().get(p).getMetaboliteAbbreviation(), "old");
+				}
 			}
 		}
 		reactionRedoAction(LocalConfig.getInstance().getRedoItemMap().size());
