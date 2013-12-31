@@ -271,16 +271,6 @@ public class LocalConfig {
 		LocalConfig.suspiciousMetabolites = suspiciousMetabolites;
 	}
 	
-	private static ArrayList<String> invalidReactions = new ArrayList<String>();
-	
-	public ArrayList<String> getInvalidReactions() {
-		return invalidReactions;
-	}
-	
-	public void setInvalidReactions(ArrayList<String> invalidReactions) {
-		this.invalidReactions = invalidReactions;
-	}
-	
 	public boolean hasMetabolitesFile;
 	public boolean hasReactionsFile;
 	

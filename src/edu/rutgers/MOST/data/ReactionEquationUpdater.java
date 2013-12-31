@@ -50,7 +50,7 @@ public class ReactionEquationUpdater {
 		ArrayList<String> oldProductsList = new ArrayList<String>();
 		ArrayList<String> newReactantsList = new ArrayList<String>();
 		ArrayList<String> newProductsList = new ArrayList<String>();
-		if (oldEquation != null) {
+		if (oldEquation != null && oldEquation.trim().length() > 0) {
 			parser.reactionList(oldEquation);
 			SBMLReactionEquation oldEqun = parser.getEquation();
 			
@@ -63,7 +63,7 @@ public class ReactionEquationUpdater {
 				oldProductsList.add(product);
 			}
 		}
-		if (newEquation != null) {
+		if (newEquation != null && newEquation.trim().length() > 0) {
 			parser.reactionList(newEquation);
 			SBMLReactionEquation newEqun = parser.getEquation();
 			
@@ -82,6 +82,7 @@ public class ReactionEquationUpdater {
 		ArrayList<String> removeProductsList = removeList(oldProductsList, newProductsList);
 		setRemoveReactantsList(removeReactantsList);
 		setRemoveProductsList(removeProductsList);
+		System.out.println("rrl " + removeReactantsList);
 		
 		// contains species in new reaction equation not present in old reaction equation,
 		// added if user does not click "No" button
