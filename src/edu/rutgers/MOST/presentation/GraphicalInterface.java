@@ -234,6 +234,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean throwNotFoundError;
 	public static boolean changeReactionFindSelection;
 	public static boolean changeMetaboliteFindSelection;
+	public static boolean reactionsReplace;
 	// paste
 	public static boolean validPaste;                 // used for error message when pasting non-valid values
 	public static boolean showDuplicatePrompt;
@@ -3372,35 +3373,19 @@ public class GraphicalInterface extends JFrame {
 			reactionUpdateValid = false;
 			reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);			
 		} else if (colIndex == GraphicalInterfaceConstants.KO_COLUMN) {
-			if (validator.validTrueEntry(newValue)) {
-				reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
-			} else if (validator.validFalseEntry(newValue)) {
-				reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
-			} else if (newValue != null) {				
-				if (!replaceAllMode) {
-					setFindReplaceAlwaysOnTop(false);
-					JOptionPane.showMessageDialog(null,                
-							GraphicalInterfaceConstants.BOOLEAN_VALUE_ERROR_MESSAGE, 
-							GraphicalInterfaceConstants.BOOLEAN_VALUE_ERROR_TITLE,                               
-							JOptionPane.ERROR_MESSAGE);
-					formulaBar.setText(getTableCellOldValue());
-					setFindReplaceAlwaysOnTop(true);
-				}				
-				reactionUpdateValid = false;
-				reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
-			}
+			// if replace 't' or 'f' not allowed, else for entry autofill occurs
+			maybeUpdateBooleanValue(oldValue, newValue, rowIndex, GraphicalInterfaceConstants.KO_COLUMN);		
 		} else if (colIndex == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
-			if (!replaceAllMode) {
-				setFindReplaceAlwaysOnTop(false);
-				JOptionPane.showMessageDialog(null, 
-						GraphicalInterfaceConstants.REVERSIBLE_ERROR_MESSAGE,                
-						GraphicalInterfaceConstants.REVERSIBLE_ERROR_TITLE, 					                               
-						JOptionPane.ERROR_MESSAGE);
-				formulaBar.setText(getTableCellOldValue());
-				setFindReplaceAlwaysOnTop(true);
-			}			
-			reactionUpdateValid = false;
-			reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+			// if replace 't' or 'f' not allowed, else for entry autofill occurs
+			maybeUpdateBooleanValue(oldValue, newValue, rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+			if (reactionUpdateValid) {
+				// rewrite equations and update map
+				SBMLReactionEquation equn = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id));
+				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(newValue);
+				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
+				reactionsTable.getModel().setValueAt(equn.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+				reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+			}
 		} else if (colIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || 
@@ -3495,6 +3480,43 @@ public class GraphicalInterface extends JFrame {
 			// action for remaining columns
 			reactionsTable.getModel().setValueAt(newValue, rowIndex, colIndex);
 		}
+	}
+	
+	// if valid boolean value, update cell
+	public void maybeUpdateBooleanValue(String oldValue, String newValue, int rowIndex, int colIndex) {
+		// if replace 't' or 'f' not allowed, else for entry autofill occurs
+		EntryValidator validator = new EntryValidator();
+		if (reactionsReplace) {
+			if (!validator.validBooleanValue(newValue)) {
+				showBooleanErrorMessage();
+				reactionUpdateValid = false;
+				reactionsTable.getModel().setValueAt(oldValue, rowIndex, colIndex);					
+			} else {
+				reactionsTable.getModel().setValueAt(newValue, rowIndex, colIndex);					
+			}
+		} else {
+			if (validator.validTrueEntry(newValue)) {
+				reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowIndex, colIndex);
+			} else if (validator.validFalseEntry(newValue)) {
+				reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, colIndex);
+			} else if (newValue != null) {				
+				showBooleanErrorMessage();			
+				reactionUpdateValid = false;
+				reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
+			}
+		}			
+	}
+	
+	public void showBooleanErrorMessage() {
+		if (!replaceAllMode) {
+			setFindReplaceAlwaysOnTop(false);
+			JOptionPane.showMessageDialog(null,                
+					GraphicalInterfaceConstants.BOOLEAN_VALUE_ERROR_MESSAGE, 
+					GraphicalInterfaceConstants.BOOLEAN_VALUE_ERROR_TITLE,                               
+					JOptionPane.ERROR_MESSAGE);
+			formulaBar.setText(getTableCellOldValue());
+			setFindReplaceAlwaysOnTop(true);
+		}	
 	}
 	
 	public void updateReactionEquation(int rowIndex, int reactionId, String oldEquation, String newEquation) {
@@ -4033,6 +4055,7 @@ public class GraphicalInterface extends JFrame {
 		metabolitesFindAll = false;
 		changeReactionFindSelection = true;
 		changeMetaboliteFindSelection = true;
+		reactionsReplace = false;
 		// paste
 		validPaste = true;
 		showDuplicatePrompt = true;
@@ -8494,6 +8517,7 @@ public class GraphicalInterface extends JFrame {
 	};
 
 	public void reactionsReplace() {
+		reactionsReplace = true;
 		int viewRow = reactionsTable.convertRowIndexToModel(getReactionsReplaceLocation().get(0));
 		String oldValue = (String) reactionsTable.getModel().getValueAt(viewRow, getReactionsReplaceLocation().get(1));		
 		String newValue = replaceValue(oldValue, replaceLocation(oldValue));
@@ -8552,6 +8576,7 @@ public class GraphicalInterface extends JFrame {
 			//System.out.println("String not found");
 		}
 		getFindReplaceDialog().requestFocus();
+		reactionsReplace = false;
 	}
 
 	ActionListener replaceAllReactionsButtonActionListener = new ActionListener() {

@@ -70,4 +70,11 @@ public class EntryValidator {
 		
 	}
 	
+	public boolean validBooleanValue(String value) {
+		if (validTrueValue(value) || validFalseValue(value)) {
+			return true;
+		}
+		return false;
+	}
+	
 }
