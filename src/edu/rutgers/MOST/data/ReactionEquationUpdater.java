@@ -82,7 +82,6 @@ public class ReactionEquationUpdater {
 		ArrayList<String> removeProductsList = removeList(oldProductsList, newProductsList);
 		setRemoveReactantsList(removeReactantsList);
 		setRemoveProductsList(removeProductsList);
-		System.out.println("rrl " + removeReactantsList);
 		
 		// contains species in new reaction equation not present in old reaction equation,
 		// added if user does not click "No" button
@@ -100,7 +99,6 @@ public class ReactionEquationUpdater {
 			}
 		}
 				
-		System.out.println("remove " + removeList);
 		return removeList;
 	}
 	
@@ -112,7 +110,6 @@ public class ReactionEquationUpdater {
 			}
 		}
 				
-		System.out.println("maybe add " + maybeAddList);
 		return maybeAddList;
 	}
 	
@@ -127,15 +124,12 @@ public class ReactionEquationUpdater {
 				updateMetaboliteUsedMap(removeProductsList.get(i), "old");
 			}
 		}		
-		System.out.println("rem" + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public void updateMetaboliteUsedMap(String species, String type) {
 		if (type.equals("old")) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
-				System.out.println("old sp " + species);
 				int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
-				System.out.println("old sp " + usedCount);
 				if (usedCount > 1) {
 					LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount - 1));									
 				} else {

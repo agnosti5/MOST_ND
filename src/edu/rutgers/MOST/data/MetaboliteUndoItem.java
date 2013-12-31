@@ -340,7 +340,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public void undoAddColumn() {
 		LocalConfig.getInstance().setMetabolitesMetaColumnNames(this.oldMetaColumnNames);
-		System.out.println("undo" + LocalConfig.getInstance().getMetabolitesMetaColumnNames());
 	}
 	
 	public void undoRename() {
@@ -376,7 +375,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public void redoAddColumn() {
 		LocalConfig.getInstance().setMetabolitesMetaColumnNames(this.newMetaColumnNames);
-		System.out.println("redo" + LocalConfig.getInstance().getMetabolitesMetaColumnNames());
 	}
 	
 	public void redoDeleteColumn() {
@@ -481,7 +479,6 @@ public class MetaboliteUndoItem implements UndoItem {
 		}
 		MetaboliteFactory aFactory = new MetaboliteFactory("SBML");
 		ArrayList<Integer> participatingReactions = aFactory.participatingReactions(oldReactant);
-		System.out.println(participatingReactions);
 		
 		for (int i = 0; i < participatingReactions.size(); i++) {
 			SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(participatingReactions.get(i));
@@ -514,8 +511,8 @@ public class MetaboliteUndoItem implements UndoItem {
 			}								
 		}
 		
-		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());		
+//		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());		
 		if (column == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldReactant)) {
 				int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(oldReactant);
@@ -525,8 +522,8 @@ public class MetaboliteUndoItem implements UndoItem {
 			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(oldReactant);
 			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(newReactant, this.id);
 		}
-		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
+//		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public static Object getKeyFromValue(Map hm, Object value) {
