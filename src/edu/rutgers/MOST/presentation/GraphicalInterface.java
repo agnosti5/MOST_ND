@@ -5679,10 +5679,10 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					for (int y = 0; y < numSelectedRows; y++) {
 						int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRows()[y]);
-						pasteIds.add((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
-						undoItem.setPasteIds(pasteIds);
+						pasteIds.add((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));						
 					}
-				}		
+				}	
+				undoItem.setPasteIds(pasteIds);
 				// save sort column and order
 				setReactionsOldSortColumnIndex(getReactionsSortColumnIndex());
 				setReactionsOldSortOrder(getReactionsSortOrder());
@@ -8570,6 +8570,7 @@ public class GraphicalInterface extends JFrame {
 				showErrorMessage = true;
 				Map<Object, ModelReactionEquation> reactionOldEquationMap = LocalConfig.getInstance().getReactionPasteEquationMap();
 				Map<Object, ModelReactionEquation> reactionNewEquationMap = LocalConfig.getInstance().getReactionPasteEquationMap();
+				ArrayList<String> pasteIds = new ArrayList<String>();
 				for (int i = 0; i < getReactionsFindLocationsList().size(); i++) {
 					int viewRow = reactionsTable.convertRowIndexToModel(getReactionsFindLocationsList().get(i).get(0));
 					String oldValue = (String) reactionsTable.getModel().getValueAt(viewRow, getReactionsFindLocationsList().get(i).get(1));					
@@ -8585,15 +8586,18 @@ public class GraphicalInterface extends JFrame {
 						}						
 					}
 					if (isReactionsEntryValid(viewRow, getReactionsFindLocationsList().get(i).get(1), replaceAllValue)) {	
-						reactionsTable.setValueAt(replaceAllValue, viewRow, getReactionsFindLocationsList().get(i).get(1));
+						reactionsTable.setValueAt(replaceAllValue, viewRow, getReactionsFindLocationsList().get(i).get(1));						
 						if (getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 							int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));								
 							updateReactionEquation(getReactionsFindLocationsList().get(i).get(0), id, oldValue, replaceAllValue);
-						} 
+						} else if (getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
+							pasteIds.add((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+						}
 					} else {
 						validPaste = false;
 					}		
 				}
+				undoItem.setPasteIds(pasteIds);
 				if (validPaste) {
 					DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 					copyReactionsTableModels(newReactionsModel); 

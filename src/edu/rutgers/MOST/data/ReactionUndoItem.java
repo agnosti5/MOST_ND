@@ -227,7 +227,7 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
 			undoDeleteColumn();
 			copyTableUndoAction();
-		} else if (this.undoType.equals(UndoConstants.PASTE)) {
+		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {
 			copyTableUndoAction();
 			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
 			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
@@ -239,8 +239,7 @@ public class ReactionUndoItem implements UndoItem {
 				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(Integer.valueOf(this.pasteIds.get(i)))).setReversible(rev);
 				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(Integer.valueOf(this.pasteIds.get(i)))).writeReactionEquation();
 			}
-		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) ||
-				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {	
+		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {	
 			copyTableUndoAction();
 		}
 		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
@@ -264,7 +263,7 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
 			redoDeleteColumn();
 			copyTableRedoAction();
-		} else if (this.undoType.equals(UndoConstants.PASTE)) {
+		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {
 			copyTableRedoAction();
 			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
 			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
@@ -276,8 +275,7 @@ public class ReactionUndoItem implements UndoItem {
 				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(Integer.valueOf(this.pasteIds.get(i)))).setReversible(rev);
 				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(Integer.valueOf(this.pasteIds.get(i)))).writeReactionEquation();
 			}
-		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) ||
-				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {
+		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {
 			copyTableRedoAction();
 		}
 		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
