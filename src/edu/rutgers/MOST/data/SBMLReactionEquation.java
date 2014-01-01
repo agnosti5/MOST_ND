@@ -217,6 +217,6 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 		+ ", reactants=" + reactantsString
 		+ ", products=" + productsString
 		+ ", equationAbbreviations=" + equationAbbreviations
-		+ ", equationNames=" + equationNames + "]";
+		+ ", equationNames=" + equationNames + "]\n";
 	}
 }
