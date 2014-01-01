@@ -142,8 +142,7 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	public void setTableCopyIndex(int tableCopyIndex) {
 		this.tableCopyIndex = tableCopyIndex;
-	}
-	
+	}	
 	public ArrayList<String> getOldMetaColumnNames() {
 		return oldMetaColumnNames;
 	}
@@ -191,7 +190,7 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	public void setOldLowerBound(String oldLowerBound) {
 		this.oldLowerBound = oldLowerBound;
-	}
+	}	
 	
 	public String createUndoDescription() {
 		String undoDescription = "";
@@ -317,7 +316,9 @@ public class ReactionUndoItem implements UndoItem {
 			updateCellById(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).equationAbbreviations, this.id, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			updateCellById(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).equationNames, this.id, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			if (validator.validFalseEntry(this.newValue)) {
-				updateCellById(this.oldLowerBound, this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				if (this.oldLowerBound != null) {
+					updateCellById(this.oldLowerBound, this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				}				
 			}
 		}
 		

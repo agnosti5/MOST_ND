@@ -3368,6 +3368,9 @@ public class GraphicalInterface extends JFrame {
 			// if replace 't' or 'f' not allowed, else for entry autofill occurs
 			maybeUpdateBooleanValue(oldValue, newValue, rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 			if (reactionUpdateValid) {
+				if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
+					reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				}
 				if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
 					// rewrite equations and update map
 					SBMLReactionEquation equn = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id));
@@ -3375,7 +3378,6 @@ public class GraphicalInterface extends JFrame {
 						((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
 					} else if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
 						((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
-						reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 					}
 					//((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(newValue);
 					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
@@ -8633,7 +8635,8 @@ public class GraphicalInterface extends JFrame {
 				}
 			}
 
-			// these two lines remove highlighting from find all
+			// these two lines remove highlighting from find all by creating a new
+			// list which should be empty, since the find all value has been replaced
 			ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
 			setReactionsFindLocationsList(locationList);
 
