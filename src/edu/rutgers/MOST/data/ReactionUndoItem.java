@@ -249,7 +249,7 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {	
 			copyTableUndoAction();
 		}
-		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 	}
 	
 	public void copyTableUndoAction() {
@@ -285,7 +285,7 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {
 			copyTableRedoAction();
 		}
-		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 	}
 	
 	public void copyTableRedoAction() {

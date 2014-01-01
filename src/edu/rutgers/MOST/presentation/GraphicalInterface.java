@@ -8504,9 +8504,6 @@ public class GraphicalInterface extends JFrame {
 		String oldValue = (String) reactionsTable.getModel().getValueAt(viewRow, getReactionsReplaceLocation().get(1));		
 		String newValue = replaceValue(oldValue, replaceLocation(oldValue));
 		int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
-//		ReactionUndoItem undoItem = createReactionUndoItem(oldValue, newValue, reactionsTable.getSelectedRow(), getReactionsReplaceLocation().get(1), id, UndoConstants.REPLACE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-//		undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
-//		undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 		ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
 		if (replaceLocation(oldValue) > -1) {
 			String oldlowerBound = (String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN));
@@ -8516,7 +8513,6 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
 			undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 			undoItem.setOldLowerBound(oldlowerBound);
-			System.out.println("lb" + undoItem.getOldLowerBound());
 			if (reactionUpdateValid) {
 				scrollToLocation(reactionsTable, getRowFromReactionsId(id), getReactionsReplaceLocation().get(1));
 				formulaBar.setText(newValue);
