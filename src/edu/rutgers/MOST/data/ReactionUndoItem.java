@@ -39,6 +39,7 @@ public class ReactionUndoItem implements UndoItem {
 	private int maxMetab;
 	private int maxMetabId;
 	private ArrayList<String> pasteIds;
+	private String oldLowerBound;
 	
 	public Integer getId() {
 		return id;
@@ -184,6 +185,12 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	public void setPasteIds(ArrayList<String> pasteIds) {
 		this.pasteIds = pasteIds;
+	}		
+	public String getOldLowerBound() {
+		return oldLowerBound;
+	}
+	public void setOldLowerBound(String oldLowerBound) {
+		this.oldLowerBound = oldLowerBound;
 	}
 	
 	public String createUndoDescription() {
@@ -309,6 +316,9 @@ public class ReactionUndoItem implements UndoItem {
 			((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).writeReactionEquation();
 			updateCellById(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).equationAbbreviations, this.id, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			updateCellById(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).equationNames, this.id, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+			if (validator.validFalseEntry(this.newValue)) {
+				updateCellById(this.oldLowerBound, this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+			}
 		}
 		
 		if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)) {
@@ -374,6 +384,7 @@ public class ReactionUndoItem implements UndoItem {
 				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
 			} else if (validator.validFalseEntry(this.newValue)) {
 				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
+				updateCellById("0.0", this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 			}			
 			((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).writeReactionEquation();
 			updateCellById(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).equationAbbreviations, this.id, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);

@@ -2400,6 +2400,7 @@ public class GraphicalInterface extends JFrame {
 		ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 		undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
 		undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
+		undoItem.setOldLowerBound((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 		updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, reactionsTable.getSelectedColumn());
 		if (reactionUpdateValid) {
 			setUpReactionsUndo(undoItem);
@@ -3221,10 +3222,11 @@ public class GraphicalInterface extends JFrame {
 			TableCellListener tcl = (TableCellListener)ae.getSource();
 
 			if (tcl.getOldValue() != tcl.getNewValue()) {
-				int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), 0)));
+				int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 				ReactionUndoItem undoItem = createReactionUndoItem(tcl.getOldValue(), tcl.getNewValue(), reactionsTable.getSelectedRow(), tcl.getColumn(), id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
 				undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
+				undoItem.setOldLowerBound((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 				LocalConfig.getInstance().reactionsTableChanged = true;
 				updateReactionsCellIfValid(tcl.getOldValue(), tcl.getNewValue(), tcl.getRow(), tcl.getColumn());
 				if (reactionUpdateValid) {
@@ -3373,6 +3375,7 @@ public class GraphicalInterface extends JFrame {
 						((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
 					} else if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
 						((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
+						reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 					}
 					//((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(newValue);
 					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
@@ -8506,11 +8509,14 @@ public class GraphicalInterface extends JFrame {
 //		undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 		ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
 		if (replaceLocation(oldValue) > -1) {
+			String oldlowerBound = (String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN));
 			reactionsTable.getModel().setValueAt(newValue, viewRow, getReactionsReplaceLocation().get(1));
 			updateReactionsCellIfValid(oldValue, newValue, viewRow, getReactionsReplaceLocation().get(1));
 			ReactionUndoItem undoItem = createReactionUndoItem(oldValue, newValue, reactionsTable.getSelectedRow(), getReactionsReplaceLocation().get(1), id, UndoConstants.REPLACE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 			undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
 			undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
+			undoItem.setOldLowerBound(oldlowerBound);
+			System.out.println("lb" + undoItem.getOldLowerBound());
 			if (reactionUpdateValid) {
 				scrollToLocation(reactionsTable, getRowFromReactionsId(id), getReactionsReplaceLocation().get(1));
 				formulaBar.setText(newValue);

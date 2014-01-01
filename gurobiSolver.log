@@ -1,414 +1,56 @@
 Gurobi Solver constructor 
 gurobi.GRB loaded 
 gurobi.GRBEnv loaded 
-gurobi.GRB$DoubleParam loaded 
-gurobi.GRB$IntParam loaded 
-gurobi.GRBModel loaded 
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Unknown Source)
+	at edu.rutgers.MOST.optimization.solvers.GurobiSolver.<init>(GurobiSolver.java:109)
+	at edu.rutgers.MOST.optimization.solvers.SolverFactory.createSolver(SolverFactory.java:27)
+	at edu.rutgers.MOST.optimization.FBA.FBA.<init>(FBA.java:23)
+	at edu.rutgers.MOST.presentation.GraphicalInterface$58.actionPerformed(GraphicalInterface.java:1251)
+	at javax.swing.AbstractButton.fireActionPerformed(Unknown Source)
+	at javax.swing.AbstractButton$Handler.actionPerformed(Unknown Source)
+	at javax.swing.DefaultButtonModel.fireActionPerformed(Unknown Source)
+	at javax.swing.DefaultButtonModel.setPressed(Unknown Source)
+	at javax.swing.AbstractButton.doClick(Unknown Source)
+	at javax.swing.plaf.basic.BasicMenuItemUI.doClick(Unknown Source)
+	at javax.swing.plaf.basic.BasicMenuItemUI$Handler.mouseReleased(Unknown Source)
+	at java.awt.Component.processMouseEvent(Unknown Source)
+	at javax.swing.JComponent.processMouseEvent(Unknown Source)
+	at java.awt.Component.processEvent(Unknown Source)
+	at java.awt.Container.processEvent(Unknown Source)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.retargetMouseEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.processMouseEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.dispatchEvent(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Window.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.EventQueue.dispatchEventImpl(Unknown Source)
+	at java.awt.EventQueue.access$200(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue.dispatchEvent(Unknown Source)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.run(Unknown Source)
+Caused by: gurobi.GRBException: License not found
+	at gurobi.GRBEnv.<init>(GRBEnv.java:17)
+	at gurobi.GRBEnv.<init>(GRBEnv.java:11)
+	... 46 more
 optimize 
-Ec_core_flux1
-gurobi.GRBCallback loaded 
-gurobi.GRBVar loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB loaded 
-gurobi.GRB$DoubleAttr loaded 
+model is null 
