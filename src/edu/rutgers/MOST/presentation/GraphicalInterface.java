@@ -5798,17 +5798,34 @@ public class GraphicalInterface extends JFrame {
 					}				
 					setUpReactionsUndo(undoItem);
 					// add pasted reactions to equation map
-					ArrayList<Object> keys = new ArrayList<Object>(LocalConfig.getInstance().getReactionPasteEquationMap().keySet());
-					for (int r = 0; r < keys.size(); r++) {
-						LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r)));
-					}
+//					ArrayList<Object> keys = new ArrayList<Object>(LocalConfig.getInstance().getReactionPasteEquationMap().keySet());
+//					for (int r = 0; r < keys.size(); r++) {
+//						SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r));
+//						equn.writeReactionEquation();
+//						System.out.println(equn.equationNames);
+//						System.out.println((int) keys.get(r));
+//						LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r)));
+//					}
 					// reset sort column and order
 					setReactionsSortColumnIndex(getReactionsOldSortColumnIndex());
 					setReactionsSortOrder(getReactionsOldSortOrder());
 					setUpReactionsTable(newReactionsModel);
+					// add pasted reactions to equation map
+					ArrayList<Object> keys = new ArrayList<Object>(LocalConfig.getInstance().getReactionPasteEquationMap().keySet());
+					for (int r = 0; r < keys.size(); r++) {
+						SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r));
+						equn.writeReactionEquation();
+						updateReactionsCellById(equn.equationNames,  (int) keys.get(r), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+						updateReactionsCellById(equn.getReversible(),  (int) keys.get(r), GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+						if (equn.getReversible().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+							updateReactionsCellById("0.0",  (int) keys.get(r), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+						}
+						LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r)));
+					}
 					if (pasteIds.size() > 0) {
 						scrollToLocation(reactionsTable, getRowFromReactionsId(Integer.valueOf(pasteIds.get(0))), startCol);
-					}				
+					}
+					System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 				}
 			} 	
 		}
