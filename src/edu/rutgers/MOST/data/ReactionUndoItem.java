@@ -41,6 +41,8 @@ public class ReactionUndoItem implements UndoItem {
 	private ArrayList<String> pasteIds;
 	private String oldLowerBound;
 	private String newLowerBound;
+	private String oldUpperBound;
+	private String newUpperBound;
 	
 	public Integer getId() {
 		return id;
@@ -197,6 +199,18 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	public void setNewLowerBound(String newLowerBound) {
 		this.newLowerBound = newLowerBound;
+	}	
+	public String getOldUpperBound() {
+		return oldUpperBound;
+	}
+	public void setOldUpperBound(String oldUpperBound) {
+		this.oldUpperBound = oldUpperBound;
+	}
+	public String getNewUpperBound() {
+		return newUpperBound;
+	}
+	public void setNewUpperBound(String newUpperBound) {
+		this.newUpperBound = newUpperBound;
 	}
 	
 	public String createUndoDescription() {
@@ -242,18 +256,7 @@ public class ReactionUndoItem implements UndoItem {
 			copyTableUndoAction();
 		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {
 			copyTableUndoAction();
-			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
-			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
-				reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
-			}
-			for (int i = 0; i < this.pasteIds.size(); i++) {
-				int rowNum = Integer.valueOf(this.pasteIds.get(i));
-				if (LocalConfig.getInstance().getReactionEquationMap().get(rowNum) != null) {
-					String rev = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(rowNum)).setReversible(rev);
-					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(rowNum)).writeReactionEquation();
-				}				
-			}
+			pasteReplaceAllAction();
 		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {	
 			copyTableUndoAction();
 		}
@@ -280,18 +283,7 @@ public class ReactionUndoItem implements UndoItem {
 			copyTableRedoAction();
 		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {
 			copyTableRedoAction();
-			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
-			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
-				reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
-			}
-			for (int i = 0; i < this.pasteIds.size(); i++) {
-				int rowNum = Integer.valueOf(this.pasteIds.get(i));
-				if (LocalConfig.getInstance().getReactionEquationMap().get(rowNum) != null) {
-					String rev = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(rowNum)).setReversible(rev);
-					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(rowNum)).writeReactionEquation();
-				}				
-			}
+			pasteReplaceAllAction();
 		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {
 			copyTableRedoAction();
 		}
@@ -356,6 +348,7 @@ public class ReactionUndoItem implements UndoItem {
 			}
 			setAddedMetaboliteAbbr(addedAbbr);
 		}
+		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		
 		return true;
 	} 
@@ -382,7 +375,7 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	
 	public boolean redoEntry() {
-
+		EntryValidator validator = new EntryValidator();
 		if (this.column == GraphicalInterfaceConstants.KO_COLUMN || this.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
 			if (this.newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
 				this.newValue = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
@@ -392,8 +385,7 @@ public class ReactionUndoItem implements UndoItem {
 		}
 		updateCellById(this.newValue, this.id, this.column);
 		
-		if (this.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {	
-			EntryValidator validator = new EntryValidator();
+		if (this.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {				
 			if (LocalConfig.getInstance().getReactionEquationMap().get(this.id) != null) {			
 				if (validator.validTrueEntry(this.newValue)) {
 					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
@@ -407,6 +399,40 @@ public class ReactionUndoItem implements UndoItem {
 			if (validator.validFalseEntry(this.newValue)) {
 				updateCellById("0.0", this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 			}			
+		}
+		
+		if (this.column == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) {
+			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+				reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+			}
+			String idString = Integer.toString(this.id);
+			int rowNum = (int) reactionsIdRowMap.get(idString);
+			String rev = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+			if (validator.validFalseEntry(rev)) {
+				if (this.getNewLowerBound() != null) {
+					updateCellById(this.getNewLowerBound(), this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				} else {
+					updateCellById("0.0", this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				}
+			}
+		}
+		
+		if (this.column == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) {
+			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+				reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+			}
+			String idString = Integer.toString(this.id);
+			int rowNum = (int) reactionsIdRowMap.get(idString);
+			Double lowerBound = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN));
+			if (Double.valueOf(this.getNewValue()) < lowerBound) {
+				if (this.getNewUpperBound() != null) {
+					updateCellById(this.getNewUpperBound(), this.id, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN);
+				} else {
+					updateCellById(GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT_STRING, this.id, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN);
+				}		
+			}
 		}
 		
 		return true;
@@ -490,6 +516,26 @@ public class ReactionUndoItem implements UndoItem {
 		String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
 		int rowNum = Integer.valueOf(row);
 		GraphicalInterface.reactionsTable.getModel().setValueAt(value, rowNum, col);
+	}
+	
+	public void pasteReplaceAllAction() {
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+		}
+		// updates equation map for reversible value
+		if (this.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {				
+			for (int i = 0; i < this.pasteIds.size(); i++) {
+				int id = Integer.valueOf(this.pasteIds.get(i));
+				String idString = this.pasteIds.get(i);
+				int rowNum = (int) reactionsIdRowMap.get(idString);
+				if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
+					String rev = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(rev);
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
+				}				
+			}
+		}
 	}
 	
 	public static void main(String[] args) {
