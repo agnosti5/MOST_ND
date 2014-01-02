@@ -292,13 +292,13 @@ public class GraphicalInterface extends JFrame {
 		return findReplaceDialog;
 	}
 
-	private static GDBBDialog textInput;
+	private static GDBBDialog1 textInput;
 
-	public static GDBBDialog getTextInput() {
+	public static GDBBDialog1 getTextInput() {
 		return textInput;
 	}
 
-	public void setTextInput(GDBBDialog textInput) {
+	public void setTextInput(GDBBDialog1 textInput) {
 		GraphicalInterface.textInput = textInput;
 	}
 
@@ -878,13 +878,14 @@ public class GraphicalInterface extends JFrame {
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 		setIconsList(icons);
 
-		textInput = new GDBBDialog(gi);
+		textInput = new GDBBDialog1(gi);
+		//textInput = new GDBBDialog(gi);
 		textInput.setModal(true);
 		textInput.setIconImages(icons);
 		textInput.setTitle("GDBB");
 		//textInput.setSize(300, 300);
 		// actually get different results when size is changed
-        textInput.setSize(360, 330);
+        textInput.setSize(400, 350);
 		textInput.setResizable(false);
 		textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		textInput.setLocationRelativeTo(null);
@@ -9430,7 +9431,7 @@ public class GraphicalInterface extends JFrame {
 			return null;
 		}
 	}
-
+	
 	class GDBBTask extends SwingWorker<Void, Solution> {
 		private GDBB gdbb;
 		private GDBBModel model;
@@ -9447,7 +9448,8 @@ public class GraphicalInterface extends JFrame {
 		private String output;
 
 		GDBBTask() {
-			model = new GDBBModel(textInput.getReactionNameDBColumnMapping().get((String)textInput.getColumnList().getSelectedItem()));
+			model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
+			//model = new GDBBModel(textInput.getReactionNameDBColumnMapping().get((String)textInput.cbSynObj.getSelectedItem()));
 		}
 
 		@Override
@@ -9598,6 +9600,8 @@ public class GraphicalInterface extends JFrame {
 			} 
 
 			textInput.setVisible(false);
+			textInput.enableComponents();
+			textInput.selectIndefiniteTimeButton();
 			// set table model to be loaded when folder GDBB clicked
 			// this will result in the last solution being loaded when folder clicked
 			LocalConfig.getInstance().getMetabolitesTableModelMap().remove(getOptimizeName());

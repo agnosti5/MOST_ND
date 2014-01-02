@@ -11,6 +11,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -43,11 +45,12 @@ public class GDBBDialog1  extends JDialog {
 	private GraphicalInterface gi;
 	private JTextField numKnockoutsField = new JTextField();
 	private JComboBox<Integer> cbNumThreads = new JComboBox<Integer>();
-	private SizedComboBox cbSynObj = new SizedComboBox();
+	public SizedComboBox cbSynObj = new SizedComboBox();
 
 	private Timer timer;
 	private int count;
 	private double timeLimit;
+	private Map<String, String> reactionNameDBColumnMapping;
 	private JButton startButton = new JButton("Start");
 	private JButton stopButton = new JButton("Stop");
 	private JRadioButton indefiniteTimeButton = new JRadioButton(GDBBConstants.INDEFINITE_TIME_LABEL);
@@ -57,7 +60,9 @@ public class GDBBDialog1  extends JDialog {
 	private JLabel counterLabel = new JLabel(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
 
 	@SuppressWarnings("unchecked")
-	public GDBBDialog1() {
+	public GDBBDialog1(GraphicalInterface parent) {
+		
+		gi = parent;
 		
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
@@ -367,6 +372,11 @@ public class GDBBDialog1  extends JDialog {
 		//Set up timer to drive animation events.
 		timer = new Timer(1000, new TimeListener());
 		count = 0;
+		reactionNameDBColumnMapping = new HashMap<String, String>();
+		reactionNameDBColumnMapping.put(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN], GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
+		reactionNameDBColumnMapping.put(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN], GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]);		
+		
+		enableComponents();
 		
 		ActionListener startButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
@@ -408,23 +418,23 @@ public class GDBBDialog1  extends JDialog {
 					startButton.setEnabled(false);
 					stopButton.setEnabled(true);
 
-//					String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
-//					DynamicTreePanel.treePanel.addObject(new Solution(solutionName, solutionName));
+					String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
+					DynamicTreePanel.treePanel.addObject(new Solution(solutionName, solutionName));
+					
+					gi.gdbbTask = gi.new GDBBTask();
 
-//					gi.gdbbTask = gi.new GDBBTask();
-//
-//					gi.gdbbTask.getModel().setC((new Double(numKnockoutsField.getText())).doubleValue());
-//					gi.gdbbTask.getModel().setTimeLimit(timeLimit);
-//
-//					if (indefiniteTimeButton.isSelected()) {
-//						gi.gdbbTask.getModel().setTimeLimit(Double.POSITIVE_INFINITY);
-//					}
-//					else {
-//						gi.gdbbTask.getModel().setTimeLimit((new Double(finiteTimeField.getText())).doubleValue());
-//					}
-//
-//					gi.gdbbTask.getModel().setThreadNum((Integer)cbNumThreads.getSelectedItem());
-//					gi.gdbbTask.execute();
+					gi.gdbbTask.getModel().setC((new Double(numKnockoutsField.getText())).doubleValue());
+					gi.gdbbTask.getModel().setTimeLimit(timeLimit);
+
+					if (indefiniteTimeButton.isSelected()) {
+						gi.gdbbTask.getModel().setTimeLimit(Double.POSITIVE_INFINITY);
+					}
+					else {
+						gi.gdbbTask.getModel().setTimeLimit((new Double(finiteTimeField.getText())).doubleValue());
+					}
+
+					gi.gdbbTask.getModel().setThreadNum((Integer)cbNumThreads.getSelectedItem());
+					gi.gdbbTask.execute();
 				}
 			}
 		};
@@ -466,6 +476,15 @@ public class GDBBDialog1  extends JDialog {
 		finiteTimeField.setEnabled(false);
 	}
 	
+	public void enableComponents() {
+		numKnockoutsField.setEditable(true);
+		cbNumThreads.setEnabled(true);
+		cbSynObj.setEnabled(true);
+		indefiniteTimeButton.setEnabled(true);
+		finiteTimeButton.setEnabled(true);
+		finiteTimeField.setEnabled(true);
+	}
+	
 	class TimeListener implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			count += 1;
@@ -478,19 +497,33 @@ public class GDBBDialog1  extends JDialog {
 		}
 	}
 	
+	public Map<String, String> getReactionNameDBColumnMapping() {
+		return reactionNameDBColumnMapping;
+	}
+	
+	public void enableStart() {
+		startButton.setEnabled(true);
+		stopButton.setEnabled(false);
+		timer.stop();
+	}
+	
+	public void selectIndefiniteTimeButton() {
+		indefiniteTimeButton.setSelected(true);
+	}
+	
 	public static void main(String[] args) throws Exception {
-		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
-		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("etc/most32.jpg").getImage());
-		
-		GDBBDialog1 d = new GDBBDialog1();
-		
-		d.setIconImages(icons);
-    	d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-    	d.setSize(400, 350);
-    	d.setLocationRelativeTo(null);
-    	d.setVisible(true);
+//		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
+//		final ArrayList<Image> icons = new ArrayList<Image>(); 
+//		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+//		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+//		
+//		GDBBDialog1 d = new GDBBDialog1();
+//		
+//		d.setIconImages(icons);
+//    	d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+//    	d.setSize(400, 350);
+//    	d.setLocationRelativeTo(null);
+//    	d.setVisible(true);
 
 	}
 	
