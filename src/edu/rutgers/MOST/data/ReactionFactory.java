@@ -174,7 +174,7 @@ public class ReactionFactory {
 				geneAssociations.add((Integer) reactionsIdPositionMap.get(id), geneAssoc);
 			}
 		}
-		System.out.println("gene assoc " + geneAssociations);
+		//System.out.println("gene assoc " + geneAssociations);
 
 		return geneAssociations;
 	}
@@ -190,7 +190,7 @@ public class ReactionFactory {
 				}
 			}
 		}
-		System.out.println("unique gene assoc " + uniqueGeneAssociations);
+		//System.out.println("unique gene assoc " + uniqueGeneAssociations);
 		
 		return uniqueGeneAssociations;
 	}
@@ -222,7 +222,7 @@ public class ReactionFactory {
 				reactionAbbreviations.add((Integer) reactionsIdPositionMap.get(id), reacAbbr);
 			}
 		}
-        System.out.println(reactionAbbreviations);
+        //System.out.println(reactionAbbreviations);
 		return reactionAbbreviations;
 	}
 	

@@ -446,6 +446,7 @@ public class GDBBDialog1  extends JDialog {
 				System.out.println("Stop");
 				timer.stop();
 				setVisible(false);
+				gi.gdbbTask.getGdbb().destroy();			
 			}
 		};
 
@@ -489,10 +490,10 @@ public class GDBBDialog1  extends JDialog {
 		public void actionPerformed(ActionEvent ae) {
 			count += 1;
 			counterLabel.setText(GDBBConstants.COUNTER_LABEL_PREFIX + count + GDBBConstants.COUNTER_LABEL_SUFFIX);
-			System.out.println(count);
 			if (finiteTimeButton.isSelected() && count >= Integer.valueOf(finiteTimeField.getText())) {
 				timer.stop();
 				setVisible(false);
+				gi.gdbbTask.getGdbb().destroy();
 			}
 		}
 	}

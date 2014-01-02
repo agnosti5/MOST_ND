@@ -292,6 +292,16 @@ public class GraphicalInterface extends JFrame {
 		return findReplaceDialog;
 	}
 
+//	private static GDBBDialog textInput;
+//
+//	public static GDBBDialog getTextInput() {
+//		return textInput;
+//	}
+//
+//	public void setTextInput(GDBBDialog textInput) {
+//		GraphicalInterface.textInput = textInput;
+//	}
+	
 	private static GDBBDialog1 textInput;
 
 	public static GDBBDialog1 getTextInput() {
@@ -883,7 +893,7 @@ public class GraphicalInterface extends JFrame {
 		textInput.setModal(true);
 		textInput.setIconImages(icons);
 		textInput.setTitle("GDBB");
-		//textInput.setSize(300, 300);
+		//textInput.setSize(350, 400);
 		// actually get different results when size is changed
         textInput.setSize(400, 350);
 		textInput.setResizable(false);
@@ -1335,7 +1345,7 @@ public class GraphicalInterface extends JFrame {
 
         		setOptimizeName(optimizeName);
 
-        		textInput.setVisible(true);
+        		textInput.setVisible(true);       		
         	}
         });
 
@@ -9497,7 +9507,7 @@ public class GraphicalInterface extends JFrame {
 					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
 					LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
 					
-					DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
+					//DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
 					writer = null;
 					try {
 						String synObjString = "";
@@ -9536,7 +9546,8 @@ public class GraphicalInterface extends JFrame {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-					}					
+					}
+					DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
 				}
 			}
 			return null;
@@ -9556,6 +9567,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected void process(List<Solution> solutions) {
+			System.out.println(gdbb.isAlive());
 			Solution solution = solutions.get(solutions.size() - 1);
 			double[] x = solution.getKnockoutVector();
 			double objectiveValue = solution.getObjectiveValue();
@@ -9574,7 +9586,7 @@ public class GraphicalInterface extends JFrame {
 			rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 			rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
 
-			DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+			DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);		
 		}
 
 		@Override
