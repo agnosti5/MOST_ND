@@ -133,6 +133,9 @@ public class GraphicalInterface extends JFrame {
 			if (!isRoot) {	
 				return false;					
 			}
+			if (column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
+				return false;
+			}
 			return true;  
 		}
 
@@ -5450,6 +5453,12 @@ public class GraphicalInterface extends JFrame {
 				}
 			});
 		} else {
+			pasteMenu.setEnabled(false);
+		}
+		// the above - isCellEditable should disable paste for this column but for
+		// some reason it does not, but this works. this column is not editable
+		// so it is not permissible to paste here either
+		if (columnIndex == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
 			pasteMenu.setEnabled(false);
 		}
 		contextMenu.add(pasteMenu);
