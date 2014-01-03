@@ -5509,6 +5509,16 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent ae) {
 				if (reactionsTable.getModel().getRowCount() > 0 && reactionsTable.getSelectedRow() != -1 )
 				{
+					Map<String, Object> oldMetaboliteUsedMap = new HashMap<String, Object>();
+
+					try {
+						if (LocalConfig.getInstance().getMetaboliteUsedMap() != null) {
+							oldMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
+						}
+					} catch (Exception e3) {
+						// TODO Auto-generated catch block
+						e3.printStackTrace();
+					}
 					// copy old model for undo/redo
 					DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 					copyReactionsTableModels(oldReactionsModel);
@@ -5521,11 +5531,36 @@ public class GraphicalInterface extends JFrame {
 						int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 						deleteIds.add(id);	
 						model.removeRow(viewRow);
-						LocalConfig.getInstance().getReactionEquationMap().remove(viewRow);
+						for (int i = 0; i < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().size(); i++) {
+							String reactant = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().get(i).getMetaboliteAbbreviation();
+							if (oldMetaboliteUsedMap.containsKey(reactant)) {
+								int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactant);
+								if (usedCount > 1) {
+									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(usedCount - 1));									
+								} else {
+									LocalConfig.getInstance().getMetaboliteUsedMap().remove(reactant);
+								}
+							}
+						}
+						for (int j = 0; j < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().size(); j++) {
+							String product = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().get(j).getMetaboliteAbbreviation();
+							if (oldMetaboliteUsedMap.containsKey(product)) {
+								int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(product);
+								if (usedCount > 1) {
+									LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(usedCount - 1));									
+								} else {
+									LocalConfig.getInstance().getMetaboliteUsedMap().remove(product);
+								}
+							}
+						}
+						LocalConfig.getInstance().getReactionEquationMap().remove(id);
+						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
+						System.out.println("del id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+						System.out.println("del used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 					}
 					//System.out.println(deleteIds);
 					ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, reactionsTable.getSelectedColumn(), deleteIds.get(0), UndoConstants.DELETE_ROW, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-					setOldUsedMap(undoItem);
+					undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
 					copyReactionsTableModels(model); 
 					setNewUsedMap(undoItem);
