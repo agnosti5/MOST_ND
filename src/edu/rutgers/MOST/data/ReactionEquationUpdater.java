@@ -146,9 +146,9 @@ public class ReactionEquationUpdater {
 		}
 	}
 	
-	public void updateReactionEquationMap(int reactionId, SBMLReactionEquation newEquation) {
-		LocalConfig.getInstance().getReactionEquationMap().put(reactionId, newEquation);
-	}
+//	public void updateReactionEquationMap(int reactionId, SBMLReactionEquation newEquation) {
+//		LocalConfig.getInstance().getReactionEquationMap().put(reactionId, newEquation);
+//	}
 
 }
 

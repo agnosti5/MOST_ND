@@ -523,17 +523,6 @@ public class GraphicalInterface extends JFrame {
 	// misc
 	/*****************************************************************************/
 
-	private static ArrayList<ModelReactionEquation> copiedReactions;
-
-	public static ArrayList<ModelReactionEquation> getCopiedReactions() {
-		return copiedReactions;
-	}
-
-	public static void setCopiedReactions(
-			ArrayList<ModelReactionEquation> copiedReactions) {
-		GraphicalInterface.copiedReactions = copiedReactions;
-	}
-
 	private static int currentMetabolitesRow;
 
 	public void setCurrentMetabolitesRow(int currentMetabolitesRow){
@@ -1033,8 +1022,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setReactionEquationMap(reactionEquationMap);
 		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
 		LocalConfig.getInstance().setReactionsIdRowMap(reactionsIdRowMap);
-		ArrayList<ModelReactionEquation> copiedReactions = new ArrayList<ModelReactionEquation>();
-		setCopiedReactions(copiedReactions);
 
 		// table model maps
 		Map<String, DefaultTableModel> metabolitesTableModelMap = new HashMap<String, DefaultTableModel>();
@@ -3572,7 +3559,7 @@ public class GraphicalInterface extends JFrame {
 				}
 			}
 			for (int i = 0; i < updater.getMaybeAddProducts().size(); i++) {
-				maybeAddMetabolite(updater.getMaybeAddProducts().get(i));	
+				maybeAddMetabolite(updater.getMaybeAddProducts().get(i));
 				if (addMetabolite || LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(updater.getMaybeAddProducts().get(i))) {
 					Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().get(updater.getMaybeAddProducts().get(i));				
 					for (int j = 0; j < unprocessedEqun.getProducts().size(); j++) {
@@ -3600,9 +3587,16 @@ public class GraphicalInterface extends JFrame {
 			ArrayList<SBMLReactant> reac = new ArrayList<SBMLReactant>();
 			ArrayList<SBMLProduct> prod = new ArrayList<SBMLProduct>();
 			for (int i = 0; i < unprocessedEqun.getReactants().size(); i++) {
+				unprocessedEqun.getReactants().get(i).setReactionId(reactionId);
+				// for some reason the ids are null for metabolites not added - reset here
+				String abbrev = unprocessedEqun.getReactants().get(i).getMetaboliteAbbreviation();
+				unprocessedEqun.getReactants().get(i).setMetaboliteId((Integer) LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().get(abbrev));
 				reac.add(unprocessedEqun.getReactants().get(i));
 			}
 			for (int i = 0; i < unprocessedEqun.getProducts().size(); i++) {
+				unprocessedEqun.getProducts().get(i).setReactionId(reactionId);
+				String abbrev = unprocessedEqun.getProducts().get(i).getMetaboliteAbbreviation();
+				unprocessedEqun.getProducts().get(i).setMetaboliteId((Integer) LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().get(abbrev));
 				prod.add(unprocessedEqun.getProducts().get(i));
 			}
 			equation.setReactants(reac);
@@ -3623,7 +3617,10 @@ public class GraphicalInterface extends JFrame {
 				MetaboliteFactory aFactory = new MetaboliteFactory("SBML");
 				LocalConfig.getInstance().setParticipatingReactions(aFactory.participatingReactions(getParticipatingMetabolite()));
 			}
-		}		
+		}
+		System.out.println("upd equn " + LocalConfig.getInstance().getReactionEquationMap());
+		System.out.println("upd equn id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+		System.out.println("upd equn used " + LocalConfig.getInstance().getMetaboliteUsedMap());	
 	}
 	
 	public void maybeAddMetabolite(String species) {
@@ -3715,7 +3712,7 @@ public class GraphicalInterface extends JFrame {
 		setUpMetabolitesTable(model);
 	}
 
-	// updates metabolites table with new value is valid, else reverts to old value
+	// updates metabolites table with new value if valid, else reverts to old value
 	public void updateMetabolitesCellIfValid(String oldValue, String newValue, int rowIndex, int colIndex) {
 		metaboliteUpdateValid = true;
 		EntryValidator validator = new EntryValidator();
@@ -5545,7 +5542,6 @@ public class GraphicalInterface extends JFrame {
 		setClipboardContents("");
 
 		StringBuffer sbf=new StringBuffer();
-		ArrayList<ModelReactionEquation> copiedReactionList = new ArrayList<ModelReactionEquation>();
 		int numrows = reactionsTable.getSelectedRowCount(); 
 		int[] rowsselected=reactionsTable.getSelectedRows();  
 		reactionsTable.changeSelection(rowsselected[0], 1, false, false);
@@ -5570,11 +5566,6 @@ public class GraphicalInterface extends JFrame {
 			//starts at 1 to avoid reading hidden db id column
 			for (int j = 1; j < reactionsTable.getColumnCount(); j++) 
 			{ 
-				if (j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-					int viewRow = reactionsTable.convertRowIndexToModel(rowsselected[i]);
-					int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
-					copiedReactionList.add(LocalConfig.getInstance().getReactionEquationMap().get(id));					
-				}
 				if (reactionsTable.getValueAt(rowsselected[i], j) != null) {
 					sbf.append(reactionsTable.getValueAt(rowsselected[i], j));
 				} else {
@@ -5585,7 +5576,6 @@ public class GraphicalInterface extends JFrame {
 			sbf.append("\n"); 
 		} 
 		
-		setCopiedReactions(copiedReactionList);
 		setClipboardContents(sbf.toString());
 		//System.out.println(sbf.toString());
 	}
@@ -5655,9 +5645,6 @@ public class GraphicalInterface extends JFrame {
 					//System.out.println("n");
 					excelStr.append("\n"); 
 				}
-				setCopiedReactions(copiedReactionList);
-				//System.out.println(getCopiedReactions());
-
 				StringSelection sel  = new StringSelection(excelStr.toString()); 
 				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
 			}
