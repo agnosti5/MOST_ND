@@ -9497,16 +9497,19 @@ public class GraphicalInterface extends JFrame {
 					solution.setIndex(index);
 					index += 1;
 					publish(solution);
-					
+					System.out.println("timer " + textInput.getTimer().isRunning());
+
 					// copy models, run optimization on these model
 					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
 					DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
 					LocalConfig.getInstance().getReactionsTableModelMap().put(solution.getSolutionName(), reactionsOptModel);
 					LocalConfig.getInstance().getMetabolitesTableModelMap().put(solution.getSolutionName(), metabolitesOptModel);
-					setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solution.getSolutionName()));
-					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
+					if (textInput.getTimer().isRunning()) {
+						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solution.getSolutionName()));
+						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
+					}					
 					LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
-					
+
 					//DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
 					writer = null;
 					try {
@@ -9514,7 +9517,7 @@ public class GraphicalInterface extends JFrame {
 						for (int i = 0; i < getrFactory().getSyntheticObjectiveVector().size(); i ++) {
 							if (getrFactory().getSyntheticObjectiveVector().get(i) > 0) {
 								synObjString += "Reaction '" + getrFactory().getReactionAbbreviations().get(i) + "' Synthetic Objective = " + getrFactory().getSyntheticObjectiveVector().get(i) + "\n";
-								
+
 							}
 						}
 						output = "";
@@ -9547,7 +9550,9 @@ public class GraphicalInterface extends JFrame {
 							e.printStackTrace();
 						}
 					}
-					DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
+					if (textInput.getTimer().isRunning()) {
+						DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
+					}					
 				}
 			}
 			return null;
@@ -9567,7 +9572,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected void process(List<Solution> solutions) {
-			System.out.println(gdbb.isAlive());
+			System.out.println("alive " + gdbb.isAlive());
 			Solution solution = solutions.get(solutions.size() - 1);
 			double[] x = solution.getKnockoutVector();
 			double objectiveValue = solution.getObjectiveValue();
@@ -9596,7 +9601,7 @@ public class GraphicalInterface extends JFrame {
 			
 			log.debug("optimization complete");
 			
-			if (soln.isEmpty())
+			if (soln == null || soln.isEmpty())
 				return;
 
 			textInput.enableStart();
@@ -9606,10 +9611,12 @@ public class GraphicalInterface extends JFrame {
 			getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 			getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
 			
-			outputTextArea.setText(output);
-			if (getPopout() != null) {
-				getPopout().setOutputText(output);
-			} 
+			if (textInput.getTimer().isRunning()) {
+				outputTextArea.setText(output);
+				if (getPopout() != null) {
+					getPopout().setOutputText(output);
+				} 
+			}			
 
 			textInput.setVisible(false);
 			textInput.enableComponents();

@@ -48,6 +48,14 @@ public class GDBBDialog1  extends JDialog {
 	public SizedComboBox cbSynObj = new SizedComboBox();
 
 	private Timer timer;
+	public Timer getTimer() {
+		return timer;
+	}
+
+	public void setTimer(Timer timer) {
+		this.timer = timer;
+	}
+
 	private int count;
 	private double timeLimit;
 	private Map<String, String> reactionNameDBColumnMapping;
@@ -380,7 +388,6 @@ public class GDBBDialog1  extends JDialog {
 		
 		ActionListener startButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				System.out.println("Start");
 				boolean isValid = true;
 				boolean koIsInteger = true;
 				boolean finiteTimeIsInteger = true;
@@ -443,10 +450,9 @@ public class GDBBDialog1  extends JDialog {
 
 		ActionListener stopButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				System.out.println("Stop");
 				timer.stop();
 				setVisible(false);
-				gi.gdbbTask.getGdbb().destroy();			
+				gi.gdbbTask.getGdbb().stopGDBB();
 			}
 		};
 
@@ -493,7 +499,7 @@ public class GDBBDialog1  extends JDialog {
 			if (finiteTimeButton.isSelected() && count >= Integer.valueOf(finiteTimeField.getText())) {
 				timer.stop();
 				setVisible(false);
-				gi.gdbbTask.getGdbb().destroy();
+				gi.gdbbTask.getGdbb().stopGDBB();
 			}
 		}
 	}
