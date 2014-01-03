@@ -5534,23 +5534,25 @@ public class GraphicalInterface extends JFrame {
 						for (int i = 0; i < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().size(); i++) {
 							String reactant = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().get(i).getMetaboliteAbbreviation();
 							if (oldMetaboliteUsedMap.containsKey(reactant)) {
-								int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactant);
-								if (usedCount > 1) {
-									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(usedCount - 1));									
-								} else {
-									LocalConfig.getInstance().getMetaboliteUsedMap().remove(reactant);
-								}
+								updateMetaboliteUsedMap(reactant);
+//								int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactant);
+//								if (usedCount > 1) {
+//									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(usedCount - 1));									
+//								} else {
+//									LocalConfig.getInstance().getMetaboliteUsedMap().remove(reactant);
+//								}
 							}
 						}
 						for (int j = 0; j < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().size(); j++) {
 							String product = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().get(j).getMetaboliteAbbreviation();
 							if (oldMetaboliteUsedMap.containsKey(product)) {
-								int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(product);
-								if (usedCount > 1) {
-									LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(usedCount - 1));									
-								} else {
-									LocalConfig.getInstance().getMetaboliteUsedMap().remove(product);
-								}
+								updateMetaboliteUsedMap(product);
+//								int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(product);
+//								if (usedCount > 1) {
+//									LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(usedCount - 1));									
+//								} else {
+//									LocalConfig.getInstance().getMetaboliteUsedMap().remove(product);
+//								}
 							}
 						}
 						LocalConfig.getInstance().getReactionEquationMap().remove(id);
@@ -5588,6 +5590,15 @@ public class GraphicalInterface extends JFrame {
 		contextMenu.add(unhighlightMenu);	
 
 		return contextMenu;
+	}
+	
+	public void updateMetaboliteUsedMap(String species) {
+		int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
+		if (usedCount > 1) {
+			LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount - 1));									
+		} else {
+			LocalConfig.getInstance().getMetaboliteUsedMap().remove(species);
+		}
 	}
 
 	/*******************************************************************************/
