@@ -3611,6 +3611,9 @@ public class GraphicalInterface extends JFrame {
 			}
 			reactionsTable.getModel().setValueAt(equation.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			reactionsTable.getModel().setValueAt(equation.getReversible(), rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+			if (equation.getReversible().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+				reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+			}
 			GraphicalInterface.showPrompt = true;
 			createUnusedMetabolitesList();
 			if (getParticipatingMetabolite() != null && getParticipatingMetabolite().trim().length() > 0) {
@@ -5798,7 +5801,9 @@ public class GraphicalInterface extends JFrame {
 					if (pasteIds.size() > 0) {
 						scrollToLocation(reactionsTable, getRowFromReactionsId(Integer.valueOf(pasteIds.get(0))), startCol);
 					}
-					System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+					System.out.println("paste " + LocalConfig.getInstance().getReactionEquationMap());
+					System.out.println("paste id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+					System.out.println("paste used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 				}
 			} 	
 		}
@@ -5933,7 +5938,6 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					updateReactionEquation(viewRow, id, oldEqun, value);
 					LocalConfig.getInstance().getReactionEquationMap().remove(id);
-					System.out.println("is valid" + LocalConfig.getInstance().getReactionEquationMap());
 					return true;
 				}					
 			} else {
