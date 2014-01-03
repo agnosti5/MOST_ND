@@ -216,18 +216,6 @@ public class LocalConfig {
 			Map<Object, ModelReactionEquation> reactionEquationMap) {
 		LocalConfig.reactionEquationMap = reactionEquationMap;
 	}
-	
-	// map used to store equations pasted, so if paste invalid, not added to above map
-	private static Map<Object, ModelReactionEquation> reactionPasteEquationMap;
-	
-	public static Map<Object, ModelReactionEquation> getReactionPasteEquationMap() {
-		return reactionPasteEquationMap;
-	}
-
-	public static void setReactionPasteEquationMap(
-			Map<Object, ModelReactionEquation> reactionPasteEquationMap) {
-		LocalConfig.reactionPasteEquationMap = reactionPasteEquationMap;
-	}
 
 	private static Map<String, Object> reactionsIdRowMap;
 

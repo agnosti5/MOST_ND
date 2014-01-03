@@ -1028,9 +1028,6 @@ public class GraphicalInterface extends JFrame {
 
 		Map<Object, ModelReactionEquation> reactionEquationMap = new HashMap<Object, ModelReactionEquation>();
 		LocalConfig.getInstance().setReactionEquationMap(reactionEquationMap);
-		// map used to store equations pasted, so if paste invalid, not added to above map
-		Map<Object, ModelReactionEquation> reactionPasteEquationMap = new HashMap<Object, ModelReactionEquation>();
-		LocalConfig.getInstance().setReactionPasteEquationMap(reactionPasteEquationMap);
 		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
 		LocalConfig.getInstance().setReactionsIdRowMap(reactionsIdRowMap);
 		ArrayList<ModelReactionEquation> copiedReactions = new ArrayList<ModelReactionEquation>();
@@ -3296,7 +3293,7 @@ public class GraphicalInterface extends JFrame {
 		//LocalConfig.getInstance().editMode = true;
 		int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0)));		
 		if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-			SBMLReactionEquation oldEquation = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id);
+			//SBMLReactionEquation oldEquation = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id);
 			ReactionParser parser = new ReactionParser();
 			if (!parser.isValid(newValue.trim())) {
 				if (newValue.trim().length() > 0) {
@@ -5745,11 +5742,6 @@ public class GraphicalInterface extends JFrame {
 										} else {
 											if (j < cells.length) {
 												updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
-												if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-													if (validPaste) {
-														updateReactionPasteEquationMap(startRow+i, i);
-													}						
-												}
 											} else {
 												updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
 											} 	
@@ -5763,11 +5755,6 @@ public class GraphicalInterface extends JFrame {
 											showPasteOutOfRangeError();			
 										} else {
 											updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
-											if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-												if (validPaste) {
-													updateReactionPasteEquationMap(startRow+i, i);
-												}						
-											}
 										}									
 									}
 								}									
@@ -5808,31 +5795,10 @@ public class GraphicalInterface extends JFrame {
 						undoItem.setId(Integer.valueOf(pasteIds.get(0)));
 					}				
 					setUpReactionsUndo(undoItem);
-					// add pasted reactions to equation map
-//					ArrayList<Object> keys = new ArrayList<Object>(LocalConfig.getInstance().getReactionPasteEquationMap().keySet());
-//					for (int r = 0; r < keys.size(); r++) {
-//						SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r));
-//						equn.writeReactionEquation();
-//						System.out.println(equn.equationNames);
-//						System.out.println((int) keys.get(r));
-//						LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r)));
-//					}
 					// reset sort column and order
 					setReactionsSortColumnIndex(getReactionsOldSortColumnIndex());
 					setReactionsSortOrder(getReactionsOldSortOrder());
 					setUpReactionsTable(newReactionsModel);
-					// add pasted reactions to equation map
-					ArrayList<Object> keys = new ArrayList<Object>(LocalConfig.getInstance().getReactionPasteEquationMap().keySet());
-					for (int r = 0; r < keys.size(); r++) {
-						SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r));
-						equn.writeReactionEquation();
-						updateReactionsCellById(equn.equationNames,  (int) keys.get(r), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
-						updateReactionsCellById(equn.getReversible(),  (int) keys.get(r), GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-						if (equn.getReversible().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
-							updateReactionsCellById("0.0",  (int) keys.get(r), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
-						}
-						LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r)));
-					}
 					if (pasteIds.size() > 0) {
 						scrollToLocation(reactionsTable, getRowFromReactionsId(Integer.valueOf(pasteIds.get(0))), startCol);
 					}
@@ -5852,11 +5818,6 @@ public class GraphicalInterface extends JFrame {
 				for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 					if (j < cells.length) {
 						updateReactionsCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
-						if (startCol+j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-							if (validPaste) {
-								updateReactionPasteEquationMap(pasteRows.get(startIndex + i), i);
-							}						
-						}
 					} else {
 						updateReactionsCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
 					} 
@@ -5965,39 +5926,27 @@ public class GraphicalInterface extends JFrame {
 				return false;
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-			if (value != null && value.trim().length() > 0) {
-				ReactionParser parser = new ReactionParser();
-				if (!parser.isValid(value)) {
+			String oldEqun = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+			ReactionParser parser = new ReactionParser();
+			if (!parser.isValid(value)) {
+				if (value.trim().length() > 0) {
 					setPasteError("Invalid Reaction Format");
 					setReplaceAllError("Invalid Reaction Format");
 					validPaste = false;
 					return false;
 				} else {
+					updateReactionEquation(viewRow, id, oldEqun, value);
+					LocalConfig.getInstance().getReactionEquationMap().remove(id);
+					System.out.println("is valid" + LocalConfig.getInstance().getReactionEquationMap());
 					return true;
-				}				
+				}					
 			} else {
-				setPasteError("Invalid Reaction Format");
-				setReplaceAllError("Invalid Reaction Format");
-				validPaste = false;
-				return false;
-			}
+				updateReactionEquation(viewRow, id, oldEqun, value);
+				return true;
+			}				
 		}
 		return true;
 
-	}
-
-	public void updateReactionPasteEquationMap(int row, int index) {
-		int viewRow = reactionsTable.convertRowIndexToModel(row);
-		int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
-		Map<Object, ModelReactionEquation> reactionPasteEquationMap = LocalConfig.getInstance().getReactionPasteEquationMap();
-		for (int i = 0; i < ((SBMLReactionEquation) getCopiedReactions().get(index)).getReactants().size(); i++) {
-			((SBMLReactionEquation) getCopiedReactions().get(index)).getReactants().get(i).setReactionId(id);
-		}
-		for (int j = 0; j < ((SBMLReactionEquation) getCopiedReactions().get(index)).getProducts().size(); j++) {
-			((SBMLReactionEquation) getCopiedReactions().get(index)).getProducts().get(j).setReactionId(id);
-		}
-		reactionPasteEquationMap.put(id, getCopiedReactions().get(index));
-		LocalConfig.getInstance().setReactionPasteEquationMap(reactionPasteEquationMap);	
 	}
 
 	public void reactionsClear() {
@@ -8610,8 +8559,6 @@ public class GraphicalInterface extends JFrame {
 				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
 				replaceAllMode = true;
 				showErrorMessage = true;
-				Map<Object, ModelReactionEquation> reactionOldEquationMap = LocalConfig.getInstance().getReactionPasteEquationMap();
-				Map<Object, ModelReactionEquation> reactionNewEquationMap = LocalConfig.getInstance().getReactionPasteEquationMap();
 				ArrayList<String> pasteIds = new ArrayList<String>();
 				for (int i = 0; i < getReactionsFindLocationsList().size(); i++) {
 					int viewRow = reactionsTable.convertRowIndexToModel(getReactionsFindLocationsList().get(i).get(0));
@@ -8644,12 +8591,6 @@ public class GraphicalInterface extends JFrame {
 					DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 					copyReactionsTableModels(newReactionsModel); 
 					setUpReactionsUndo(undoItem);
-					// add pasted reactions to equation map
-					ArrayList<Object> keys = new ArrayList<Object>(LocalConfig.getInstance().getReactionPasteEquationMap().keySet());
-					for (int r = 0; r < keys.size(); r++) {
-						LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), LocalConfig.getInstance().getReactionPasteEquationMap().get(keys.get(r)));
-					}
-					//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 				} else {
 					if (showErrorMessage = true) {
 						setFindReplaceAlwaysOnTop(false);
@@ -8662,11 +8603,6 @@ public class GraphicalInterface extends JFrame {
 					// restore old model if invalid replace
 					setUpReactionsTable(oldReactionsModel);
 					LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), oldReactionsModel);
-					// add pasted reactions to equation map
-					ArrayList<Object> keys = new ArrayList<Object>(reactionOldEquationMap.keySet());
-					for (int r = 0; r < keys.size(); r++) {
-						LocalConfig.getInstance().getReactionEquationMap().put(keys.get(r), reactionOldEquationMap.get(keys.get(r)));
-					}
 					deleteReactionsPasteUndoItem();
 					getFindReplaceDialog().replaceAllButton.setEnabled(true);
 					validPaste = true;
