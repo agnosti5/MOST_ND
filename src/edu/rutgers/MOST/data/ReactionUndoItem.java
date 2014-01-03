@@ -43,6 +43,8 @@ public class ReactionUndoItem implements UndoItem {
 	private String newLowerBound;
 	private String oldUpperBound;
 	private String newUpperBound;
+	private Map<String, Object> oldMetaboliteUsedMap;
+	private Map<String, Object> newMetaboliteUsedMap;
 	
 	public Integer getId() {
 		return id;
@@ -212,6 +214,18 @@ public class ReactionUndoItem implements UndoItem {
 	public void setNewUpperBound(String newUpperBound) {
 		this.newUpperBound = newUpperBound;
 	}
+	public Map<String, Object> getOldMetaboliteUsedMap() {
+		return oldMetaboliteUsedMap;
+	}
+	public void setOldMetaboliteUsedMap(Map<String, Object> oldMetaboliteUsedMap) {
+		this.oldMetaboliteUsedMap = oldMetaboliteUsedMap;
+	}
+	public Map<String, Object> getNewMetaboliteUsedMap() {
+		return newMetaboliteUsedMap;
+	}
+	public void setNewMetaboliteUsedMap(Map<String, Object> newMetaboliteUsedMap) {
+		this.newMetaboliteUsedMap = newMetaboliteUsedMap;
+	}
 	
 	public String createUndoDescription() {
 		String undoDescription = "";
@@ -260,7 +274,10 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {	
 			copyTableUndoAction();
 		}
-		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+		restoreOldCollections();
+		System.out.println("undo " + LocalConfig.getInstance().getReactionEquationMap());
+		System.out.println("undo id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+		System.out.println("undo used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public void copyTableUndoAction() {
@@ -287,7 +304,10 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {
 			copyTableRedoAction();
 		}
-		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+		restoreNewCollections();
+		System.out.println("redo " + LocalConfig.getInstance().getReactionEquationMap());
+		System.out.println("redo id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+		System.out.println("redo used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public void copyTableRedoAction() {
@@ -340,13 +360,22 @@ public class ReactionUndoItem implements UndoItem {
 				String abbrev = (String) getKeyFromValue(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap(), this.addedMetabolites.get(i)); 
 				addedAbbr.add(abbrev);
 				LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(abbrev);
-				LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
+				//LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
+//				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(abbrev)) {
+//					int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(abbrev);
+//					if (usedCount > 1) {
+//						LocalConfig.getInstance().getMetaboliteUsedMap().put(abbrev, new Integer(usedCount - 1));									
+//					} else {
+//						LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
+//					}
+//				}	
 				String row = (metabolitesIdRowMap.get(Integer.toString(this.addedMetabolites.get(i)))).toString();
 				
 				int rowNum = Integer.valueOf(row);
 				GraphicalInterface.metabolitesTable.getModel().setValueAt("", rowNum, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 			}
 			setAddedMetaboliteAbbr(addedAbbr);
+			ReactionEquationUpdater updater = new ReactionEquationUpdater();
 		}
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		
@@ -462,6 +491,14 @@ public class ReactionUndoItem implements UndoItem {
 			columnName = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[columnIndex];
 		}
 		return columnName;
+	}
+	
+	public void restoreOldCollections() {
+		LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
+	}
+	
+	public void restoreNewCollections() {
+		LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
 	}
 	
 	public String toString() {
