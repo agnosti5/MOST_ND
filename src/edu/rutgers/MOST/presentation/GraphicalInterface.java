@@ -5485,7 +5485,14 @@ public class GraphicalInterface extends JFrame {
 
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
 		if (isRoot) {
-			clearMenu.setEnabled(true);
+			if (columnIndex == GraphicalInterfaceConstants.KO_COLUMN || columnIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN ||
+					columnIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || columnIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
+					columnIndex == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || columnIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN ||
+					columnIndex == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN || columnIndex == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
+				clearMenu.setEnabled(false);
+			} else {
+				clearMenu.setEnabled(true);
+			}			
 		} else {
 			clearMenu.setEnabled(false);
 		}
@@ -5535,24 +5542,12 @@ public class GraphicalInterface extends JFrame {
 							String reactant = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().get(i).getMetaboliteAbbreviation();
 							if (oldMetaboliteUsedMap.containsKey(reactant)) {
 								updateMetaboliteUsedMap(reactant);
-//								int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactant);
-//								if (usedCount > 1) {
-//									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(usedCount - 1));									
-//								} else {
-//									LocalConfig.getInstance().getMetaboliteUsedMap().remove(reactant);
-//								}
 							}
 						}
 						for (int j = 0; j < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().size(); j++) {
 							String product = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().get(j).getMetaboliteAbbreviation();
 							if (oldMetaboliteUsedMap.containsKey(product)) {
 								updateMetaboliteUsedMap(product);
-//								int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(product);
-//								if (usedCount > 1) {
-//									LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(usedCount - 1));									
-//								} else {
-//									LocalConfig.getInstance().getMetaboliteUsedMap().remove(product);
-//								}
 							}
 						}
 						LocalConfig.getInstance().getReactionEquationMap().remove(id);
@@ -6507,7 +6502,11 @@ public class GraphicalInterface extends JFrame {
 
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
 		if (isRoot) {
-			clearMenu.setEnabled(true);
+			if (columnIndex == GraphicalInterfaceConstants.BOUNDARY_COLUMN) {
+				clearMenu.setEnabled(false);
+			} else {
+				clearMenu.setEnabled(true);
+			}			
 		} else {
 			clearMenu.setEnabled(false);
 		}
