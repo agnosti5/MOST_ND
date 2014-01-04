@@ -2994,7 +2994,14 @@ public class GraphicalInterface extends JFrame {
 			//... Open a file dialog.
 			File file = null;
 			if (saveOptFile) {
-				file = new File(DynamicTreePanel.treePanel.getTree().getLastSelectedPathComponent().toString());
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+						DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
+				Solution nodeInfo = (Solution)node.getUserObject();	
+				String suffix = "";
+				if (nodeInfo.getIndex() > 0) {
+					suffix = "_[" + nodeInfo.getIndex() + "]";
+				}
+				file = new File(nodeInfo.getDatabaseName() + suffix);
 				fileChooser.setSelectedFile(file);
 			}
 			int retval = fileChooser.showSaveDialog(output);
@@ -4031,9 +4038,9 @@ public class GraphicalInterface extends JFrame {
 					DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
 			Solution nodeInfo = (Solution)node.getUserObject();		
 			nodeInfo.setSolutionName(LocalConfig.getInstance().getModelName());
-			String solutionName = nodeInfo.getSolutionName();
+			//String solutionName = nodeInfo.getSolutionName();
 			node.setUserObject((new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName())));			
-			DefaultTreeModel treeModel = (DefaultTreeModel) DynamicTreePanel.treePanel.tree.getModel();
+			//DefaultTreeModel treeModel = (DefaultTreeModel) DynamicTreePanel.treePanel.tree.getModel();
 			treePanel.repaint();
 		} else {
 			DynamicTreePanel.treePanel.clear();
