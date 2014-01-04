@@ -135,9 +135,7 @@ public class TextMetabolitesModelReader {
 		int row = 1;
 		
 		CSVReader reader;
-		
-		ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
-		
+	
 		try {
 			reader = new CSVReader(new FileReader(file), ',');
 			String [] dataArray;
@@ -172,7 +170,7 @@ public class TextMetabolitesModelReader {
 	                String metaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()];
 	                
 					if (metaboliteAbbreviation == null || metaboliteAbbreviation.trim().length() == 0) {
-						blankMetabIds.add(id);		
+							
 					} else {
 						if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(metaboliteAbbreviation)) {
 							metaboliteAbbreviation = metaboliteAbbreviation + duplicateSuffix(metaboliteAbbreviation);
@@ -219,8 +217,7 @@ public class TextMetabolitesModelReader {
 		}
 		
 		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
-		System.out.println(LocalConfig.getInstance().getMetaboliteIdNameMap());
-		LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);					
+		System.out.println(LocalConfig.getInstance().getMetaboliteIdNameMap());				
 		LocalConfig.getInstance().hasMetabolitesFile = true;
 		setMetabolitesTableModel(metabTableModel);
 		//System.out.println("Done");		

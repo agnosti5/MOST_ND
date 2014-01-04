@@ -968,9 +968,6 @@ public class GraphicalInterface extends JFrame {
 		DynamicTreePanel.treePanel.addObject(new Solution(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME, GraphicalInterfaceConstants.DEFAULT_MODEL_NAME));
 
 		// lists populated in file load
-		ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
-		LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);	
-
 		Map<String, Object> metaboliteAbbreviationIdMap = new HashMap<String, Object>();
 		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(metaboliteAbbreviationIdMap);
 		Map<Object, String> metaboliteIdNameMap = new HashMap<Object, String>();
@@ -1381,10 +1378,14 @@ public class GraphicalInterface extends JFrame {
 						LocalConfig.getInstance().getSuspiciousMetabolites().remove(LocalConfig.getInstance().getSuspiciousMetabolites().indexOf(LocalConfig.getInstance().getUnusedList().get(i)));
 					}
 				}	
-				for (int j = 0; j < LocalConfig.getInstance().getBlankMetabIds().size(); j++) {			
-					deleteMetabolitesRowById(LocalConfig.getInstance().getBlankMetabIds().get(j));						
+				DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
+				for (int j = metabolitesTable.getRowCount() - 1; j >=0; j--) {
+					if (metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) == null ||
+							((String) metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() == 0) {
+						System.out.println(j);
+						model.removeRow(j);
+					}
 				}
-				LocalConfig.getInstance().getBlankMetabIds().clear();
 				highlightUnusedMetabolites = false;
 				highlightUnusedMetabolitesItem.setState(false);
 				formulaBar.setText("");				
@@ -2617,13 +2618,6 @@ public class GraphicalInterface extends JFrame {
 	};
 
 	public void loadReactionColumnNameInterface() {
-		/*
-		if (!LocalConfig.getInstance().hasMetabolitesFile) {
-			DefaultTableModel blankMetabModel = createBlankMetabolitesTableModel();
-			setUpMetabolitesTable(blankMetabModel);
-			LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), blankMetabModel);
-		}
-		 */
 		LocalConfig.getInstance().setReactionsNextRowCorrection(0);
 
 		TextReactionsModelReader reader = new TextReactionsModelReader();			    
@@ -4111,7 +4105,6 @@ public class GraphicalInterface extends JFrame {
 	public void clearConfigLists() {
 		LocalConfig.getInstance().getMetabolitesTableModelMap().clear();
 		LocalConfig.getInstance().getReactionsTableModelMap().clear();
-		LocalConfig.getInstance().getBlankMetabIds().clear();
 		LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().clear();
 		LocalConfig.getInstance().getMetaboliteIdNameMap().clear();
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
@@ -4132,6 +4125,9 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getMetabolitesSortColumns().add(0);
 		LocalConfig.getInstance().getMetabolitesSortOrderList().clear();
 		LocalConfig.getInstance().getMetabolitesSortOrderList().add(SortOrder.ASCENDING);
+		
+		LocalConfig.getInstance().setMaxMetabolite(0);
+		LocalConfig.getInstance().setMaxMetaboliteId(0);
 	}
 
 	public DefaultTableModel copyMetabolitesTableModel(DefaultTableModel model) {
@@ -6563,9 +6559,6 @@ public class GraphicalInterface extends JFrame {
 										if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(key)) {
 											LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(key);
 										}
-										if (LocalConfig.getInstance().getBlankMetabIds().contains(id)) {
-											LocalConfig.getInstance().getBlankMetabIds().remove(LocalConfig.getInstance().getBlankMetabIds().indexOf(id));
-										}
 									}									
 								}
 								undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
@@ -7321,12 +7314,10 @@ public class GraphicalInterface extends JFrame {
 		ArrayList<Integer> oldUnusedList = null;
 		
 		try {
-			oldBlankMetabIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getBlankMetabIds()));
 			oldMetaboliteAbbreviationIdMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap()));
 			oldMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
 			oldSuspiciousMetabolites = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getSuspiciousMetabolites()));
 			oldUnusedList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getUnusedList()));
-			undoItem.setOldBlankMetabIds(oldBlankMetabIds);
 			undoItem.setOldMetaboliteAbbreviationIdMap(oldMetaboliteAbbreviationIdMap);
 			undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
 			undoItem.setOldSuspiciousMetabolites(oldSuspiciousMetabolites);
@@ -7349,9 +7340,6 @@ public class GraphicalInterface extends JFrame {
 		ArrayList<Integer> oldUnusedList = new ArrayList<Integer>();
 
 		try {
-			if (LocalConfig.getInstance().getBlankMetabIds() != null) {
-				oldBlankMetabIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getBlankMetabIds()));
-			}
 			if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap() != null) {
 				oldMetaboliteAbbreviationIdMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap()));
 			}
@@ -7364,7 +7352,6 @@ public class GraphicalInterface extends JFrame {
 			if (LocalConfig.getInstance().getUnusedList() != null) {
 				oldUnusedList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getUnusedList()));
 			}
-			undoItem.setOldBlankMetabIds(oldBlankMetabIds);
 			undoItem.setOldMetaboliteAbbreviationIdMap(oldMetaboliteAbbreviationIdMap);
 			undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
 			undoItem.setOldSuspiciousMetabolites(oldSuspiciousMetabolites);
@@ -7385,9 +7372,6 @@ public class GraphicalInterface extends JFrame {
 		ArrayList<Integer> newUnusedList = new ArrayList<Integer>();
 
 		try {
-			if (LocalConfig.getInstance().getBlankMetabIds() != null) {
-				newBlankMetabIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getBlankMetabIds()));
-			}
 			if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap() != null) {
 				newMetaboliteAbbreviationIdMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap()));
 			}
@@ -7401,7 +7385,6 @@ public class GraphicalInterface extends JFrame {
 				newUnusedList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getUnusedList()));
 			}
 
-			undoItem.setNewBlankMetabIds(newBlankMetabIds);
 			undoItem.setNewMetaboliteAbbreviationIdMap(newMetaboliteAbbreviationIdMap);
 			undoItem.setNewMetaboliteUsedMap(newMetaboliteUsedMap);
 			undoItem.setNewSuspiciousMetabolites(newSuspiciousMetabolites);
@@ -8079,10 +8062,7 @@ public class GraphicalInterface extends JFrame {
 
 	public void setUpReactionsUndo(ReactionUndoItem undoItem) {
         ArrayList<Integer> addedMetabList = new ArrayList<Integer>();		
-		try {
-			if (LocalConfig.getInstance().getBlankMetabIds() != null) {
-				addedMetabList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getAddedMetabolites()));
-			}			
+		try {		
 			undoItem.setAddedMetabolites(addedMetabList);
 	    	LocalConfig.getInstance().getUndoItemMap().put(undoCount, undoItem);				
 			updateUndoButton();

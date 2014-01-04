@@ -27,8 +27,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	private SortOrder newSortOrder;
 	private int addedColumnIndex;
 	private int deletedColumnIndex;
-	private ArrayList<Integer> oldBlankMetabIds;
-	private ArrayList<Integer> newBlankMetabIds;
 	private Map<String, Object> oldMetaboliteAbbreviationIdMap;
 	private Map<String, Object> newMetaboliteAbbreviationIdMap;
 	private Map<String, Object> oldMetaboliteUsedMap;
@@ -120,19 +118,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	public void setDeletedColumnIndex(int deletedColumnIndex) {
 		this.deletedColumnIndex = deletedColumnIndex;
-	}
-	
-	public ArrayList<Integer> getOldBlankMetabIds() {
-		return oldBlankMetabIds;
-	}
-	public void setOldBlankMetabIds(ArrayList<Integer> oldBlankMetabIds) {
-		this.oldBlankMetabIds = oldBlankMetabIds;
-	}
-	public ArrayList<Integer> getNewBlankMetabIds() {
-		return newBlankMetabIds;
-	}
-	public void setNewBlankMetabIds(ArrayList<Integer> newBlankMetabIds) {
-		this.newBlankMetabIds = newBlankMetabIds;
 	}
 	public Map<String, Object> getOldMetaboliteAbbreviationIdMap() {
 		return oldMetaboliteAbbreviationIdMap;
@@ -396,7 +381,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	
 	public void restoreOldCollections() {
-		LocalConfig.getInstance().setBlankMetabIds(this.oldBlankMetabIds);
 		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(this.oldMetaboliteAbbreviationIdMap);
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.oldSuspiciousMetabolites);
@@ -412,7 +396,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	
 	public void restoreNewCollections() {
-		LocalConfig.getInstance().setBlankMetabIds(this.newBlankMetabIds);
 		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(this.newMetaboliteAbbreviationIdMap);
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.newSuspiciousMetabolites);
