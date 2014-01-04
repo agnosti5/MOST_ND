@@ -1194,6 +1194,7 @@ public class GraphicalInterface extends JFrame {
 		modelMenu.add(saveCSVMetabolitesItem);
 		saveCSVMetabolitesItem.setMnemonic(KeyEvent.VK_O);
 		saveCSVMetabolitesItem.addActionListener(new SaveCSVMetabolitesItemAction());
+		saveCSVMetabolitesItem.setEnabled(false);
 
 		modelMenu.add(saveCSVReactionsItem);
 		saveCSVReactionsItem.setMnemonic(KeyEvent.VK_N);
@@ -2336,6 +2337,16 @@ public class GraphicalInterface extends JFrame {
 				GraphicalInterface.this.requestFocus();
 				tabChanged = true;
 				int tabIndex = tabbedPane.getSelectedIndex();
+				if (tabIndex == 1) {
+					saveCSVMetabolitesItem.setEnabled(true);
+				} else if (tabIndex == 0) {
+					saveCSVMetabolitesItem.setEnabled(false);
+				}
+				if (tabIndex == 0) {
+					saveCSVReactionsItem.setEnabled(true);
+				} else if (tabIndex == 1) {
+					saveCSVReactionsItem.setEnabled(false);
+				}
 				String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
 				String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
 				if (tabIndex == 0 && reactionsTable.getSelectedRow() > - 1) {
@@ -4038,9 +4049,7 @@ public class GraphicalInterface extends JFrame {
 					DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
 			Solution nodeInfo = (Solution)node.getUserObject();		
 			nodeInfo.setSolutionName(LocalConfig.getInstance().getModelName());
-			//String solutionName = nodeInfo.getSolutionName();
 			node.setUserObject((new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName())));			
-			//DefaultTreeModel treeModel = (DefaultTreeModel) DynamicTreePanel.treePanel.tree.getModel();
 			treePanel.repaint();
 		} else {
 			DynamicTreePanel.treePanel.clear();
