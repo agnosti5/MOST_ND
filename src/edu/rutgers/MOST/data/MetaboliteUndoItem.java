@@ -385,14 +385,6 @@ public class MetaboliteUndoItem implements UndoItem {
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.oldSuspiciousMetabolites);
 		LocalConfig.getInstance().setUnusedList(this.oldUnusedList);
-		/*
-		System.out.println("old" + LocalConfig.getInstance().getMetaboliteIdNameMap());
-		System.out.println("old" + LocalConfig.getInstance().getUnusedList());
-		System.out.println("old" + LocalConfig.getInstance().getDuplicateIds());
-		System.out.println("new" + this.newMetaboliteIdNameMap);
-		System.out.println("new" + this.newUnusedList);
-		System.out.println("new" + this.newDuplicateIds);
-		*/
 	}
 	
 	public void restoreNewCollections() {
@@ -400,14 +392,6 @@ public class MetaboliteUndoItem implements UndoItem {
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.newSuspiciousMetabolites);
 		LocalConfig.getInstance().setUnusedList(this.newUnusedList);
-		/*
-		System.out.println("new" + LocalConfig.getInstance().getMetaboliteIdNameMap());
-		System.out.println("new" + LocalConfig.getInstance().getUnusedList());
-		System.out.println("new" + LocalConfig.getInstance().getDuplicateIds());
-		System.out.println("old" + this.oldMetaboliteIdNameMap);
-		System.out.println("old" + this.oldUnusedList);
-		System.out.println("old" + this.oldDuplicateIds);
-		*/
 	}
 	
 	public String toString() {

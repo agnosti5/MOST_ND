@@ -824,6 +824,7 @@ public class GraphicalInterface extends JFrame {
 					if (solutionName != null) {
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
 							isRoot = true;
+							saveOptFile = false;
 							clearOutputPane();
 							if (getPopout() != null) {
 								getPopout().clear();
@@ -832,7 +833,8 @@ public class GraphicalInterface extends JFrame {
 							setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 							setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
 							enableMenuItems();
-						} else {							
+						} else {
+							saveOptFile = true;
 							if (node.getUserObject().toString() != null) {
 								//System.out.println("node " + node.getUserObject().toString());
 								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
@@ -856,6 +858,7 @@ public class GraphicalInterface extends JFrame {
 						}		
 					}								
 				} else {
+					saveOptFile = true;
 					if (node.getUserObject().toString() != null) {
 						//System.out.println("else " + node.getUserObject().toString());
 						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
@@ -2876,6 +2879,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getReactionsTableModelMap().put(filename, reactionsModel);
 		LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
 
+		System.out.println("save metab");
 		setUpTables();
 	}
 
@@ -2967,6 +2971,7 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getReactionsTableModelMap().put(filename, reactionsModel);
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
 			
+			System.out.println("save reac");
 			setUpTables();
 		}	
 		saveOptFile = false;
@@ -4024,21 +4029,22 @@ public class GraphicalInterface extends JFrame {
 			DynamicTreePanel.treePanel.setNodeSelected(0);
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 					DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
-			Solution nodeInfo = (Solution)node.getUserObject();
+			Solution nodeInfo = (Solution)node.getUserObject();		
+			nodeInfo.setSolutionName(LocalConfig.getInstance().getModelName());
 			String solutionName = nodeInfo.getSolutionName();
 			node.setUserObject((new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName())));			
 			DefaultTreeModel treeModel = (DefaultTreeModel) DynamicTreePanel.treePanel.tree.getModel();
-			DynamicTreePanel.treePanel.print(treeModel);
+			treePanel.repaint();
 		} else {
 			DynamicTreePanel.treePanel.clear();
 			listModel.addElement(LocalConfig.getInstance().getModelName());
-			DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));			
+			DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));				
+			setSortDefault();
 		}
 		DynamicTreePanel.treePanel.setNodeSelected(0);
 		// enables or disables menu items depending on if there are unused items present
 		createUnusedMetabolitesList();
 		enableMenuItems();
-		setSortDefault();
 		setUpCellSelectionMode();		
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());
 		if (!saveDisabled) {
