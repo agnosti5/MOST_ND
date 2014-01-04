@@ -135,17 +135,17 @@ public class JSBMLWriter implements TreeModelListener{
 			// if path is null or does not exist, default used, else last path used
 			chooser.setCurrentDirectory(new File(u.lastPath(lastSBML_path, chooser)));					
 			
-			if (GraphicalInterface.saveOptFile) {	
-				String path = getOptFilePath() + ".xml";
-				File theFileToSave = new File(path);
-				chooser.setSelectedFile(theFileToSave);
-				//System.out.println("ch " + chooser.getSelectedFile());
-			} 		
 			chooser.setApproveButtonText("Save");
 			chooser.setDialogTitle("Save to");
 			chooser.setFileFilter(new XMLFileFilter());
 			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
+			
+			if (GraphicalInterface.saveOptFile) {	
+				String path = getOptFilePath();
+				File theFileToSave = new File(path);
+				chooser.setSelectedFile(theFileToSave);
+			} 		
+			
 			boolean done = false;
 			boolean cancel = false;
 			while (!done) {

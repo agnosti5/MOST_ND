@@ -2835,8 +2835,19 @@ public class GraphicalInterface extends JFrame {
 		saveSBML = true;
 		try {
 			JSBMLWriter jWrite = new JSBMLWriter();
+			if (saveOptFile) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+						DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
+				Solution nodeInfo = (Solution)node.getUserObject();	
+				String suffix = "";
+				if (nodeInfo.getIndex() > 0) {
+					suffix = "_[" + nodeInfo.getIndex() + "]";
+				}
+				jWrite.setOptFilePath(nodeInfo.getDatabaseName() + suffix);
+			}
 
 			jWrite.formConnect(LocalConfig.getInstance());
+			
 			if (jWrite.load) {
 				setSBMLFile(jWrite.getOutFile());
 				if (showJSBMLFileChooser) {
@@ -2846,14 +2857,18 @@ public class GraphicalInterface extends JFrame {
 					}
 					LocalConfig.getInstance().setModelName(modelName);
 					curSettings.add("LastSBML", jWrite.getOutFile().getAbsolutePath());
-				}				
-				LocalConfig.getInstance().setProgress(0);
-				progressBar.setVisible(true);
+				}	
+				if (!saveOptFile) {
+					LocalConfig.getInstance().setProgress(0);
+					progressBar.setVisible(true);
 
-				timer.start();
-				task = new Task();
-				task.execute();
-				saveDisabled = false;
+					timer.start();
+					task = new Task();
+					task.execute();
+					saveDisabled = false;
+				} else {
+					// need a progress bar here if large opt files take too long to save
+				}
 			}				
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -2890,7 +2905,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getReactionsTableModelMap().put(filename, reactionsModel);
 		LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
 
-		System.out.println("save metab");
 		setUpTables();
 	}
 
@@ -2982,7 +2996,6 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getReactionsTableModelMap().put(filename, reactionsModel);
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
 			
-			System.out.println("save reac");
 			setUpTables();
 		}	
 		saveOptFile = false;
