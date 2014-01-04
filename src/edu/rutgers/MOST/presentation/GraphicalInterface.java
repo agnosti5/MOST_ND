@@ -798,8 +798,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
-		//showIdColumn = true;
-		showIdColumn = false;
+		showIdColumn = true;
+		//showIdColumn = false;
 
 		gi = this;
 
@@ -6039,14 +6039,7 @@ public class GraphicalInterface extends JFrame {
 			if (valid) {
 				for(int i=0; i < reactionsTable.getSelectedRows().length ;i++) { 
 					for(int j=0; j < reactionsTable.getSelectedColumns().length ;j++) {
-						int viewRow = reactionsTable.convertRowIndexToModel(startRow + i);
-						// TODO: use to remove reaction equations from map
-						int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
-						reactionsTable.setValueAt(" ", startRow + i, startCol + j);	
-						if (startCol + j == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-							LocalConfig.getInstance().getReactionEquationMap().remove(id);
-							reactionsTable.setValueAt(" ", startRow + i, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);	
-						}							
+						updateReactionsCellIfPasteValid("", startRow+i, startCol+j);						
 					} 
 				}
 				DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
@@ -6060,7 +6053,10 @@ public class GraphicalInterface extends JFrame {
 						JOptionPane.ERROR_MESSAGE);
 				deleteReactionsPasteUndoItem();
 			}
-		}		
+		}
+		System.out.println("clear " + LocalConfig.getInstance().getReactionEquationMap());
+		System.out.println("clear id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+		System.out.println("clear used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	/**************************************************************************/
