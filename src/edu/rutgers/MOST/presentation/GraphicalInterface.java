@@ -1370,7 +1370,7 @@ public class GraphicalInterface extends JFrame {
 				// copy model so old model can be restored if paste not valid
 				DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
 				copyMetabolitesTableModels(oldMetabolitesModel); 
-				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 1, UndoConstants.DELETE_UNUSED, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 0, UndoConstants.DELETE_UNUSED, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 				setUndoOldCollections(undoItem);
 				
@@ -1386,7 +1386,7 @@ public class GraphicalInterface extends JFrame {
 				for (int j = metabolitesTable.getRowCount() - 1; j >=0; j--) {
 					if (metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) == null ||
 							((String) metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() == 0) {
-						System.out.println(j);
+						//System.out.println(j);
 						model.removeRow(j);
 					}
 				}
@@ -1589,7 +1589,7 @@ public class GraphicalInterface extends JFrame {
 					// copy old model for undo/redo
 					DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 					copyReactionsTableModels(oldReactionsModel);
-					ReactionUndoItem undoItem = createReactionUndoItem("", "", getCurrentReactionsRow(), getCurrentReactionsColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+					ReactionUndoItem undoItem = createReactionUndoItem("", "", getCurrentReactionsRow(), getCurrentReactionsColumn(), 0, UndoConstants.ADD_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 					setOldUsedMap(undoItem);
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
 					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getReactionsMetaColumnNames().size() + GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length);
@@ -1674,7 +1674,7 @@ public class GraphicalInterface extends JFrame {
 					// copy old model for undo/redo
 					DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 					copyMetabolitesTableModels(oldMetabolitesModel);
-					MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getCurrentMetabolitesRow(), getCurrentMetabolitesColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
+					MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getCurrentMetabolitesRow(), getCurrentMetabolitesColumn(), 0, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getMetabolitesMetaColumnNames().size() + GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length);
 					setUndoOldCollections(undoItem);
@@ -3266,7 +3266,6 @@ public class GraphicalInterface extends JFrame {
 			if (tcl.getOldValue() != tcl.getNewValue()) {
 				int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 				ReactionUndoItem undoItem = createReactionUndoItem(tcl.getOldValue(), tcl.getNewValue(), reactionsTable.getSelectedRow(), tcl.getColumn(), id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-				System.out.println("pre");
 				setOldUsedMap(undoItem);
 				undoItem.setMaxMetab(LocalConfig.getInstance().getMaxMetabolite());
 				undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
@@ -3280,7 +3279,6 @@ public class GraphicalInterface extends JFrame {
 					undoItem.setNewUpperBound((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));			
 					setNewUsedMap(undoItem);
 					setUpReactionsUndo(undoItem);
-					System.out.println("post");
 				} else {
 					formulaBar.setText(tcl.getOldValue());
 				}
@@ -3563,15 +3561,14 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void updateReactionEquation(int rowIndex, int reactionId, String oldEquation, String newEquation) {
-		System.out.println(oldEquation);
-		System.out.println(newEquation);
+//		System.out.println(oldEquation);
+//		System.out.println(newEquation);
 		LocalConfig.getInstance().getAddedMetabolites().clear();
 		SBMLReactionEquation equation = new SBMLReactionEquation();	
 		ReactionEquationUpdater updater = new ReactionEquationUpdater();
 		updater.createLists(oldEquation, newEquation);
 		System.out.println(reactionsUndo);
 		if (!reactionsUndo) {
-			System.out.println(reactionsUndo);
 			updater.removeOldItems(updater.getRemoveReactantsList(), updater.getRemoveProductsList());
 		}		
 		if (newEquation != null && newEquation.trim().length() > 0) {
@@ -3928,7 +3925,6 @@ public class GraphicalInterface extends JFrame {
 			if (metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null 
 					&& ((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() > 0) {
 				LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN), new Integer(metaboliteId));
-				System.out.println("coll " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 			}				
 		}
 		// enables or disables unused metabolites menu items depending on if there are unused items present
@@ -5127,7 +5123,7 @@ public class GraphicalInterface extends JFrame {
 				// copy old model for undo/redo
 				DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 				copyReactionsTableModels(oldReactionsModel);
-				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), 1, UndoConstants.DELETE_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), 0, UndoConstants.DELETE_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				setOldUsedMap(undoItem);
 				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());								
 				undoItem.setDeletedColumnIndex(columnIndex);
@@ -5194,7 +5190,7 @@ public class GraphicalInterface extends JFrame {
 				// copy old model for undo/redo
 				DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 				copyMetabolitesTableModels(oldMetabolitesModel);
-				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 1, UndoConstants.DELETE_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 0, UndoConstants.DELETE_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 				setUndoOldCollections(undoItem);
 				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());								
 				undoItem.setDeletedColumnIndex(columnIndex);
@@ -5592,9 +5588,9 @@ public class GraphicalInterface extends JFrame {
 							}
 						}
 						LocalConfig.getInstance().getReactionEquationMap().remove(id);
-						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
-						System.out.println("del id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-						System.out.println("del used " + LocalConfig.getInstance().getMetaboliteUsedMap());
+//						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
+//						System.out.println("del id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//						System.out.println("del used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 					}
 					//System.out.println(deleteIds);
 					ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, reactionsTable.getSelectedColumn(), deleteIds.get(0), UndoConstants.DELETE_ROW, UndoConstants.REACTION_UNDO_ITEM_TYPE);
@@ -5785,7 +5781,7 @@ public class GraphicalInterface extends JFrame {
 				// copy model so old model can be restored if paste not valid
 				DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 				copyReactionsTableModels(oldReactionsModel);
-				ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 0, UndoConstants.PASTE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				setOldUsedMap(undoItem);
 				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
 				ArrayList<String> pasteIds = new ArrayList<String>();
@@ -6588,7 +6584,7 @@ public class GraphicalInterface extends JFrame {
 								int rowIndexEnd = metabolitesTable.getSelectionModel().getMaxSelectionIndex();
 								int firstViewRow = metabolitesTable.convertRowIndexToModel(startRow);
 								int firstId = (Integer.valueOf((String) metabolitesTable.getModel().getValueAt(firstViewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
-								MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, 1, firstId, UndoConstants.DELETE_ROW, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+								MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, 0, firstId, UndoConstants.DELETE_ROW, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 								setUndoOldCollections(undoItem);
 								for (int r = rowIndexEnd; r >= startRow; r--) {
 									int viewRow = metabolitesTable.convertRowIndexToModel(r);
@@ -6784,7 +6780,7 @@ public class GraphicalInterface extends JFrame {
 				// copy model so old model can be restored if paste not valid
 				DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
 				copyMetabolitesTableModels(oldMetabolitesModel); 
-				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 0, UndoConstants.PASTE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 				setUndoOldCollections(undoItem);
 				ArrayList<String> pasteIds = new ArrayList<String>();
@@ -8659,7 +8655,7 @@ public class GraphicalInterface extends JFrame {
 				// copy model so old model can be restored if replace all not valid
 				DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());	
 				copyReactionsTableModels(oldReactionsModel);
-				ReactionUndoItem undoItem = createReactionUndoItem("", "", getReactionsFindLocationsList().get(0).get(0), getReactionsFindLocationsList().get(0).get(1), 1, UndoConstants.REPLACE_ALL, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", getReactionsFindLocationsList().get(0).get(0), getReactionsFindLocationsList().get(0).get(1), 0, UndoConstants.REPLACE_ALL, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				setOldUsedMap(undoItem);
 				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
 				replaceAllMode = true;
