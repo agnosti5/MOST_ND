@@ -315,8 +315,14 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public boolean undoAddRow() {
 		DefaultTableModel model = (DefaultTableModel) GraphicalInterface.metabolitesTable.getModel();
-		model.removeRow(this.row);
 		int maxId = LocalConfig.getInstance().getMaxMetaboliteId();
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN), i);
+		}
+		String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
+		int rowNum = Integer.valueOf(row);
+		model.removeRow(rowNum);
 		LocalConfig.getInstance().setMaxMetaboliteId(maxId - 1);
 		
 		return true;

@@ -798,8 +798,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
-		showIdColumn = true;
-		//showIdColumn = false;
+		//showIdColumn = true;
+		showIdColumn = false;
 
 		gi = this;
 
@@ -1497,16 +1497,17 @@ public class GraphicalInterface extends JFrame {
 		ActionListener addReacRowActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				tabbedPane.setSelectedIndex(0);
+				int row = reactionsTable.getSelectedRow();
+				int col = reactionsTable.getSelectedColumn();
 				int id = LocalConfig.getInstance().getMaxReactionId();
 				DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();	
 				model.addRow(createReactionsRow(id));
 				setUpReactionsTable(model);
-				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), id, UndoConstants.ADD_ROW, UndoConstants.REACTION_UNDO_ITEM_TYPE);		
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", row, col, id, UndoConstants.ADD_ROW, UndoConstants.REACTION_UNDO_ITEM_TYPE);		
 				setOldUsedMap(undoItem);
 				//set focus to id cell in new row in order to set row visible
 				int maxRow = reactionsTable.getModel().getRowCount();
 				int viewRow = reactionsTable.convertRowIndexToView(maxRow - 1);
-				undoItem.setRow(maxRow - 1);
 				setTableCellFocused(viewRow, 1, reactionsTable);
 				setNewUsedMap(undoItem);
 				setUpReactionsUndo(undoItem);
@@ -1522,15 +1523,16 @@ public class GraphicalInterface extends JFrame {
 		addMetabRowItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				tabbedPane.setSelectedIndex(1);
+				int row = metabolitesTable.getSelectedRow();
+				int col = metabolitesTable.getSelectedColumn();
 				int id = LocalConfig.getInstance().getMaxMetaboliteId();
 				DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();	
 				model.addRow(createMetabolitesRow(id));
 				setUpMetabolitesTable(model);
-				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), id, UndoConstants.ADD_ROW, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", row, col, id, UndoConstants.ADD_ROW, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 				setUndoOldCollections(undoItem);				
 				int maxRow = metabolitesTable.getModel().getRowCount();
 				int viewRow = metabolitesTable.convertRowIndexToView(maxRow - 1);
-				undoItem.setRow(maxRow - 1);
 				setTableCellFocused(viewRow, 1, metabolitesTable);
 				setUndoNewCollections(undoItem);
 				setUpMetabolitesUndo(undoItem);
@@ -4343,15 +4345,17 @@ public class GraphicalInterface extends JFrame {
 				metabolitesTable.repaint();  
 				selectedCellChanged = true;
 				changeReactionFindSelection = true;
-				int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
-				// prevents invisible id column from setting id in formulaBar for find events
-				if (reactionsTable.getSelectedColumn() > 0) {
-					try {
-						formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));
-					} catch (Throwable t) {
+				if (reactionsTable.getSelectedRow() < reactionsTable.getRowCount()) {
+					int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
+					// prevents invisible id column from setting id in formulaBar for find events
+					if (reactionsTable.getSelectedColumn() > 0) {
+						try {
+							formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));
+						} catch (Throwable t) {
 
+						} 
 					} 
-				}    			  						
+				}				   			  						
 			} else {
 				// to catch strange error "Attempt to mutate in notification" 
 				try {
@@ -4389,15 +4393,17 @@ public class GraphicalInterface extends JFrame {
 				metabolitesTable.repaint();
 				selectedCellChanged = true;	
 				changeReactionFindSelection = true;
-				int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
-				// prevents invisible id column from setting id in formulaBar for find events
-				if (reactionsTable.getSelectedColumn() > 0) {
-					try {
-						formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));				
-					} catch (Throwable t) {
+				if (reactionsTable.getSelectedRow() < reactionsTable.getRowCount()) {
+					int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
+					// prevents invisible id column from setting id in formulaBar for find events
+					if (reactionsTable.getSelectedColumn() > 0) {
+						try {
+							formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));				
+						} catch (Throwable t) {
 
-					}					
-				}				
+						}					
+					}
+				}								
 			} else {
 				formulaBar.setText("");
 			} 
@@ -4704,15 +4710,17 @@ public class GraphicalInterface extends JFrame {
 				metabolitesTable.repaint();  
 				selectedCellChanged = true;
 				changeMetaboliteFindSelection = true;
-				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
-				// prevents invisible id column from setting id in formulaBar for find events
-				if (metabolitesTable.getSelectedColumn() > 0) {
-					try {
-						formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));
-					} catch (Throwable t) {
+				if (metabolitesTable.getSelectedRow() < metabolitesTable.getRowCount()) {
+					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
+					// prevents invisible id column from setting id in formulaBar for find events
+					if (metabolitesTable.getSelectedColumn() > 0) {
+						try {
+							formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));
+						} catch (Throwable t) {
 
+						} 
 					} 
-				}    			  						
+				}				   			  						
 			} else {
 				// to catch strange error "Attempt to mutate in notification" 
 				try {
@@ -4750,15 +4758,17 @@ public class GraphicalInterface extends JFrame {
 				metabolitesTable.repaint();
 				selectedCellChanged = true;	
 				changeReactionFindSelection = true;
-				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
-				// prevents invisible id column from setting id in formulaBar for find events
-				if (metabolitesTable.getSelectedColumn() > 0) {
-					try {
-						formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));				
-					} catch (Throwable t) {
+				if (metabolitesTable.getSelectedRow() < metabolitesTable.getRowCount()) {
+					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
+					// prevents invisible id column from setting id in formulaBar for find events
+					if (metabolitesTable.getSelectedColumn() > 0) {
+						try {
+							formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));				
+						} catch (Throwable t) {
 
-					}					
-				}				
+						}					
+					}
+				}								
 			} else {
 				formulaBar.setText("");
 			} 
@@ -7569,7 +7579,7 @@ public class GraphicalInterface extends JFrame {
 									}
 									reactionUndoAction(i);
 									if (reactionsTable.getModel().getRowCount() > LocalConfig.getInstance().getMetaboliteIdNameMap().size()) {
-										if (LocalConfig.getMaxMetabolite() >= Integer.valueOf((String)reactionsTable.getModel().getValueAt(reactionsTable.getModel().getRowCount() - 1, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN))) {
+										if (LocalConfig.getMaxMetabolite() >= Integer.valueOf((String)reactionsTable.getModel().getValueAt(reactionsTable.getModel().getRowCount() - 1, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN))) {
 											for (int k = 0; k < deleteMetabRows.size(); k++) {
 												deleteMetabolitesRowById(deleteMetabRows.get(k));
 											}
@@ -7610,7 +7620,7 @@ public class GraphicalInterface extends JFrame {
 									DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 									setUpReactionsTable(model);
 									tabbedPane.setSelectedIndex(0);
-									if (scroll) {
+									if (scroll) {										
 										scrollToLocation(reactionsTable, scrollRow, scrollCol);
 									}									
 								}											
@@ -7940,12 +7950,6 @@ public class GraphicalInterface extends JFrame {
     	ArrayList<Integer> deleteMetabRows = new ArrayList<Integer>();
     	if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.TYPING) ||
     			((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.REPLACE)) {
-//    		if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-//				updateReactionEquation(((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow(), ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getId(), ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getNewValue(), ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getOldValue());
-//				for (int j = 0; j < ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getAddedMetabolites().size(); j++) {
-//					deleteMetabRows.add(((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getAddedMetabolites().get(j));
-//				}
-//			}
     	}
     	LocalConfig.getInstance().getUndoItemMap().remove(index);
     	undoCount -= 1;	

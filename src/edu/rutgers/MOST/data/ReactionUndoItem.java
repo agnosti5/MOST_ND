@@ -384,8 +384,14 @@ public class ReactionUndoItem implements UndoItem {
 	
 	public boolean undoAddRow() {
 		DefaultTableModel model = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
-		model.removeRow(this.row);
 		int maxId = LocalConfig.getInstance().getMaxReactionId();
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+		}
+		String row = (reactionsIdRowMap.get(Integer.toString(this.id))).toString();
+		int rowNum = Integer.valueOf(row);
+		model.removeRow(rowNum);
 		LocalConfig.getInstance().setMaxReactionId(maxId - 1);
 		if (LocalConfig.getInstance().getReactionEquationMap().containsKey(this.id)) {
 			LocalConfig.getInstance().getReactionEquationMap().remove(this.id);
