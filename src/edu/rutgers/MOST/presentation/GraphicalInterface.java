@@ -6061,10 +6061,11 @@ public class GraphicalInterface extends JFrame {
 		if (reactionsTable.getSelectedRows().length > 0 && reactionsTable.getSelectedColumns().length > 0) {
 			int startRow=(reactionsTable.getSelectedRows())[0]; 
 			int startCol=(reactionsTable.getSelectedColumns())[0];
+			int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(startRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 			// copy model for undo 
 			DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());	
 			copyReactionsTableModels(oldReactionsModel);
-			ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 1, UndoConstants.CLEAR_CONTENTS, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+			ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, id, UndoConstants.CLEAR_CONTENTS, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 			setOldUsedMap(undoItem);
 			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());		
 			boolean valid = true;
@@ -7077,10 +7078,11 @@ public class GraphicalInterface extends JFrame {
 		if (metabolitesTable.getSelectedRows().length > 0 && metabolitesTable.getSelectedColumns().length > 0) {
 			int startRow=(metabolitesTable.getSelectedRows())[0]; 
 			int startCol=(metabolitesTable.getSelectedColumns())[0];
+			int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(startRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
 			// copy model for undo
 			DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
 			copyMetabolitesTableModels(oldMetabolitesModel); 
-			MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.CLEAR_CONTENTS, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+			MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, id, UndoConstants.CLEAR_CONTENTS, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 			setUndoOldCollections(undoItem);		
 			boolean valid = true;
