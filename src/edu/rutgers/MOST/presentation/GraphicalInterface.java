@@ -9500,7 +9500,7 @@ public class GraphicalInterface extends JFrame {
 		private String solutionName;
 		private String kString;
 		private String output;
-
+		
 		GDBBTask() {
 			model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
 			//model = new GDBBModel(textInput.getReactionNameDBColumnMapping().get((String)textInput.cbSynObj.getSelectedItem()));
@@ -9528,6 +9528,8 @@ public class GraphicalInterface extends JFrame {
 //			formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
 			Solution solution;
 
+			System.out.println("is alive " + gdbb.isAlive());
+			System.out.println("size " + GDBB.intermediateSolution.size());
 			int index = 1;
 			while (gdbb.isAlive() || GDBB.intermediateSolution.size() > 0) {
 				if (GDBB.intermediateSolution.size() > 0) {
@@ -9649,7 +9651,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected void done() {
-			// System.out.println("GDBB is done!");
+			System.out.println("GDBB is done!");
 			soln = gdbb.getSolution();
 			
 			log.debug("optimization complete");
@@ -9681,7 +9683,9 @@ public class GraphicalInterface extends JFrame {
 			textInput.getTimer().stop();
 			textInput.enableComponents();
 			textInput.selectIndefiniteTimeButton();
+			// fixes bug where column header not aligned with columns when gdbb closes
 			reactionsTable.repaint();
+			GDBB.getSolver().setAbort(false);
 			// set table model to be loaded when folder GDBB clicked
 			// this will result in the last solution being loaded when folder clicked
 			LocalConfig.getInstance().getMetabolitesTableModelMap().remove(getOptimizeName());

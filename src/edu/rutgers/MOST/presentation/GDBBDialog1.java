@@ -455,7 +455,7 @@ public class GDBBDialog1  extends JDialog {
 					else {
 						gi.gdbbTask.getModel().setTimeLimit((new Double(finiteTimeField.getText())).doubleValue());
 					}
-
+					
 					gi.gdbbTask.getModel().setThreadNum((Integer)cbNumThreads.getSelectedItem());
 					gi.gdbbTask.execute();
 				}

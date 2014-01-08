@@ -67,7 +67,7 @@ public class GurobiSolver extends Solver {
 	public static void main(String[] args) {
 		//GurobiSolver gurobiSolver = new GurobiSolver("test.log");
 	}
-	public static void setAbort(boolean isAbort) {
+	public void setAbort(boolean isAbort) {
 		GurobiSolver.isAbort = isAbort;
 	}
 
