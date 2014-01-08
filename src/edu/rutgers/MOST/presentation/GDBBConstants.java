@@ -2,7 +2,7 @@ package edu.rutgers.MOST.presentation;
 
 public class GDBBConstants {
 
-	public static final String GDBB_DIALOG_TITLE = "GDBB";
+	public static final String GDBB_DIALOG_TITLE = GraphicalInterfaceConstants.TITLE + " - " + "GDBB";
 	
 	public static final String NUM_KNOCKOUTS_LABEL = "   Number of Knockouts";
 	public static final String NUM_THREADS_LABEL = "   Number of Threads";

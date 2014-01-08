@@ -525,7 +525,7 @@ public class GDBBDialog1  extends JDialog {
 	public void enableStart() {
 		startButton.setEnabled(true);
 		stopButton.setEnabled(false);
-		timer.stop();
+		//timer.stop();
 	}
 	
 	public void selectIndefiniteTimeButton() {
@@ -536,8 +536,9 @@ public class GDBBDialog1  extends JDialog {
 	
 	// used when stop button or finite time stops GDBB
 	public void stopGDBBAction() {
-		setVisible(false);
+		//setVisible(false);
 		gi.gdbbTask.getGdbb().stopGDBB();
+		setVisible(false);
 		enableStart();
 		enableComponents();
 		finiteTimeField.setEnabled(false);

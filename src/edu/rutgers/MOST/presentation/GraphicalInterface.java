@@ -888,7 +888,7 @@ public class GraphicalInterface extends JFrame {
 		//textInput = new GDBBDialog(gi);
 		textInput.setModal(true);
 		textInput.setIconImages(icons);
-		textInput.setTitle("GDBB");
+		textInput.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
 		//textInput.setSize(350, 400);
 		// actually get different results when size is changed
         textInput.setSize(400, 350);
@@ -9678,8 +9678,10 @@ public class GraphicalInterface extends JFrame {
 			}
 
 			textInput.setVisible(false);
+			textInput.getTimer().stop();
 			textInput.enableComponents();
 			textInput.selectIndefiniteTimeButton();
+			reactionsTable.repaint();
 			// set table model to be loaded when folder GDBB clicked
 			// this will result in the last solution being loaded when folder clicked
 			LocalConfig.getInstance().getMetabolitesTableModelMap().remove(getOptimizeName());
