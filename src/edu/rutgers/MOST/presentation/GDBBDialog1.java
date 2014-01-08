@@ -76,6 +76,14 @@ public class GDBBDialog1  extends JDialog {
 	private JTextField finiteTimeField = new JTextField();
 	private JLabel counterLabel = new JLabel(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
 
+	public JLabel getCounterLabel() {
+		return counterLabel;
+	}
+
+	public void setCounterLabel(JLabel counterLabel) {
+		this.counterLabel = counterLabel;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public GDBBDialog1(GraphicalInterface parent) {
 		
@@ -93,8 +101,7 @@ public class GDBBDialog1  extends JDialog {
 		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				timer.stop();   
-				setVisible(false);
+				stopGDBBAction();
 			}
 		});			
 		

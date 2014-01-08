@@ -1334,6 +1334,7 @@ public class GraphicalInterface extends JFrame {
 
         		setOptimizeName(optimizeName);
 
+        		textInput.getCounterLabel().setText(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
         		textInput.setVisible(true);       		
         	}
         });
@@ -9594,12 +9595,17 @@ public class GraphicalInterface extends JFrame {
 						}
 					}
 					if (textInput.getTimer().isRunning()) {
+						gdbbItem.setEnabled(false);
 						DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
 						outputTextArea.setText(output);
 						if (getPopout() != null) {
 							getPopout().setOutputText(output);
 						} 
-					}					
+					} else {
+						if (isRoot) {
+							gdbbItem.setEnabled(true);
+						}						
+					}
 				}
 			}
 			return null;
@@ -9660,11 +9666,16 @@ public class GraphicalInterface extends JFrame {
 			getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
 			
 			if (textInput.getTimer().isRunning()) {
+				gdbbItem.setEnabled(false);
 				outputTextArea.setText(output);
 				if (getPopout() != null) {
 					getPopout().setOutputText(output);
 				} 
-			}			
+			} else {
+				if (isRoot) {
+					gdbbItem.setEnabled(true);
+				}						
+			}
 
 			textInput.setVisible(false);
 			textInput.enableComponents();
