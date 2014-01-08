@@ -3563,13 +3563,10 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void updateReactionEquation(int rowIndex, int reactionId, String oldEquation, String newEquation) {
-//		System.out.println(oldEquation);
-//		System.out.println(newEquation);
 		LocalConfig.getInstance().getAddedMetabolites().clear();
 		SBMLReactionEquation equation = new SBMLReactionEquation();	
 		ReactionEquationUpdater updater = new ReactionEquationUpdater();
 		updater.createLists(oldEquation, newEquation);
-		System.out.println(reactionsUndo);
 		if (!reactionsUndo) {
 			updater.removeOldItems(updater.getRemoveReactantsList(), updater.getRemoveProductsList());
 		}		
@@ -3665,9 +3662,9 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().setParticipatingReactions(aFactory.participatingReactions(getParticipatingMetabolite()));
 			}
 		}
-		System.out.println("upd equn " + LocalConfig.getInstance().getReactionEquationMap());
-		System.out.println("upd equn id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-		System.out.println("upd equn used " + LocalConfig.getInstance().getMetaboliteUsedMap());	
+//		System.out.println("upd equn " + LocalConfig.getInstance().getReactionEquationMap());
+//		System.out.println("upd equn id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("upd equn used " + LocalConfig.getInstance().getMetaboliteUsedMap());	
 	}
 	
 	public void maybeAddMetabolite(String species) {
@@ -5909,9 +5906,9 @@ public class GraphicalInterface extends JFrame {
 					if (pasteIds.size() > 0) {
 						scrollToLocation(reactionsTable, getRowFromReactionsId(Integer.valueOf(pasteIds.get(0))), startCol);
 					}
-					System.out.println("paste " + LocalConfig.getInstance().getReactionEquationMap());
-					System.out.println("paste id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-					System.out.println("paste used " + LocalConfig.getInstance().getMetaboliteUsedMap());
+//					System.out.println("paste " + LocalConfig.getInstance().getReactionEquationMap());
+//					System.out.println("paste id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//					System.out.println("paste used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 				}
 			} 	
 		}
@@ -6098,9 +6095,9 @@ public class GraphicalInterface extends JFrame {
 				deleteReactionsPasteUndoItem();
 			}
 		}
-		System.out.println("clear " + LocalConfig.getInstance().getReactionEquationMap());
-		System.out.println("clear id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-		System.out.println("clear used " + LocalConfig.getInstance().getMetaboliteUsedMap());
+//		System.out.println("clear " + LocalConfig.getInstance().getReactionEquationMap());
+//		System.out.println("clear id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("clear used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	/**************************************************************************/
@@ -7452,7 +7449,7 @@ public class GraphicalInterface extends JFrame {
 				oldMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
 			}
 			undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
-			System.out.println("old " + oldMetaboliteUsedMap);
+			//System.out.println("old " + oldMetaboliteUsedMap);
 		} catch (Exception e3) {
 			// TODO Auto-generated catch block
 			e3.printStackTrace();
@@ -7467,7 +7464,7 @@ public class GraphicalInterface extends JFrame {
 				newMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
 			}
 			undoItem.setNewMetaboliteUsedMap(newMetaboliteUsedMap);
-			System.out.println("new " + newMetaboliteUsedMap);
+			//System.out.println("new " + newMetaboliteUsedMap);
 		} catch (Exception e3) {
 			// TODO Auto-generated catch block
 			e3.printStackTrace();
@@ -9276,7 +9273,6 @@ public class GraphicalInterface extends JFrame {
 						int id = (Integer) idMap.get(idList.get(i));
 						unusedList.add(id); 
 					} catch (Throwable t) {
-						System.out.println("Error");
 						Utilities u = new Utilities();
 						u.showResizableDialog("Error", "Error", "errorMessage");
 					}								
@@ -9285,7 +9281,7 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().setUnusedList(unusedList);
 			//System.out.println("unused" + unusedList);
 		} catch (Throwable t) {
-			System.out.println("Error");
+//			System.out.println("Error");
 //			Utilities u = new Utilities();
 //			u.showResizableDialog("Error", "Error", "errorMessage");
 		}		
@@ -9524,12 +9520,8 @@ public class GraphicalInterface extends JFrame {
 			knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
 
 			soln = new ArrayList<Double>();
-//			Format formatter;
-//			formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
 			Solution solution;
 
-			System.out.println("is alive " + gdbb.isAlive());
-			System.out.println("size " + GDBB.intermediateSolution.size());
 			int index = 1;
 			while (gdbb.isAlive() || GDBB.intermediateSolution.size() > 0) {
 				if (GDBB.intermediateSolution.size() > 0) {
@@ -9543,7 +9535,7 @@ public class GraphicalInterface extends JFrame {
 					solution.setIndex(index);
 					index += 1;
 					publish(solution);
-					System.out.println("timer " + textInput.getTimer().isRunning());
+					//System.out.println("timer " + textInput.getTimer().isRunning());
 
 					// copy models, run optimization on these model
 					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
@@ -9627,7 +9619,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected void process(List<Solution> solutions) {
-			System.out.println("alive " + gdbb.isAlive());
+			//System.out.println("alive " + gdbb.isAlive());
 			Solution solution = solutions.get(solutions.size() - 1);
 			double[] x = solution.getKnockoutVector();
 			double objectiveValue = solution.getObjectiveValue();
@@ -9651,7 +9643,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected void done() {
-			System.out.println("GDBB is done!");
+			//System.out.println("GDBB is done!");
 			soln = gdbb.getSolution();
 			
 			log.debug("optimization complete");
@@ -9852,7 +9844,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			setGurobiPath(getGurobiPathInterface().textField.getText());
 			String path = getGurobiPath();
-			System.out.println(path);
+			//System.out.println(path);
 			curSettings.add("LastGurobi", path);
 			hasGurobiPath = true;
 			gurobiPathSelected = false;

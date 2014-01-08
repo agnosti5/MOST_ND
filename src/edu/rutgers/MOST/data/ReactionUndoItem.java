@@ -275,9 +275,9 @@ public class ReactionUndoItem implements UndoItem {
 			copyTableUndoAction();
 		}
 		restoreOldCollections();
-		System.out.println("undo " + LocalConfig.getInstance().getReactionEquationMap());
-		System.out.println("undo id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-		System.out.println("undo used " + LocalConfig.getInstance().getMetaboliteUsedMap());
+//		System.out.println("undo " + LocalConfig.getInstance().getReactionEquationMap());
+//		System.out.println("undo id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("undo used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public void copyTableUndoAction() {
@@ -305,9 +305,9 @@ public class ReactionUndoItem implements UndoItem {
 			copyTableRedoAction();
 		}
 		restoreNewCollections();
-		System.out.println("redo " + LocalConfig.getInstance().getReactionEquationMap());
-		System.out.println("redo id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-		System.out.println("redo used " + LocalConfig.getInstance().getMetaboliteUsedMap());
+//		System.out.println("redo " + LocalConfig.getInstance().getReactionEquationMap());
+//		System.out.println("redo id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("redo used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public void copyTableRedoAction() {
