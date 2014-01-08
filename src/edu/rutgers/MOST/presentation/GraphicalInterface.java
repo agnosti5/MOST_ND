@@ -2104,11 +2104,7 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.registerKeyboardAction(metabolitesRedoActionListener,metabRedo,JComponent.WHEN_FOCUSED);
 		metabolitesTable.registerKeyboardAction(metabolitesSaveActionListener,metabSave,JComponent.WHEN_IN_FOCUSED_WINDOW);
 		metabolitesTable.registerKeyboardAction(metabolitesSaveActionListener,metabSave,JComponent.WHEN_FOCUSED);
-		metabolitesTable.registerKeyboardAction(metabolitesSelectAllActionListener,metabSelectAll,JComponent.WHEN_FOCUSED);
-
-		//setTableCellFocused(0, 1, metabolitesTable);
-		//setTableCellFocused(0, 1, reactionsTable);
-		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));     			
+		metabolitesTable.registerKeyboardAction(metabolitesSelectAllActionListener,metabSelectAll,JComponent.WHEN_FOCUSED);  			
 
 		DynamicTreePanel.treePanel.setNodeSelected(0);
 		
@@ -2403,6 +2399,11 @@ public class GraphicalInterface extends JFrame {
 		add (statusBar, "1, 9, 3, 1");
 
 		setBackground(Color.lightGray);
+		
+		tabbedPane.setSelectedIndex(0);
+		scrollToLocation(reactionsTable, 0, 1);
+		
+		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
 	}
 	/********************************************************************************/
 	//end constructor and layout
@@ -4078,6 +4079,10 @@ public class GraphicalInterface extends JFrame {
 			saveItem.setEnabled(true);
 			savebutton.setEnabled(true);
 		}
+		tabbedPane.setSelectedIndex(0);
+		scrollToLocation(reactionsTable, 0, 1);
+		
+		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
 	}
 
 	public void setBooleanDefaults() {
@@ -9590,6 +9595,10 @@ public class GraphicalInterface extends JFrame {
 					}
 					if (textInput.getTimer().isRunning()) {
 						DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
+						outputTextArea.setText(output);
+						if (getPopout() != null) {
+							getPopout().setOutputText(output);
+						} 
 					}					
 				}
 			}
@@ -9644,6 +9653,7 @@ public class GraphicalInterface extends JFrame {
 
 			textInput.enableStart();
 			textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);		
 			
 			setrFactory(new ReactionFactory("SBML"));
 			getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));

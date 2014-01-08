@@ -57,6 +57,15 @@ public class GDBBDialog1  extends JDialog {
 	}
 
 	private int count;
+	
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+	
 	private double timeLimit;
 	private Map<String, String> reactionNameDBColumnMapping;
 	private JButton startButton = new JButton("Start");
@@ -450,9 +459,7 @@ public class GDBBDialog1  extends JDialog {
 
 		ActionListener stopButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				timer.stop();
-				setVisible(false);
-				gi.gdbbTask.getGdbb().stopGDBB();
+				stopGDBBAction();
 			}
 		};
 
@@ -466,6 +473,7 @@ public class GDBBDialog1  extends JDialog {
 		
 		finiteTimeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				finiteTimeField.setEnabled(true);
 				finiteTimeField.setEditable(true);
 				finiteTimeField.requestFocus();
 			}
@@ -481,6 +489,7 @@ public class GDBBDialog1  extends JDialog {
 		indefiniteTimeButton.setEnabled(false);
 		finiteTimeButton.setEnabled(false);
 		finiteTimeField.setEnabled(false);
+		finiteTimeField.setEditable(false);
 	}
 	
 	public void enableComponents() {
@@ -489,7 +498,7 @@ public class GDBBDialog1  extends JDialog {
 		cbSynObj.setEnabled(true);
 		indefiniteTimeButton.setEnabled(true);
 		finiteTimeButton.setEnabled(true);
-		finiteTimeField.setEnabled(true);
+		//finiteTimeField.setEnabled(true);
 	}
 	
 	class TimeListener implements ActionListener {
@@ -497,9 +506,7 @@ public class GDBBDialog1  extends JDialog {
 			count += 1;
 			counterLabel.setText(GDBBConstants.COUNTER_LABEL_PREFIX + count + GDBBConstants.COUNTER_LABEL_SUFFIX);
 			if (finiteTimeButton.isSelected() && count >= Integer.valueOf(finiteTimeField.getText())) {
-				timer.stop();
-				setVisible(false);
-				gi.gdbbTask.getGdbb().stopGDBB();
+				stopGDBBAction();
 			}
 		}
 	}
@@ -516,8 +523,23 @@ public class GDBBDialog1  extends JDialog {
 	
 	public void selectIndefiniteTimeButton() {
 		indefiniteTimeButton.setSelected(true);
+		finiteTimeField.setEditable(false);
+		finiteTimeField.setEnabled(false);
 	}
 	
+	// used when stop button or finite time stops GDBB
+	public void stopGDBBAction() {
+		setVisible(false);
+		gi.gdbbTask.getGdbb().stopGDBB();
+		enableStart();
+		enableComponents();
+		finiteTimeField.setEnabled(false);
+		finiteTimeField.setEditable(false);
+		indefiniteTimeButton.setSelected(true);
+		count = 0;
+		counterLabel.setText(GDBBConstants.COUNTER_LABEL_PREFIX + count + GDBBConstants.COUNTER_LABEL_SUFFIX);
+	}
+
 	public static void main(String[] args) throws Exception {
 //		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 //		final ArrayList<Image> icons = new ArrayList<Image>(); 
