@@ -893,7 +893,7 @@ public class GraphicalInterface extends JFrame {
 		// actually get different results when size is changed
         textInput.setSize(400, 350);
 		textInput.setResizable(false);
-		textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		textInput.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		textInput.setLocationRelativeTo(null);
 		textInput.setAlwaysOnTop(true);
 		setTextInput(textInput);
@@ -1335,6 +1335,8 @@ public class GraphicalInterface extends JFrame {
         		setOptimizeName(optimizeName);
 
         		textInput.getCounterLabel().setText(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
+        		textInput.stopped = false;
+        		textInput.enableComponents();
         		textInput.setVisible(true);       		
         	}
         });

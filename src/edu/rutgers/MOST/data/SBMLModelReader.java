@@ -70,7 +70,7 @@ public class SBMLModelReader {
 						+ ProgressConstants.SBML_LOAD_PERCENT);		
 			}
 			
-			System.out.println("i" + i);
+			//System.out.println("i" + i);
 			
 			String charge = "";
 			Vector <String> metabRow = new Vector<String>();
@@ -245,7 +245,7 @@ public class SBMLModelReader {
 						+ ProgressConstants.METABOLITE_LOAD_PERCENT + ProgressConstants.SBML_LOAD_PERCENT);		
 			}
 			
-			System.out.println("j" + j);
+			//System.out.println("j" + j);
 
 			String fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT_STRING;
 			String geneAssociation = "";
@@ -268,12 +268,12 @@ public class SBMLModelReader {
 				}				
 			}
 			reacRow.add(fluxValue);
-			System.out.println("flux value " + fluxValue);
+			//System.out.println("flux value " + fluxValue);
 
 			reacRow.add(reactions.get(j).getId());
-			System.out.println("reac id " + reactions.get(j).getId());
+			//System.out.println("reac id " + reactions.get(j).getId());
 			reacRow.add(reactions.get(j).getName());
-			System.out.println("name " + reactions.get(j).getName());
+			//System.out.println("name " + reactions.get(j).getName());
 
 			String reversible = "";
 			// This code will be removed when reactions read since it is defined above
@@ -282,7 +282,7 @@ public class SBMLModelReader {
 			} else {
 				reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];;
 			}
-			System.out.println("reversible " + reversible);
+			//System.out.println("reversible " + reversible);
 
 			SBMLReactionEquation equation = new SBMLReactionEquation();
 			ArrayList<SBMLReactant> equnReactants = new ArrayList<SBMLReactant>();
@@ -403,11 +403,11 @@ public class SBMLModelReader {
 				}
 			} 
 			reacRow.add(lowerBound);
-			System.out.println("lower bound " + lowerBound);
+			//System.out.println("lower bound " + lowerBound);
 			reacRow.add(upperBound);
-			System.out.println("upper bound " + upperBound);
+			//System.out.println("upper bound " + upperBound);
 			reacRow.add(biologicalObjective);
-			System.out.println("biol obj " + biologicalObjective);
+			//System.out.println("biol obj " + biologicalObjective);
 			reacRow.add(syntheticObjective);
 			
 			Map<String, String> reactionsMetaColumnMap = new HashMap<String, String>();
@@ -420,13 +420,13 @@ public class SBMLModelReader {
 						String noteItem = "";
 						//removes xmlns (xml namespace tags)
 						if (noteString.contains("xmlns")) {
-							System.out.println(noteString);
+							//System.out.println(noteString);
 							if (!noteString.endsWith("/>")) {
 								noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-								System.out.println(noteString);
+								//System.out.println(noteString);
 								if (noteString.contains("<")) {
 									String endtag = noteString.substring(noteString.lastIndexOf("<"));
-									System.out.println("endtag " + endtag);
+									//System.out.println("endtag " + endtag);
 									String[] nameSpaces = noteString.split(endtag);
 									for (int n = 0; n < nameSpaces.length; n++) {
 										noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
