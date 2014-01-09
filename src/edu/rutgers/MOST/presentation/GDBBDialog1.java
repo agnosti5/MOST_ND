@@ -118,7 +118,6 @@ public class GDBBDialog1  extends JDialog {
 		getRootPane().setDefaultButton(startButton);
 
 		setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
-		//setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		addWindowListener(new WindowAdapter() {

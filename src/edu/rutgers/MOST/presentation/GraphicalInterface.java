@@ -1336,6 +1336,7 @@ public class GraphicalInterface extends JFrame {
 
         		textInput.getCounterLabel().setText(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
         		textInput.stopped = false;
+        		textInput.enableStart();
         		textInput.enableComponents();
         		textInput.setVisible(true);       		
         	}
@@ -9602,6 +9603,16 @@ public class GraphicalInterface extends JFrame {
 							gdbbItem.setEnabled(true);
 						}						
 					}
+					// if no optimizations have been started, just kill the dialog and reset
+				} else if (textInput.stopped) {
+					gdbbTask.getGdbb().stopGDBB();
+					textInput.setVisible(false);
+					textInput.getTimer().stop();
+					textInput.enableComponents();
+					textInput.selectIndefiniteTimeButton();
+					// fixes bug where column header not aligned with columns when gdbb closes
+					reactionsTable.repaint();
+					GDBB.getSolver().setAbort(false);
 				}
 			}
 			return null;
@@ -9654,7 +9665,7 @@ public class GraphicalInterface extends JFrame {
 				return;
 
 			textInput.enableStart();
-			textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			//textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);		
 			
 			setrFactory(new ReactionFactory("SBML"));
