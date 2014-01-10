@@ -136,7 +136,7 @@ public class GDBBDialog1  extends JDialog {
 		}
 		
 		cbSynObj.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
-		cbSynObj.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]);		
+		//cbSynObj.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]);		
 
 		numKnockoutsField.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		numKnockoutsField.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
@@ -422,7 +422,7 @@ public class GDBBDialog1  extends JDialog {
 		dotCount = 0;
 		reactionNameDBColumnMapping = new HashMap<String, String>();
 		reactionNameDBColumnMapping.put(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN], GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
-		reactionNameDBColumnMapping.put(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN], GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]);		
+		//reactionNameDBColumnMapping.put(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN], GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]);		
 		
 		enableComponents();
 		
@@ -542,7 +542,7 @@ public class GDBBDialog1  extends JDialog {
 				dotBuffer.append(" .");
 			}
 			setProcessingString(GDBBConstants.PROCESSING + dotBuffer.toString());			
-			if (finiteTimeButton.isSelected() && count >= Integer.valueOf(finiteTimeField.getText())) {
+			if (finiteTimeButton.isSelected() && count == Integer.valueOf(finiteTimeField.getText())) {
 				stopGDBBAction();
 			}
 			if (!stopped) {
@@ -574,16 +574,8 @@ public class GDBBDialog1  extends JDialog {
 		gi.gdbbTask.getGdbb().stopGDBB();
 		stopButton.setEnabled(false);
 		stopped = true;
-		//setVisible(false);
-		//enableStart();
-		//enableComponents();
-//		finiteTimeField.setEnabled(false);
-//		finiteTimeField.setEditable(false);
-		//indefiniteTimeButton.setSelected(true);
-		//count = 0;
 		dotCount = 0;
 		counterLabel.setText(getProcessingString());
-		//counterLabel.setText(GDBBConstants.COUNTER_LABEL_PREFIX + count + GDBBConstants.COUNTER_LABEL_SUFFIX);
 	}
 
 	public static void main(String[] args) throws Exception {

@@ -9665,7 +9665,6 @@ public class GraphicalInterface extends JFrame {
 				return;
 
 			textInput.enableStart();
-			//textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);		
 			
 			setrFactory(new ReactionFactory("SBML"));
