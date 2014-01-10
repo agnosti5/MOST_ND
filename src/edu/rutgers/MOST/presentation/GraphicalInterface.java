@@ -9951,6 +9951,13 @@ public class GraphicalInterface extends JFrame {
 		// selected row default at first
 		statusBar.setText("Row 1");
 		
+		File sourceFile = new File("C:\\MOST.jar");
+		//File destFile = new File("C:\\downloads\\MOST.jar");
+		File dir = new File("C:\\downloads\\test");
+		dir.mkdir();
+		File destFile = new File("C:\\downloads\\test\\MOST.jar");
+		copyFile(sourceFile, destFile);
+		
 	}
 }
 
