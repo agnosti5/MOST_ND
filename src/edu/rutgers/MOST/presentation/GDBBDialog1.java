@@ -122,7 +122,21 @@ public class GDBBDialog1  extends JDialog {
 		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				stopGDBBAction();
+				setAlwaysOnTop(false);
+				Object[] options = {"    Yes    ", "    No    ",};
+				int choice = JOptionPane.showOptionDialog(null, 
+						GDBBConstants.FRAME_CLOSE_MESSAGE, 
+						GDBBConstants.FRAME_CLOSE_TITLE, 
+						JOptionPane.YES_NO_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, 
+						null, options, options[0]);
+				if (choice == JOptionPane.YES_OPTION) {
+					stopGDBBAction();
+				}
+				if (choice == JOptionPane.NO_OPTION) {
+					
+				}
+				setAlwaysOnTop(true);
 			}
 		});	
 		

@@ -31,4 +31,7 @@ public class GDBBConstants {
 	public static final String PROCESSING_OOT = " .";
 	public static final int MAX_NUM_DOTS = 6;
 	
+	public static final String FRAME_CLOSE_TITLE = "GDBB";
+	public static final String FRAME_CLOSE_MESSAGE = "GDBB is Running. Are You Sure You Wish to Stop Optimizing?";
+	
 }
