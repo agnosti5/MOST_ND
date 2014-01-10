@@ -9912,7 +9912,7 @@ public class GraphicalInterface extends JFrame {
 		}
 		return gurobiPath;
 	}
-
+	
 	/******************************************************************************/
 	// end Gurobi path methods
 	/******************************************************************************/
@@ -9954,7 +9954,15 @@ public class GraphicalInterface extends JFrame {
 		File sourceFile = new File("C:\\MOST.jar");
 		//File destFile = new File("C:\\downloads\\MOST.jar");
 		File dir = new File("C:\\downloads\\test");
-		dir.mkdir();
+		if (!dir.exists()) {
+			dir.mkdir();
+		} else {
+			System.out.println("Directory exists. Do you wish to install MOST in this directory?");
+			File destFile = new File("C:\\downloads\\test\\MOST.jar");
+			if (destFile.exists()) {
+				System.out.println("File exists. Do you wish to overwrite the file?");
+			}
+		}		
 		File destFile = new File("C:\\downloads\\test\\MOST.jar");
 		copyFile(sourceFile, destFile);
 		
