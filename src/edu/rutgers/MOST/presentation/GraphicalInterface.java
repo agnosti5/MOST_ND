@@ -14,7 +14,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
@@ -9950,21 +9949,6 @@ public class GraphicalInterface extends JFrame {
 		
 		// selected row default at first
 		statusBar.setText("Row 1");
-		
-		File sourceFile = new File("C:\\MOST.jar");
-		//File destFile = new File("C:\\downloads\\MOST.jar");
-		File dir = new File("C:\\downloads\\test");
-		if (!dir.exists()) {
-			dir.mkdir();
-		} else {
-			System.out.println("Directory exists. Do you wish to install MOST in this directory?");
-			File destFile = new File("C:\\downloads\\test\\MOST.jar");
-			if (destFile.exists()) {
-				System.out.println("File exists. Do you wish to overwrite the file?");
-			}
-		}		
-		File destFile = new File("C:\\downloads\\test\\MOST.jar");
-		copyFile(sourceFile, destFile);
 		
 	}
 }

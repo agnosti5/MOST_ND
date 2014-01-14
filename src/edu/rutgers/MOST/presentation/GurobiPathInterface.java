@@ -178,8 +178,8 @@ public class GurobiPathInterface  extends JDialog {
 		
 		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("images/most32.jpg").getImage());
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 
 		String lastGurobi_path = curSettings.get("LastGurobi");
 		if (lastGurobi_path == null) {
