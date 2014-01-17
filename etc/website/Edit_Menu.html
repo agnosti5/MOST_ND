@@ -17,8 +17,8 @@ A{text-decoration:none}
 		<td align=center width=120><p><a href="index.html" name="top">Home</a></p></td>
 		<td align=center width=120><p><a href="download.html">Software</a></p></td>
 		<td align=center width=120><p><a href="#">Publications</a></p></td>
-		<td align=center width=120><p><a href="http://crab.rutgers.edu/~dslun/research_group.html" target="_blank">People</a></p></td>
-		<td align=center width=120><p><a href="help.html">Help</p></td>
+		<td align=center width=120><p><a href="http://crab.rutgers.edu/~dslun/research_group.html">People</a></p></td>
+		<td align=center width=120><p><a href="help.html">Help</a></p></td>
 	</table>
 
 			<!-- Title -->
@@ -34,21 +34,21 @@ A{text-decoration:none}
 	<td width=140 valign=top bgcolor=a0a0a0 align=top>
 	<p><font size=3>Help Topics</font></p>
 
-	<p><font size=2><a href="Installing_MOST.html">Installing MOST</font></p>
-	<ul><li><font size=2>Requirements<a href="Installing_MOST.html#req"></font></li>
+	<p><font size=2><a href="Installing_MOST.html">Installing MOST</a></font></p>
+	<ul><li><font size=2><a href="Installing_MOST.html#req">Requirements</a></font></li>
 
-	<li><font size=2><a href="Installing_MOST.html#win">Windows</font></li>
-	<ul><li><font size=2><a href="Installing_MOST.html#issues">Known Issues</font></li></ul>
+	<li><font size=2><a href="Installing_MOST.html#win">Windows</a></font></li>
+	<ul><li><font size=2><a href="Installing_MOST.html#issues">Known Issues</a></font></li></ul>
 
-	<li><font size=2><a href="Installing_MOST.html">Linux</font></li>
-	<li><font size=2><a href="Installing_MOST.html">Macintosh</font></li></ul>
+	<li><font size=2><a href="Installing_MOST.html">Linux</a></font></li>
+	<li><font size=2><a href="Installing_MOST.html">Macintosh</a></font></li></ul>
 
-	<p><font size=2><a href="Setup_Gurobi.html">Setting up Gurobi</font></p>
+	<p><font size=2><a href="Setup_Gurobi.html">Setting up Gurobi</a></font></p>
 
-	<ul><li><font size=2><a href="Setup_Gurobi.html#gurobi">Install Gurobi</font></li>
-	<li><font size=2><a href="Setup_Gurobi.html#jar">Locate Jar</font></li>
-	<li><font size=2><a href="Setup_Gurobi.html#update">Gurobi Updates</font></li>
-	<li><font size=2><a href="Setup_Gurobi.html#issues">Known Issues</font></li></ul>
+	<ul><li><font size=2><a href="Setup_Gurobi.html#gurobi">Install Gurobi</a></font></li>
+	<li><font size=2><a href="Setup_Gurobi.html#jar">Locate Jar</a></font></li>
+	<li><font size=2><a href="Setup_Gurobi.html#update">Gurobi Updates</a></font></li>
+	<li><font size=2><a href="Setup_Gurobi.html#issues">Known Issues</a></font></li></ul>
 
 	<p><font size=2><a href="Model_Menu.html">Model Menu</a></font></p>
 
@@ -68,10 +68,10 @@ A{text-decoration:none}
 	<li><font size=2><a href="Model_Menu.html#savecsvm">Save As CSV Metabolites</a></font></li>
 	<li><font size=2><a href="Model_Menu.html#savecsvr">Save As CSV Reactions</a></font></li></ul>
 
-	<li><font size=2><a href="Model_Menu.html#clear">Clear Tables</font></li>
-	<li><font size=2><a href="Model_Menu.html#exit">Exit</font></li></ul>
+	<li><font size=2><a href="Model_Menu.html#clear">Clear Tables</a></font></li>
+	<li><font size=2><a href="Model_Menu.html#exit">Exit</a></font></li></ul>
 
-	<p><font size=2><a href="#">Edit Menu</a></font></p>
+	<p><font size=2>Edit Menu</font></p>
 
 	<ul><li><font size=2><a href="#unused">Unused Metabolites</a></font></li>
 	<li><font size=2><a href="#suspicious">Suspicious Metabolites</a></font></li>
@@ -105,27 +105,107 @@ A{text-decoration:none}
 
 	<td width=600 valign=top>
 	<p align=center><font size=5></font></p>
-	<p align=center><font size=5>Edit Menu</font></a></p>
+	<p align=center><font size=5>Edit Menu</font></p>
 
-	<p><a name="unused">  Unused Metabolites:</p>
+	<p><a name="unused">  Unused Metabolites:</a></p>
+	<blockquote>If the Metabolites table contains metabolite abbreviations that do not participate in any reaction, 
+	MOST makes it easy to find these metabolites and delete them.  The following two menu items can be used 
+	for this purpose:</blockquote>
+
+	<p> Highlight Unused Metabolites:</p>
+
+	<blockquote>Select Edit -> Highlight Unused Metabolites (Alt+E then Alt+H)</blockquote>
+
+	<blockquote>MOST will automatically tab to the Metabolites table if not already there. If the check box next to 
+	the menu item is checked, unused metabolites will be highlighted yellow. If un-checked, there will be no highlighting.
+	</blockquote>
+
+	<p> Delete All Unused Metabolites:</p>
+
+	<blockquote>Select Edit -> Delete All Unused Metabolites (Alt+E then Alt+D)</blockquote>
+
+	<blockquote>If the loaded model does not contain any unused metabolites, these menu items will be grayed out.
+	</blockquote>
+
+	<p><a name="suspicious">  Suspicious Metabolites:</a></p>
+	<blockquote>MOST uses the arrow in a reaction to split the reaction into reactants and products strings of the 
+	reaction, then “ + “ (space plus space) to split the reactants and products strings into individual species. If a 
+	reaction contains a “+” without a space preceding and following it, the result is a species that contains a “+” 
+	which is flagged as suspicious. (Species that end with a “+” such as H+ are not flagged and are perfectly 
+	acceptable). So a reaction A +B + C  D+ E will result in two suspicious metabolites: “A +B” and “D+ E”. If 
+	there are any suspicious metabolites in the loaded model, the message “Model contains suspicious 
+	metabolites” will appear in the Status Bar. These metabolites will be highlighted red. MOST makes it easy 
+	to locate these suspicious metabolites in the Metabolites table by using the “Find Suspicious Metabolites” 
+	menu item.</blockquote>
+
+	<p>Find Suspicious Metabolites:</p>
+
+	<blockquote>Select Edit -> Find Suspicious Metabolites (Alt+E then Alt+ S)</blockquote>
+
+	<blockquote>MOST will automatically tab to the Metabolites table if not already there, and the first suspicious 
+	metabolite will be selected.  </blockquote>
+
+	<blockquote>In order to locate the reaction or reactions that contain the suspicious metabolite (and therefore 
+	are improperly spaced), right-click on the cell containing the suspicious metabolite, and click “Highlight 
+	Participating Reactions”. All reactions that contain it will be highlighted green. Each reaction can be edited to 
+	correct the spacing, or Find/Replace can be used to correct the reactions, (e.g. – for “A +B”):</blockquote>
+
+	<blockquote>Type A +B in the Find field and A + B in the Replace field, and click the “Replace All” button). 
+	If there are any reactions that have metabolites/compounds that are not present in the Metabolites table, the 
+	Add Metabolite prompt will appear:</blockquote>
+
+	<!-- Add metab -->
+
+	<blockquote>Click “Yes” to add the metabolite, “Yes to All” to suppress the prompt for remaining metabolites 
+	in the reaction, or “No” to not add the metabolite. If “No” is pressed, the metabolite will also be removed from 
+	the reaction. When all of the reactions that contain the suspicious metabolite have been corrected, the 
+	suspicious metabolite will be able to be deleted. (Metabolites that participate in reactions cannot be deleted.) 
+	After all reactions that contain suspicious metabolites have been corrected, the “Model contains suspicious 
+	metabolites” message in the Status Bar will disappear.</blockquote>
+
+	<blockquote>See <a href="Context_Menu.html#reac">Reaction Editor</a> in Context Menu tutorial. Using 
+	the Reaction Editor will make editing reaction easier and the resulting reactions will always be spaced correctly.
+	</blockquote>
+
+	<p><a name="undo">  Undo/Redo:</a></p>
+
+	<p> Undo:</p>
+
+	<blockquote>Select Edit -> Undo (Clrl+Z) or use the Undo button (counterclockwise arrow) in the 
+	<a href="Toolbar.html">Toolbar</a>.</blockquote>
+
+	<blockquote>This will undo the last edit.</blockquote>
+
+	<p> Redo:</p>
+
+	<blockquote>Select Edit -> Redo (Clrl+Y) or use the Redo button (clockwise arrow) in the 
+	<a href="Toolbar.html">Toolbar</a>.</blockquote>
+
+	<blockquote>This will redo the last undo action.</blockquote>
+
+	<blockquote>If you use the arrows next to the Undo or Redo buttons, a list will appear of all available 
+	undo-able or redo-able actions. Any action selected will undo or redo all actions above and including 
+	the selected action.</blockquote>
+
+	<blockquote>Note that any edits clear the list of redo actions available.</blockquote>
+
+	<blockquote><a href="Toolbar.html">Toolbar</a> with <a href="Model_Menu.html#save">Save</a>, <a href="Context_Menu.html#copy">Copy</a>,
+	<a href="Context_Menu.html#copy">Paste</a>, Undo, Redo, and Find buttons.</blockquote>
+
+	<!-- Toolbar enabled -->
+
+	<blockquote>If there are no undoable actions, the Undo and Redo buttons will be grayed out.</blockquote>
+
+	<p><a name="find">  Find/Replace:</a></p>
 	<blockquote></blockquote>
 
-	<p><a name="suspicious">  Suspicious Metabolites:</p>
+	<p><a name="select">  Select All:</a></p>
 	<blockquote></blockquote>
 
-	<p><a name="undo">  Undo/Redo:</p>
+	<p><a name="add">  Add Row/Column:</a></p>
 	<blockquote></blockquote>
 
-	<p><a name="find">  Find/Replace:</p>
-	<blockquote></blockquote>
-
-	<p><a name="select">  Select All:</p>
-	<blockquote></blockquote>
-
-	<p><a name="add">  Add Row/Column:</p>
-	<blockquote></blockquote>
-
-	<p><a name="unsort">  Unsort:</p>
+	<p><a name="unsort">  Unsort:</a></p>
 	<blockquote></blockquote>
 
 	</td>
