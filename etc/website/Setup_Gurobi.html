@@ -90,16 +90,25 @@ A{text-decoration:none}
 
 	<p><font size=2><a href="Context_Menu.html">Context Menus</a></font></p>
 
+	<ul><li><font size=2><a href="Context_Menu.html#table">Table Menus</a></font></li>
 	<ul><li><font size=2><a href="Context_Menu.html#select">Select Row(s)/Column(s)/Cell(s)</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#selectall">Select All</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#copy">Copy/Paste</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#clear">Clear Contents</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#delrow">Delete Row(s)</a></font></li>
-	<li><font size=2><a href="Context_Menu.html#delcol">Delete Column</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#rename">Rename</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#highpar">Highlight Participating Reactions</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#unhighpar">Un-Highlight Participating Reactions</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#reac">Reaction Editor</a></font></li></ul>
+	<li><font size=2><a href="Context_Menu.html#header">Table Header Menus</a></font></li>
+	<ul><li><font size=2><a href="Context_Menu.html#delcol">Delete Column</a></font></li></ul>
+	<li><font size=2><a href="Context_Menu.html#formula">Formula Bar Menu</a></font></li>
+	<li><font size=2><a href="Context_Menu.html#console">Console Menu</a></font></li>
+	<ul><li><font size=2><a href="Context_Menu.html#popout">Console Popout</a></font></li></ul>
+	<li><font size=2><a href="Context_Menu.html#tree">Tree Menu</a></font></li></ul>
+
+	<p><font size=2><a href="Keyboard_Shortcuts.html">Keyboard Shortcuts</font></p>
+	<ul><li><font size=2><a href="Keyboard_Shortcuts.html#shortcuts">List of Keyboard Shortcuts</a></font></li></ul>
 
 	</td>
 
@@ -107,11 +116,11 @@ A{text-decoration:none}
 	<p align=center><font size=5></font></p>
 	<p align=center><font size=5>Setting Up Gurobi</font></p>
 
-	<p></p>
 	<p><a name="gurobi">  Install Gurobi:</a></p>
 	<blockquote>MOST uses Gurobi Optimization for the FBA and GDBB functions. Gurobi jar file and
 	license can be downloaded at the Gurobi site <a href="http://www.gurobi.com">www.gurobi.com</a>.</blockquote>
 
+	<br>
 	<p><a name="jar">  Locate Gurobi Jar File:</a></p>
 	<blockquote>In order for the Gurobi Solver to work, the Gurobi jar file must be located. When MOST 
 	is first installed, the Gurobi Jar Path interface will appear, and if the Gurobi Jar path has been located, 
@@ -139,10 +148,12 @@ A{text-decoration:none}
 	<blockquote>FBA and GDBB items in the “Analysis” menu will be grayed out. MOST will still be functional for loading, 
 	editing and saving files.</blockquote>
 
+	<br>
 	<p><a name="update"> Gurobi Updates:</a></p>
 	<blockquote>If the Gurobi jar is updated or was not located in the above steps, the Gurobi Jar Path can be 
 	changed by clicking Options -> Set Gurobi Jar Path (Alt+O then Alt+G).</blockquote>
 
+	<br>
 	<p><a name="issues"> Known Issues:</a></p>
 
 	<blockquote>If 32 bit Java is being run, the Gurobi jar file must also be 32 bit.</blockquote>

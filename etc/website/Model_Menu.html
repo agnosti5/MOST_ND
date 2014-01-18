@@ -90,16 +90,25 @@ A{text-decoration:none}
 
 	<p><font size=2><a href="Context_Menu.html">Context Menus</a></font></p>
 
+	<ul><li><font size=2><a href="Context_Menu.html#table">Table Menus</a></font></li>
 	<ul><li><font size=2><a href="Context_Menu.html#select">Select Row(s)/Column(s)/Cell(s)</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#selectall">Select All</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#copy">Copy/Paste</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#clear">Clear Contents</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#delrow">Delete Row(s)</a></font></li>
-	<li><font size=2><a href="Context_Menu.html#delcol">Delete Column</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#rename">Rename</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#highpar">Highlight Participating Reactions</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#unhighpar">Un-Highlight Participating Reactions</a></font></li>
 	<li><font size=2><a href="Context_Menu.html#reac">Reaction Editor</a></font></li></ul>
+	<li><font size=2><a href="Context_Menu.html#header">Table Header Menus</a></font></li>
+	<ul><li><font size=2><a href="Context_Menu.html#delcol">Delete Column</a></font></li></ul>
+	<li><font size=2><a href="Context_Menu.html#formula">Formula Bar Menu</a></font></li>
+	<li><font size=2><a href="Context_Menu.html#console">Console Menu</a></font></li>
+	<ul><li><font size=2><a href="Context_Menu.html#popout">Console Popout</a></font></li></ul>
+	<li><font size=2><a href="Context_Menu.html#tree">Tree Menu</a></font></li></ul>
+
+	<p><font size=2><a href="Keyboard_Shortcuts.html">Keyboard Shortcuts</font></p>
+	<ul><li><font size=2><a href="Keyboard_Shortcuts.html#shortcuts">List of Keyboard Shortcuts</a></font></li></ul>
 
 	</td>
 
@@ -113,6 +122,7 @@ A{text-decoration:none}
 	<blockquote>Note that if any changes have been made or Optimizations have been run previously to performing any load or Clear 
 	Tables actions, the “Save Changes” prompt will appear.</blockquote>
 
+	<br>
 	<p><a name="loadsbml">  Load SBML:</a></p>
 	<blockquote>Select Model –> Load SBML (Alt+M then Alt+L) then select a file with an “.xml” or “.sbml” extension that is a 
 	valid SBML file. If the file is not valid, a message will appear.</blockquote>
@@ -125,6 +135,7 @@ A{text-decoration:none}
 
 	<p align="center"><img src ="images/loadsbml2.jpg" alt="Image - Load SBML2" border="0" height="90%" width="90%"></p>
 
+	<br>
 	<p><a name="loadcsv">  Load CSV:</a></p>
 	<blockquote>MOST can load CSV files of reactions, metabolites or reactions and metabolites together. If a reactions file 
 	is loaded and a reactant is encountered that is not present in the Metabolites table, MOST will prompt the user to add it. 
@@ -190,9 +201,11 @@ A{text-decoration:none}
 	<blockquote>Click “Yes” to add the metabolite, “Yes to All” to suppress the prompt for the rest of the load, or “No” to not add 
 	the metabolite. If “No” is pressed, the metabolite will also be removed from the reaction.</blockquote>
 
+	<br>
 	<p><a name="excel"> Load Excel Spreadsheets:</a></p>
 	<blockquote>In order to load Microsoft Excel spreadsheets, save each table as CSV (Comma delimited).</blockquote>
 
+	<br>
 	<p><a name="collection"> Load from Model Collection:</a></p>
 	<blockquote>MOST has a collection of published models that can be loaded using this menu item.</blockquote>
 
@@ -204,7 +217,7 @@ A{text-decoration:none}
 
 	<p align="center"><img src ="images/modelcollection.jpg" alt="Image - Model Collection" border="0" height="90%" width="90%"></p>
 
-	<p></p>
+	<br>
 	<p><a name="saving"> Saving Files:</a></p>
 
 	<blockquote>MOST can save files in SBML and CSV file formats.  SBML requires that Reaction Abbreviation and 
@@ -218,7 +231,8 @@ A{text-decoration:none}
 	<blockquote>Save as CSV does not have these requirements and it will save the file as it appears.</blockquote>
 
 	<blockquote>Since save will overwrite the loaded file, it is advisable to make a copy of the file using Save As, 
-	and then use the copy for editing.</blockquote>
+	and then use the copy for editing.If a model is loaded from the <a href="#collection">Model Collection</a>, Save will be grayed out to
+	prevent corrupting the model.</blockquote>
 
 	<p><a name="save"> Save:</a></p>
 
@@ -255,6 +269,7 @@ A{text-decoration:none}
 
 	<blockquote>If an extension is not typed into the file chooser, it will automatically be added.</blockquote>
 
+	<br>
 	<p><a name="clear"> Clear Tables:</a></p>
 
 	<blockquote>Select Model –> Clear Tables (Alt+M then Alt+C).</blockquote>
@@ -262,6 +277,7 @@ A{text-decoration:none}
 	<blockquote>This function will clear both tables in order to start fresh. Each blank table has 2000 rows.
 	</blockquote>
 
+	<br>
 	<p><a name="exit"> Exit:</a></p>
 
 	<blockquote>Select Model –> Exit (Alt+M then Alt+X) or click the “X” (frame close button) on top right corner. 
