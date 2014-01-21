@@ -329,8 +329,9 @@ public class GraphicalInterfaceConstants {
     
     // about
     public static final String ABOUT_BOX_TITLE = "About MOST";
-    public static final String ABOUT_BOX_TEXT = "MOST - Metabolic Optimization and Simulation Tool." +
-	" Version 1.0.0";
+    public static final String ABOUT_BOX_TEXT = "MOST - Metabolic Optimization and Simulation Tool.\n" +
+	"Version: alpha-1";
+    public static final String ABOUT_LICENSE_URL = "http://citrate.rutgers.edu/most/help.html";
     
     // other
     public static final String[] REVERSIBLE_ARROWS =
