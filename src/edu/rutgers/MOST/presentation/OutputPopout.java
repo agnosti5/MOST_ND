@@ -137,8 +137,13 @@ public class OutputPopout extends JFrame {
 		public void actionPerformed(ActionEvent e) {			
 			boolean done = false;
 			while (!done) {
-				File f = new File(getPathName().substring(0, getPathName().length() - 4) + ".txt");
-				fileChooser.setSelectedFile(f);
+				if (getPathName() != null) {
+					File file = new File(getPathName().substring(0, getPathName().length() - 4) + ".txt");
+					if (file.exists()) {
+						fileChooser.setSelectedFile(file);
+					}					
+				}
+				
 				int retval = fileChooser.showSaveDialog(OutputPopout.this);
 				if (retval == JFileChooser.CANCEL_OPTION) {
 					done = true;
@@ -148,7 +153,7 @@ public class OutputPopout extends JFrame {
 					if (!path.endsWith(".txt")) {
 						path = path + ".txt";
 					}
-					//File f = new File(path);
+					File f = new File(path);
 
 					if (path == null) {
 						done = true;
