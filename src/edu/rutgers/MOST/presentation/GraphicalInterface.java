@@ -283,6 +283,8 @@ public class GraphicalInterface extends JFrame {
 	// components
 	/*****************************************************************************/		
 
+	public final AboutDialog aboutDialog = new AboutDialog();
+	
 	public final CSVLoadInterface csvLoadInterface = new CSVLoadInterface();
 
 	private static FindReplaceDialog findReplaceDialog;
@@ -921,6 +923,14 @@ public class GraphicalInterface extends JFrame {
 		});			
 		csvLoadInterface.okButton.addActionListener(okButtonCSVLoadActionListener);
 		csvLoadInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
+		
+		aboutDialog.setIconImages(icons);					
+		aboutDialog.setSize(400, 180);
+		aboutDialog.setResizable(false);
+		aboutDialog.setLocationRelativeTo(null);		
+		aboutDialog.setVisible(false);	
+		aboutDialog.setModal(true);
+		aboutDialog.licenseButton.addActionListener(new OpenUrlAction());
 		
 		File f = new File("ModelCollection.csv");
 		ModelCollectionTable mcTable = new ModelCollectionTable(f);
@@ -1833,10 +1843,11 @@ public class GraphicalInterface extends JFrame {
 
 		aboutBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				JOptionPane.showMessageDialog(null,                
-						GraphicalInterfaceConstants.ABOUT_BOX_TEXT,                
-						GraphicalInterfaceConstants.ABOUT_BOX_TITLE,                                
-						JOptionPane.INFORMATION_MESSAGE);
+//				JOptionPane.showMessageDialog(null,                
+//						GraphicalInterfaceConstants.ABOUT_BOX_TEXT,                
+//						GraphicalInterfaceConstants.ABOUT_BOX_TITLE,                                
+//						JOptionPane.INFORMATION_MESSAGE);
+				aboutDialog.setVisible(true);
 			}    	     
 		});
 
@@ -9915,6 +9926,21 @@ public class GraphicalInterface extends JFrame {
 	/******************************************************************************/
 	// end Gurobi path methods
 	/******************************************************************************/
+	
+	class OpenUrlAction implements ActionListener {
+		@Override public void actionPerformed(ActionEvent e) {
+			try{ 
+				String url = GraphicalInterfaceConstants.ABOUT_LICENSE_URL;  
+				java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
+			}  
+			catch (java.io.IOException e1) {  
+				JOptionPane.showMessageDialog(null,                
+						GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_MESSAGE,                
+						GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_TITLE,                                
+						JOptionPane.ERROR_MESSAGE);   
+			}
+		}
+	}
 	
 	public static void main(String[] args) throws Exception {
 		curSettings = new SettingsFactory();
