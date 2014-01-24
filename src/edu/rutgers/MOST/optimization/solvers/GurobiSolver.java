@@ -174,6 +174,9 @@ public class GurobiSolver extends Solver {
 								JOptionPane.QUESTION_MESSAGE, 
 								null, options, options[0]);
 						LocalConfig.getInstance().getOptimizationFilesList().clear();
+						if (GraphicalInterface.getTextInput().getTimer().isRunning()) {
+							GraphicalInterface.getTextInput().getTimer().stop();
+						}
 					}
 					else {
 						handleGurobiException();
