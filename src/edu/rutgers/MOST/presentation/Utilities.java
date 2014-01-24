@@ -105,6 +105,28 @@ public class Utilities {
 		}
 	}
 	
+	public String createLogFileName(String name) {
+		String fileName = "";
+		if (System.getProperty("os.name").equals("Windows 7")) {
+			File destDir = new File(GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + GraphicalInterfaceConstants.FOLDER_NAME);
+			if (!destDir.exists()) {
+				destDir.mkdir();				
+			}
+			fileName = GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + GraphicalInterfaceConstants.FOLDER_NAME + name;
+		} else if (System.getProperty("os.name").equals("Windows XP")) {
+			File destDir = new File(GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME);
+			if (!destDir.exists()) {
+				destDir.mkdir();				
+			}
+			fileName = GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME + name;
+		} else {
+			fileName = name;
+		}
+		
+		return fileName;
+		
+	}
+	
 	public void showResizableDialog(String errorTitle, String errorDescription, String errorMessage) {
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 

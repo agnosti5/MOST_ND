@@ -1277,8 +1277,8 @@ public class GraphicalInterface extends JFrame {
 						outputText.append(LocalConfig.getInstance().getModelName() + "\n");
 						outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions\n");
 						outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
-
-						File file = new File(optimizeName + ".log");
+						
+						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
 						writer.write(outputText.toString());
 
@@ -9582,9 +9582,10 @@ public class GraphicalInterface extends JFrame {
 						text.append("Knockouts:");
 						if (kString != null) {
 							text.append(kString);
-						}						
+						}	
 
-						File file = new File(solution.getSolutionName() + ".log");
+						Utilities u = new Utilities();
+						File file = new File(u.createLogFileName(solution.getSolutionName() + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
 						writer.write(text.toString()); 
 						output = text.toString();

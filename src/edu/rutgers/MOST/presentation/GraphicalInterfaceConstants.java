@@ -381,9 +381,19 @@ public class GraphicalInterfaceConstants {
     //public static final Color FIND_ALL_COLOR = new Color(190,205,225);
     public static final Color SELECTED_AREA_COLOR = new Color(190,205,225);
     
+    // directories used for writing log files
+    public static final String SETTINGS_PATH_PREFIX_WINDOWS_7 = "C:\\Users\\";
+	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_7 = "\\AppData\\Local";
+	
+	public static final String SETTINGS_PATH_PREFIX_WINDOWS_XP = "C:\\Documents and Settings\\";
+	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_XP = "\\Local Settings\\Application Data\\";
+	
+	public static final String FOLDER_NAME = "\\MOST\\";
+    
     public static final String EDIT_OPT_TABLE_ERROR = "Results Tables Are Not Editable";
     public static final String EDIT_OPT_TABLE_ERROR_TITLE = "Read-Only Table";
     
+    // Gurobi 
     public static final String GUROBI_JAR_PATH_INTERFACE_TITLE = "Gurobi Jar Path Locator";
     public static final String GUROBI_JAR_PATH_NOT_FOUND_LABEL = "Gurobi Jar Path Not Found. Click Load Gurobi Jar Path to Browse For Path";
     public static final String GUROBI_JAR_PATH_FOUND_LABEL = "Gurobi Jar Path Found. Click 'OK' if Correct or Click 'Load Gurobi Jar Path' if Not Correct.";
