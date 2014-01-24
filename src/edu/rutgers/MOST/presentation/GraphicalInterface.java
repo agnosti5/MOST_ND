@@ -9976,6 +9976,9 @@ public class GraphicalInterface extends JFrame {
 		// selected row default at first
 		statusBar.setText("Row 1");
 		
+		System.out.println(System.getProperty("user.name")); 
+		System.out.println(System.getProperty("os.name"));
+		
 	}
 }
 

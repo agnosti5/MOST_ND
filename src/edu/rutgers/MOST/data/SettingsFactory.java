@@ -38,7 +38,13 @@ public class SettingsFactory {
 	
 	public SettingsFactory() throws Exception {
 		mappings = new HashMap<String, String>();
-		this.filename = "settings.xml";
+		File destDir = new File(SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + SettingsConstants.FOLDER_NAME);
+		if (!destDir.exists()) {
+			destDir.mkdir();
+		}
+		this.filename = SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + SettingsConstants.FOLDER_NAME + "settings.xml";
+		//this.filename = "settings.xml";
+		System.out.println(this.filename);
 		this.read();
 	}
 	
