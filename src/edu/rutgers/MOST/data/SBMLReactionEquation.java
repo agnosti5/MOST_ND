@@ -160,6 +160,12 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 			}			
 		}
 		
+		if (this.irreversibleArrow == null) {
+			this.irreversibleArrow = GraphicalInterfaceConstants.NOT_REVERSIBLE_ARROWS[2];
+		}
+		if (this.reversibleArrow == null) {
+			this.reversibleArrow = GraphicalInterfaceConstants.REVERSIBLE_ARROWS[1];
+		}
 		// prevents arrow only from being displayed if there are no reactants and no products
 		if (reacBfr.toString().trim().length() > 0 || prodBfr.toString().trim().length() > 0) {
 			if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
@@ -176,6 +182,22 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 		//System.out.println(rxnBfr.toString());
 		//System.out.println(rxnNamesBfr.toString());
 		
+	}
+	
+	public void removeReactantByAbbr(String abbr) {
+		for (int i = 0; i < reactants.size(); i++) {
+			if (reactants.get(i).getMetaboliteAbbreviation().equals(abbr)) {
+				reactants.remove(i);
+			}
+		}		
+	}
+	
+	public void removeProductByAbbr(String abbr) {
+		for (int i = 0; i < products.size(); i++) {
+			if (products.get(i).getMetaboliteAbbreviation().equals(abbr)) {
+				products.remove(i);
+			}
+		}		
 	}
 	
 	@Override
@@ -195,6 +217,6 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 		+ ", reactants=" + reactantsString
 		+ ", products=" + productsString
 		+ ", equationAbbreviations=" + equationAbbreviations
-		+ ", equationNames=" + equationNames + "]";
+		+ ", equationNames=" + equationNames + "]\n";
 	}
 }

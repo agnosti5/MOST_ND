@@ -141,29 +141,15 @@ public class LocalConfig {
     
     //map used to hold metabolite abbreviation/id pairs, in order to construct reaction_reactant
 	//and reaction_product (lookup) tables
-    public static Map<String, Object> metaboliteIdAbbreviationMap = new HashMap<String, Object>();
-    
-    public static Map<String, Object> getMetaboliteIdAbbreviationMap() {
-		return metaboliteIdAbbreviationMap;
+    public static Map<String, Object> metaboliteAbbreviationIdMap = new HashMap<String, Object>();
+
+    public static Map<String, Object> getMetaboliteAbbreviationIdMap() {
+		return metaboliteAbbreviationIdMap;
 	}
 
-	public static void setMetaboliteIdAbbreviationMap(
-			Map<String, Object> metaboliteIdAbbreviationMap) {
-		LocalConfig.metaboliteIdAbbreviationMap = metaboliteIdAbbreviationMap;
-	}
-
-	//map used to hold metabolite name/id pairs, in order to construct reaction_reactant
-	//and reaction_product (lookup) tables
-	// TODO; rename to metaboliteAbbrIdMap since it is actually abbreviations and id's
-    public static Map<String, Object> metaboliteNameIdMap;
-    
-    public static Map<String, Object> getMetaboliteNameIdMap() {
-		return metaboliteNameIdMap;
-	}
-
-	public static void setMetaboliteNameIdMap(
-			Map<String, Object> metaboliteNameIdMap) {
-		LocalConfig.metaboliteNameIdMap = metaboliteNameIdMap;
+	public static void setMetaboliteAbbreviationIdMap(
+			Map<String, Object> metaboliteAbbreviationIdMap) {
+		LocalConfig.metaboliteAbbreviationIdMap = metaboliteAbbreviationIdMap;
 	}
 	
 	private static Map<Object, String> metaboliteIdNameMap;
@@ -175,16 +161,6 @@ public class LocalConfig {
 	public static void setMetaboliteIdNameMap(
 			Map<Object, String> metaboliteIdNameMap) {
 		LocalConfig.metaboliteIdNameMap = metaboliteIdNameMap;
-	}
-
-	private static ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
-	
-	public ArrayList<Integer> getBlankMetabIds() {
-		return blankMetabIds;
-	}
-	
-	public void setBlankMetabIds(ArrayList<Integer> blankMetabIds) {
-		LocalConfig.blankMetabIds = blankMetabIds;
 	}
 	
 	//used for determining id when adding a metabolite when a reaction is
@@ -230,18 +206,6 @@ public class LocalConfig {
 			Map<Object, ModelReactionEquation> reactionEquationMap) {
 		LocalConfig.reactionEquationMap = reactionEquationMap;
 	}
-	
-	// map used to store equations pasted, so if paste invalid, not added to above map
-	private static Map<Object, ModelReactionEquation> reactionPasteEquationMap;
-	
-	public static Map<Object, ModelReactionEquation> getReactionPasteEquationMap() {
-		return reactionPasteEquationMap;
-	}
-
-	public static void setReactionPasteEquationMap(
-			Map<Object, ModelReactionEquation> reactionPasteEquationMap) {
-		LocalConfig.reactionPasteEquationMap = reactionPasteEquationMap;
-	}
 
 	private static Map<String, Object> reactionsIdRowMap;
 
@@ -283,16 +247,6 @@ public class LocalConfig {
 	
 	public void setSuspiciousMetabolites(ArrayList<Integer> suspiciousMetabolites) {
 		LocalConfig.suspiciousMetabolites = suspiciousMetabolites;
-	}
-	
-	private static ArrayList<String> invalidReactions = new ArrayList<String>();
-	
-	public ArrayList<String> getInvalidReactions() {
-		return invalidReactions;
-	}
-	
-	public void setInvalidReactions(ArrayList<String> invalidReactions) {
-		this.invalidReactions = invalidReactions;
 	}
 	
 	public boolean hasMetabolitesFile;

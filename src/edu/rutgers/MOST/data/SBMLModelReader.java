@@ -38,7 +38,7 @@ public class SBMLModelReader {
 		SBMLModelReader.reactionsTableModel = reactionsTableModel;
 	}
 	
-	public static Map<String, Object> metaboliteIdAbbreviationMap = new HashMap<String, Object>();
+	public static Map<String, Object> metaboliteAbbreviationIdMap = new HashMap<String, Object>();
 	// id name map used only to set metabolite names in SBMLReactants and SBMLProducts
 	public static Map<Object, String> metaboliteIdNameMap = new HashMap<Object, String>();
 	private static Map<Object, ModelReactionEquation> reactionEquationMap = new HashMap<Object, ModelReactionEquation>();
@@ -59,7 +59,7 @@ public class SBMLModelReader {
 		for (int m = 0; m < GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length; m++) {
 			metabTableModel.addColumn(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[m]);
 		}
-		LocalConfig.getInstance().getMetaboliteNameIdMap().clear();
+		LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().clear();
 		Map<String, Object> metaboliteNameIdMap = new HashMap<String, Object>();
 
 		ArrayList<String> metabolitesMetaColumnNames = new ArrayList<String>();
@@ -70,16 +70,19 @@ public class SBMLModelReader {
 						+ ProgressConstants.SBML_LOAD_PERCENT);		
 			}
 			
+			//System.out.println("i" + i);
+			
 			String charge = "";
 			Vector <String> metabRow = new Vector<String>();
 			metabRow.add(Integer.toString(i));
 			metabRow.add(metabolites.get(i).getId());
-			metaboliteIdAbbreviationMap.put(metabolites.get(i).getId(), new Integer(i));
+			metaboliteAbbreviationIdMap.put(metabolites.get(i).getId(), new Integer(i));
 			metabRow.add(metabolites.get(i).getName());	
 			metaboliteIdNameMap.put(new Integer(i), metabolites.get(i).getName());
 			metaboliteNameIdMap.put(metabolites.get(i).getId(), new Integer(i));
-			charge = Integer.toString(metabolites.get(i).getCharge());
-			//System.out.println("charge " + charge);
+			if (metabolites.get(i).isSetCharge()) {
+				charge = Integer.toString(metabolites.get(i).getCharge());
+			}
 			
 			Map<String, String> metabolitesMetaColumnMap = new HashMap<String, String>();
 			if (metabolites.get(i).isSetNotes()) {
@@ -241,6 +244,8 @@ public class SBMLModelReader {
 				LocalConfig.getInstance().setProgress((j * ProgressConstants.REACTION_LOAD_PERCENT) / reactions.size() 
 						+ ProgressConstants.METABOLITE_LOAD_PERCENT + ProgressConstants.SBML_LOAD_PERCENT);		
 			}
+			
+			//System.out.println("j" + j);
 
 			String fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT_STRING;
 			String geneAssociation = "";
@@ -263,9 +268,12 @@ public class SBMLModelReader {
 				}				
 			}
 			reacRow.add(fluxValue);
+			//System.out.println("flux value " + fluxValue);
 
 			reacRow.add(reactions.get(j).getId());
+			//System.out.println("reac id " + reactions.get(j).getId());
 			reacRow.add(reactions.get(j).getName());
+			//System.out.println("name " + reactions.get(j).getName());
 
 			String reversible = "";
 			// This code will be removed when reactions read since it is defined above
@@ -274,6 +282,7 @@ public class SBMLModelReader {
 			} else {
 				reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];;
 			}
+			//System.out.println("reversible " + reversible);
 
 			SBMLReactionEquation equation = new SBMLReactionEquation();
 			ArrayList<SBMLReactant> equnReactants = new ArrayList<SBMLReactant>();
@@ -286,13 +295,13 @@ public class SBMLModelReader {
 				if (reactants.get(r).isSetSpecies()) {
 					// if a metabolite is missing in the model, but used in an equation, 
 					// null error caught here
-					if (metaboliteIdAbbreviationMap.get(reactants.get(r).getSpecies()) == null) {
+					if (metaboliteAbbreviationIdMap.get(reactants.get(r).getSpecies()) == null) {
 						// add missing metabolite to maps and model
 						id = LocalConfig.getInstance().getMaxMetabolite() + 1;
 						LocalConfig.getInstance().setMaxMetabolite(id);
 						LocalConfig.getInstance().setMaxMetaboliteId(id);
-						metaboliteIdAbbreviationMap.put(reactants.get(r).getSpecies(), id);
-						LocalConfig.getInstance().setMetaboliteIdAbbreviationMap(metaboliteIdAbbreviationMap);
+						metaboliteAbbreviationIdMap.put(reactants.get(r).getSpecies(), id);
+						LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(metaboliteAbbreviationIdMap);
 						Vector <String> metabRow = new Vector<String>();
 						metabRow.add(Integer.toString(id));
 						metabRow.add(reactants.get(r).getSpecies());
@@ -302,7 +311,7 @@ public class SBMLModelReader {
 						metabRow.add(GraphicalInterfaceConstants.BOUNDARY_DEFAULT);
 						getMetabolitesTableModel().addRow(metabRow);
 					} else {
-						id = (Integer) metaboliteIdAbbreviationMap.get(reactants.get(r).getSpecies());									
+						id = (Integer) metaboliteAbbreviationIdMap.get(reactants.get(r).getSpecies());									
 					}
 					if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(reactants.get(r).getSpecies())) {
 						int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactants.get(r).getSpecies());
@@ -326,13 +335,13 @@ public class SBMLModelReader {
 				if (products.get(p).isSetSpecies()) {
 					// if a metabolite is missing in the model, but used in an equation, 
 					// null error caught here
-					if (metaboliteIdAbbreviationMap.get(products.get(p).getSpecies()) == null) {
+					if (metaboliteAbbreviationIdMap.get(products.get(p).getSpecies()) == null) {
 						// add missing metabolite to maps and model
 						id = LocalConfig.getInstance().getMaxMetabolite() + 1;
 						LocalConfig.getInstance().setMaxMetabolite(id);
 						LocalConfig.getInstance().setMaxMetaboliteId(id);
-						metaboliteIdAbbreviationMap.put(products.get(p).getSpecies(), id);
-						LocalConfig.getInstance().setMetaboliteIdAbbreviationMap(metaboliteIdAbbreviationMap);
+						metaboliteAbbreviationIdMap.put(products.get(p).getSpecies(), id);
+						LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(metaboliteAbbreviationIdMap);
 						Vector <String> metabRow = new Vector<String>();
 						metabRow.add(Integer.toString(id));
 						metabRow.add(products.get(p).getSpecies());
@@ -342,7 +351,7 @@ public class SBMLModelReader {
 						metabRow.add(GraphicalInterfaceConstants.BOUNDARY_DEFAULT);
 						getMetabolitesTableModel().addRow(metabRow);
 					} else {
-						id = (Integer) metaboliteIdAbbreviationMap.get(products.get(p).getSpecies());									
+						id = (Integer) metaboliteAbbreviationIdMap.get(products.get(p).getSpecies());									
 					}
 					if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(products.get(p).getSpecies())) {
 						int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(products.get(p).getSpecies());
@@ -394,11 +403,13 @@ public class SBMLModelReader {
 				}
 			} 
 			reacRow.add(lowerBound);
+			//System.out.println("lower bound " + lowerBound);
 			reacRow.add(upperBound);
+			//System.out.println("upper bound " + upperBound);
 			reacRow.add(biologicalObjective);
+			//System.out.println("biol obj " + biologicalObjective);
 			reacRow.add(syntheticObjective);
 			
-			//ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();
 			Map<String, String> reactionsMetaColumnMap = new HashMap<String, String>();
 			if (reactions.get(j).isSetNotes()) {
 				ArrayList<String> noteItemList = new ArrayList<String>();
@@ -409,15 +420,22 @@ public class SBMLModelReader {
 						String noteItem = "";
 						//removes xmlns (xml namespace tags)
 						if (noteString.contains("xmlns")) {
+							//System.out.println(noteString);
 							if (!noteString.endsWith("/>")) {
 								noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-								String endtag = noteString.substring(noteString.lastIndexOf("<"));
-								String[] nameSpaces = noteString.split(endtag);
-								for (int n = 0; n < nameSpaces.length; n++) {
-									noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
-									noteItemList.add(noteItem);										
+								//System.out.println(noteString);
+								if (noteString.contains("<")) {
+									String endtag = noteString.substring(noteString.lastIndexOf("<"));
+									//System.out.println("endtag " + endtag);
+									String[] nameSpaces = noteString.split(endtag);
+									for (int n = 0; n < nameSpaces.length; n++) {
+										noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
+										noteItemList.add(noteItem);										
+									}
+								} else {
+									noteItemList.add(noteString);
 								}
-							}
+							} 
 						} else {
 							if ((noteString.indexOf(">") + 1) < noteString.lastIndexOf("<")) {
 								//for "<>", "</>" types of nodes, tags are removed
@@ -525,7 +543,7 @@ public class SBMLModelReader {
 					locusBfrStr = locusBfrStr.substring(0, locusBfrStr.length() - 2);
 				}
 				//System.out.println(locusBfrStr);
-				
+							
 				for (int n = 0; n < noteItemList.size(); n++) {
 					if (noteItemList.get(n).contains(":")) {
 						//accounts for condition of multiple ":"
@@ -580,22 +598,18 @@ public class SBMLModelReader {
 						reacTableModel.addColumn(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME);
 					}
 					reacRow.add(reactionsMetaColumnMap.get(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME));
-					/*
-					System.out.println(j);
-					System.out.println(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME);
-					System.out.println(reactionsMetaColumnMap.get(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME));
-					*/
+//					System.out.println(j);
+//					System.out.println(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME);
+//					System.out.println(reactionsMetaColumnMap.get(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME));
 				} else {
 					if (j == 0) {
 						reacTableModel.addColumn(reactionsMetaColumnNames2.get(m));
 						//System.out.println("add reac col " + reactionsMetaColumnNames2);
 					}
 					reacRow.add(reactionsMetaColumnMap.get(reactionsMetaColumnNames2.get(m)));
-					/*
-					System.out.println(j);
-					System.out.println(reactionsMetaColumnNames2.get(m));
-					System.out.println(reactionsMetaColumnMap.get(reactionsMetaColumnNames2.get(m)));
-					*/
+//					System.out.println(j);
+//					System.out.println(reactionsMetaColumnNames2.get(m));
+//					System.out.println(reactionsMetaColumnMap.get(reactionsMetaColumnNames2.get(m)));
 				}
 			}		
 			
@@ -604,9 +618,9 @@ public class SBMLModelReader {
 		setReactionsTableModel(reacTableModel);
 		LocalConfig.getInstance().setMaxReactionId(reactions.size());
 		LocalConfig.getInstance().setReactionsMetaColumnNames(reactionsMetaColumnNames);
-		LocalConfig.getInstance().setMetaboliteNameIdMap(metaboliteNameIdMap);
+		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(metaboliteAbbreviationIdMap);
 		//System.out.println(metaboliteNameIdMap);
-		//LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
 		//System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 		LocalConfig.getInstance().setReactionEquationMap(reactionEquationMap);
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());

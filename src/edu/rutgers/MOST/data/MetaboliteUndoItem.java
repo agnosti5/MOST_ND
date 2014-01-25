@@ -27,10 +27,8 @@ public class MetaboliteUndoItem implements UndoItem {
 	private SortOrder newSortOrder;
 	private int addedColumnIndex;
 	private int deletedColumnIndex;
-	private ArrayList<Integer> oldBlankMetabIds;
-	private ArrayList<Integer> newBlankMetabIds;
-	private Map<String, Object> oldMetaboliteNameIdMap;
-	private Map<String, Object> newMetaboliteNameIdMap;
+	private Map<String, Object> oldMetaboliteAbbreviationIdMap;
+	private Map<String, Object> newMetaboliteAbbreviationIdMap;
 	private Map<String, Object> oldMetaboliteUsedMap;
 	private Map<String, Object> newMetaboliteUsedMap;
 	private ArrayList<Integer> oldSuspiciousMetabolites;		
@@ -121,30 +119,17 @@ public class MetaboliteUndoItem implements UndoItem {
 	public void setDeletedColumnIndex(int deletedColumnIndex) {
 		this.deletedColumnIndex = deletedColumnIndex;
 	}
-	
-	public ArrayList<Integer> getOldBlankMetabIds() {
-		return oldBlankMetabIds;
+	public Map<String, Object> getOldMetaboliteAbbreviationIdMap() {
+		return oldMetaboliteAbbreviationIdMap;
 	}
-	public void setOldBlankMetabIds(ArrayList<Integer> oldBlankMetabIds) {
-		this.oldBlankMetabIds = oldBlankMetabIds;
+	public void setOldMetaboliteAbbreviationIdMap(Map<String, Object> oldMetaboliteAbbreviationIdMap) {
+		this.oldMetaboliteAbbreviationIdMap = oldMetaboliteAbbreviationIdMap;
 	}
-	public ArrayList<Integer> getNewBlankMetabIds() {
-		return newBlankMetabIds;
+	public Map<String, Object> getNewMetaboliteAbbreviationIdMap() {
+		return newMetaboliteAbbreviationIdMap;
 	}
-	public void setNewBlankMetabIds(ArrayList<Integer> newBlankMetabIds) {
-		this.newBlankMetabIds = newBlankMetabIds;
-	}
-	public Map<String, Object> getOldMetaboliteNameIdMap() {
-		return oldMetaboliteNameIdMap;
-	}
-	public void setOldMetaboliteNameIdMap(Map<String, Object> oldMetaboliteNameIdMap) {
-		this.oldMetaboliteNameIdMap = oldMetaboliteNameIdMap;
-	}
-	public Map<String, Object> getNewMetaboliteNameIdMap() {
-		return newMetaboliteNameIdMap;
-	}
-	public void setNewMetaboliteNameIdMap(Map<String, Object> newMetaboliteNameIdMap) {
-		this.newMetaboliteNameIdMap = newMetaboliteNameIdMap;
+	public void setNewMetaboliteAbbreviationIdMap(Map<String, Object> newMetaboliteAbbreviationIdMap) {
+		this.newMetaboliteAbbreviationIdMap = newMetaboliteAbbreviationIdMap;
 	}
 	public Map<String, Object> getOldMetaboliteUsedMap() {
 		return oldMetaboliteUsedMap;
@@ -240,6 +225,8 @@ public class MetaboliteUndoItem implements UndoItem {
 			undoDescription = UndoConstants.CLEAR_CONTENTS;	
 		} else if (this.undoType.equals(UndoConstants.SORT)) {
 			undoDescription = UndoConstants.SORT;
+		} else if (this.undoType.equals(UndoConstants.UNSORT)) {
+			undoDescription = UndoConstants.UNSORT;	
 		} else if (this.undoType.equals(UndoConstants.DELETE_UNUSED)) {
 			undoDescription = UndoConstants.DELETE_UNUSED;	
 		} else if (this.undoType.equals(UndoConstants.RENAME_METABOLITE)) {
@@ -319,16 +306,23 @@ public class MetaboliteUndoItem implements UndoItem {
 			} else if (this.oldValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
 				this.oldValue = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 			}				
-		}		
-		GraphicalInterface.metabolitesTable.getModel().setValueAt(oldValue, this.row, this.column);
+		}	
+		updateCellById(this.oldValue, this.id, this.column);
+		//GraphicalInterface.metabolitesTable.getModel().setValueAt(oldValue, this.row, this.column);
 		
 		return true;
 	} 
 	
 	public boolean undoAddRow() {
 		DefaultTableModel model = (DefaultTableModel) GraphicalInterface.metabolitesTable.getModel();
-		model.removeRow(this.row);
 		int maxId = LocalConfig.getInstance().getMaxMetaboliteId();
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN), i);
+		}
+		String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
+		int rowNum = Integer.valueOf(row);
+		model.removeRow(rowNum);
 		LocalConfig.getInstance().setMaxMetaboliteId(maxId - 1);
 		
 		return true;
@@ -337,7 +331,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public void undoAddColumn() {
 		LocalConfig.getInstance().setMetabolitesMetaColumnNames(this.oldMetaColumnNames);
-		System.out.println("undo" + LocalConfig.getInstance().getMetabolitesMetaColumnNames());
 	}
 	
 	public void undoRename() {
@@ -349,7 +342,7 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	
 	public boolean redoEntry() {
-
+		
 		if (this.column == GraphicalInterfaceConstants.BOUNDARY_COLUMN) {
 			if (this.newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
 				this.newValue = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
@@ -357,7 +350,8 @@ public class MetaboliteUndoItem implements UndoItem {
 				this.newValue = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 			}				
 		}
-		GraphicalInterface.metabolitesTable.getModel().setValueAt(newValue, this.row, this.column);
+		updateCellById(this.newValue, this.id, this.column);
+		//GraphicalInterface.metabolitesTable.getModel().setValueAt(newValue, this.row, this.column);
 		
 		return true;
 	} 
@@ -372,7 +366,6 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public void redoAddColumn() {
 		LocalConfig.getInstance().setMetabolitesMetaColumnNames(this.newMetaColumnNames);
-		System.out.println("redo" + LocalConfig.getInstance().getMetabolitesMetaColumnNames());
 	}
 	
 	public void redoDeleteColumn() {
@@ -394,35 +387,17 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	
 	public void restoreOldCollections() {
-		LocalConfig.getInstance().setBlankMetabIds(this.oldBlankMetabIds);
-		LocalConfig.getInstance().setMetaboliteNameIdMap(this.oldMetaboliteNameIdMap);
+		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(this.oldMetaboliteAbbreviationIdMap);
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.oldSuspiciousMetabolites);
 		LocalConfig.getInstance().setUnusedList(this.oldUnusedList);
-		/*
-		System.out.println("old" + LocalConfig.getInstance().getMetaboliteIdNameMap());
-		System.out.println("old" + LocalConfig.getInstance().getUnusedList());
-		System.out.println("old" + LocalConfig.getInstance().getDuplicateIds());
-		System.out.println("new" + this.newMetaboliteIdNameMap);
-		System.out.println("new" + this.newUnusedList);
-		System.out.println("new" + this.newDuplicateIds);
-		*/
 	}
 	
 	public void restoreNewCollections() {
-		LocalConfig.getInstance().setBlankMetabIds(this.newBlankMetabIds);
-		LocalConfig.getInstance().setMetaboliteNameIdMap(this.newMetaboliteNameIdMap);
+		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(this.newMetaboliteAbbreviationIdMap);
 		LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
 		LocalConfig.getInstance().setSuspiciousMetabolites(this.newSuspiciousMetabolites);
 		LocalConfig.getInstance().setUnusedList(this.newUnusedList);
-		/*
-		System.out.println("new" + LocalConfig.getInstance().getMetaboliteIdNameMap());
-		System.out.println("new" + LocalConfig.getInstance().getUnusedList());
-		System.out.println("new" + LocalConfig.getInstance().getDuplicateIds());
-		System.out.println("old" + this.oldMetaboliteIdNameMap);
-		System.out.println("old" + this.oldUnusedList);
-		System.out.println("old" + this.oldDuplicateIds);
-		*/
 	}
 	
 	public String toString() {
@@ -477,7 +452,6 @@ public class MetaboliteUndoItem implements UndoItem {
 		}
 		MetaboliteFactory aFactory = new MetaboliteFactory("SBML");
 		ArrayList<Integer> participatingReactions = aFactory.participatingReactions(oldReactant);
-		System.out.println(participatingReactions);
 		
 		for (int i = 0; i < participatingReactions.size(); i++) {
 			SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(participatingReactions.get(i));
@@ -510,19 +484,19 @@ public class MetaboliteUndoItem implements UndoItem {
 			}								
 		}
 		
-		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteNameIdMap());
-		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());		
+//		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());		
 		if (column == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldReactant)) {
 				int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(oldReactant);
 				LocalConfig.getInstance().getMetaboliteUsedMap().remove(oldReactant);
 				LocalConfig.getInstance().getMetaboliteUsedMap().put(newReactant, new Integer(usedCount));									
 			}
-			LocalConfig.getInstance().getMetaboliteNameIdMap().remove(oldReactant);
-			LocalConfig.getInstance().getMetaboliteNameIdMap().put(newReactant, this.id);
+			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(oldReactant);
+			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(newReactant, this.id);
 		}
-		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteNameIdMap());
-		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
+//		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	public static Object getKeyFromValue(Map hm, Object value) {
@@ -532,6 +506,16 @@ public class MetaboliteUndoItem implements UndoItem {
 			}
 		}
 		return null;
+	}
+	
+	public static void updateCellById(String value, int id, int col) {
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN), i);
+		}
+		String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
+		int rowNum = Integer.valueOf(row);
+		GraphicalInterface.metabolitesTable.getModel().setValueAt(value, rowNum, col);
 	}
 	
 	public static void main(String[] args) {

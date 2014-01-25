@@ -69,9 +69,6 @@ public class ReactionParser {
 				createSBMLReactionEquation(rawProducts, "product");
 			}		
 		}
-		//System.out.println("eq" + getEquation().getReactants());
-		//System.out.println("eq" + getEquation().getProducts());
-		//System.out.println(getEquation().toString());
 		hasPrefix = false;		
 	}
 	
@@ -112,13 +109,9 @@ public class ReactionParser {
 				products.add(prod);
 			}
 		}
-		//System.out.println(reactants);
-		//System.out.println(products);
 		if (type == "reactant") {
-			//setReactants(reactants);
 			getEquation().setReactants(reactants);
 		} else if (type == "product") {
-			//setProducts(products);
 			getEquation().setProducts(products);
 		} 
 	}
@@ -315,6 +308,9 @@ public class ReactionParser {
 
 	
 	public static boolean hasPrefix(String reactionEquation) {
+		// corrects error if {} are used instead of []
+		reactionEquation = reactionEquation.replace("{", "[");
+		reactionEquation = reactionEquation.replace("}", "]");
 		if (reactionEquation.startsWith("[") && reactionEquation.indexOf("]") == 2 && reactionEquation.contains(":")) {
 			return true;
 		}

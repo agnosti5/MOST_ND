@@ -23,4 +23,7 @@ public abstract class Solver {
 	public abstract void setVars(VarType[] types, double[] lb, double[] ub);
 	public abstract void abort();
 	public abstract void enable();
+	
+	public boolean abort;
+	public abstract void setAbort(boolean abort);
 }

@@ -30,6 +30,7 @@ import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
@@ -86,15 +87,36 @@ public class GDBBDialog extends JDialog
 			JTextField tf = (JTextField) input;
 			try {
 				Integer.parseInt(tf.getText());
-				System.out.println("It is an integer");
-				exception.setText("");
+				//System.out.println("It is an integer");
+				//exception.setText("");
 				startButton.setEnabled(true);
 			}
 			catch(NumberFormatException nfe) {
-				System.out.println("It is not an integer");
+				//System.out.println("It is not an integer");
 				isInteger = false;
-				exception.setText("Not an integer!");
-				startButton.setEnabled(false);
+				//exception.setText("Not an integer!");
+				setAlwaysOnTop(false);
+				JOptionPane.showMessageDialog(null,                
+						GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
+						GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
+						JOptionPane.ERROR_MESSAGE);
+				// if non-integer is entered in these fields after numerical error
+				// prompt, set to default value
+				try {
+					Integer.parseInt(numKnockouts.getText());
+				}
+				catch(NumberFormatException nfe2) {
+					numKnockouts.setText("1");
+				}
+				try {
+					Integer.parseInt(totalTime.getText());
+				}
+				catch(NumberFormatException nfe2) {
+					totalTime.setText("300");
+				}
+				
+				setAlwaysOnTop(true);
+				//startButton.setEnabled(false);
 			}
 			return isInteger;
 		}
@@ -200,14 +222,14 @@ public class GDBBDialog extends JDialog
 		return reactionNameDBColumnMapping;
 	}
 
-	private Component createComboBox() {
-		// TODO Auto-generated method stub
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		setColumnList(new JComboBox<String>());
-		panel.add(new JLabel("Synthetic Objective Vector "));
-		panel.add(getColumnList());
-		return panel;
-	}
+//	private Component createComboBox() {
+//		// TODO Auto-generated method stub
+//		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//		setColumnList(new JComboBox<String>());
+//		panel.add(new JLabel("Synthetic Objective Vector "));
+//		panel.add(getColumnList());
+//		return panel;
+//	}
 
 	private JComponent createTimer() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -253,6 +275,7 @@ public class GDBBDialog extends JDialog
 			//We can't just setText on the formatted text
 			//field, since its value will remain set.
 		} else if ("Start".equals(e.getActionCommand())) {
+			System.out.println("start");
 			count = 0;
 			timer.restart();
 			startButton.setEnabled(false);

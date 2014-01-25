@@ -1,9 +1,15 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Image;
 import java.io.File;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileSystemView;
 
 public class Utilities {
 
@@ -79,5 +85,58 @@ public class Utilities {
             //System.out.println("Error renmaing file");
         }
     }
+	
+	public String lastPath(String path, JFileChooser fileChooser) {
+		// based on http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
+		// works for Windows XP and Windows 7
+		FileSystemView fsv = fileChooser.getFileSystemView();
+		String defaultPath = fsv.getDefaultDirectory().getPath();
+		// if username is preferable this works
+		//String defaultPath = System.getenv("USERPROFILE") ;
+		if (path == null) {
+			return defaultPath;
+		} else {
+			File f = new File(path);
+			if (f.exists()) {
+				return path;
+			} else {
+				return defaultPath;
+			}
+		}
+	}
+	
+	public String createLogFileName(String name) {
+		String fileName = "";
+		if (System.getProperty("os.name").equals("Windows 7")) {
+			File destDir = new File(GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + GraphicalInterfaceConstants.FOLDER_NAME);
+			if (!destDir.exists()) {
+				destDir.mkdir();				
+			}
+			fileName = GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + GraphicalInterfaceConstants.FOLDER_NAME + name;
+		} else if (System.getProperty("os.name").equals("Windows XP")) {
+			File destDir = new File(GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME);
+			if (!destDir.exists()) {
+				destDir.mkdir();				
+			}
+			fileName = GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME + name;
+		} else {
+			fileName = name;
+		}
+		
+		return fileName;
+		
+	}
+	
+	public void showResizableDialog(String errorTitle, String errorDescription, String errorMessage) {
+		final ArrayList<Image> icons = new ArrayList<Image>(); 
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+		
+		ResizableDialog r = new ResizableDialog(errorTitle, errorDescription, errorMessage);
+		
+		r.setIconImages(icons);
+    	r.setLocationRelativeTo(null);
+    	r.setVisible(true);
+	}
 	
 }

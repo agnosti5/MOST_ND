@@ -233,6 +233,8 @@ public class GraphicalInterfaceConstants {
     // general 
     public static final String NUMERIC_VALUE_ERROR_TITLE = "Invalid numeric entry.";
     public static final String NUMERIC_VALUE_ERROR_MESSAGE = "Number Format Error";
+    public static final String INTEGER_VALUE_ERROR_TITLE = "Value not an Integer.";
+    public static final String INTEGER_VALUE_ERROR_MESSAGE = "Number Format Error";
     
     public static final String[] BOOLEAN_VALUES = {"false", "true"};
     public static final String[] VALID_FALSE_VALUES = {"f"};
@@ -262,24 +264,24 @@ public class GraphicalInterfaceConstants {
     public static final String PARTICIPATING_METAB_PASTE_ERROR_MESSAGE = "Invalid Paste. One or more selected metabolites participate in reactions.";
     
     public static final String PARTICIPATING_METAB_RENAME_TITLE = "Rename Participating Metabolite?";
-    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_PREFIX = "Renaming ";
-    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_SUFFIX = " will result in changing one or more reactions. Are you sure you want to do this?";
+    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_PREFIX = "Renaming '";
+    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_SUFFIX = "' will result in changing one or more reactions. Are you sure you want to do this?";
         
     public static final String METABOLITE_RENAME_ERROR_TITLE = "Rename Error";
-    public static final String METABOLITE_RENAME_ERROR_MESSAGE = "Metabolite Abbreviation or Name Cannot Be Blank";
+    public static final String METABOLITE_RENAME_ERROR_MESSAGE = "Metabolite Abbreviation Cannot Be Blank if it Participates in Reactions";
     
     // duplicate metabolite
     public static final String DUPLICATE_METABOLITE_TITLE = "Duplicate Metabolite";
-    public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Rename As "; 
+    public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Rename as "; 
     public static final String DUPLICATE_METABOLITE_PASTE_MESSAGE = "Duplicate Metabolites. Names Will Be Appended With '[1]', '[2]', etc.";
     
     public static final String DUPLICATE_SUFFIX = "[1]";
     
     // invalid reactions
-    public static final String INVALID_REACTIONS_ERROR_TITLE = "Invalid Reactions Warning";
-    public static final String INVALID_REACTIONS_ERROR_MESSAGE = "Model contains invalid reactions. Are you sure you wish to save?";    
     public static final String INVALID_REACTIONS_ENTRY_ERROR_TITLE = "Invalid Reaction";
-    public static final String INVALID_REACTIONS_ENTRY_ERROR_MESSAGE = "Invalid Reaction Format";    
+    public static final String INVALID_REACTIONS_ENTRY_ERROR_MESSAGE = "Invalid Reaction Format"; 
+    public static final String EQUATION_NAMES_ERROR_TITLE = "Equation Not Editable";
+    public static final String EQUATION_NAMES_ERROR_MESSAGE = "Reaction equation with names is not editable";
     
     // replace errors
     public static final String REPLACE_ALL_ERROR_TITLE = "Replace All Error";
@@ -294,6 +296,7 @@ public class GraphicalInterfaceConstants {
     public static final String LOWER_BOUND_PASTE_ERROR = "Lower bound must be less than or equal to upper bound.";
     public static final String UPPER_BOUND_PASTE_ERROR = "Upper bound must be greater than or equal to lower bound.";
     public static final String INVALID_PASTE_BOOLEAN_VALUE = "Boolean Value Error";
+    public static final String PASTE_OUT_OF_RANGE_ERROR = "Paste area out of range";
     
     // clear error
     public static final String CLEAR_ERROR_MESSAGE = "One or more cells selected require a value and cannot be cleared.";
@@ -308,11 +311,11 @@ public class GraphicalInterfaceConstants {
     
     public static final String CSV_FILE_LOAD_INTERFACE_TITLE = "CSV File Load";    
     public static final String CSV_FILE_LOAD_METAB_BUTTON = "Load Metabolites File";
-    public static final String CSV_FILE_LOAD_REAC_BUTTON = " Load Reactions File "; 
+    public static final String CSV_FILE_LOAD_REAC_BUTTON = " Load Reactions File  "; 
     
     // delete optimize database and log files
     public static final String DELETE_ASSOCIATED_FILES_TITLE = "Delete Associated Files?";
-    public static final String DELETE_ASSOCIATED_FILES = "Delete Associated database and log Files?";
+    public static final String DELETE_ASSOCIATED_FILES = "Delete Associated log Files?";
     
     // tab names
     public static final String DEFAULT_METABOLITE_TABLE_TAB_NAME = "Metabolites";
@@ -320,14 +323,16 @@ public class GraphicalInterfaceConstants {
     public static final String DEFAULT_REACTION_TABLE_TAB_NAME = " Reactions ";
     
     // help
-    public static final String HELP_TOPICS_URL = "https://github.com/dennisegen/MOST/wiki";
+    public static final String HELP_TOPICS_URL = "http://citrate.rutgers.edu/most/help.html";
     public static final String HELP_URL_NOT_FOUND_TITLE = "URL Not Found";
     public static final String HELP_URL_NOT_FOUND_MESSAGE = "This URL may not exist. Check internet connection.";
     
     // about
     public static final String ABOUT_BOX_TITLE = "About MOST";
-    public static final String ABOUT_BOX_TEXT = "MOST - Metabolic Optimization and Simulation Tool." +
-	" Version 1.0.0";
+    public static final String ABOUT_BOX_TEXT = "MOST - Metabolic Optimization and Simulation Tool.";	
+    public static final String ABOUT_BOX_VERSION_TEXT = "Version: alpha-1";
+    
+    public static final String ABOUT_LICENSE_URL = "http://citrate.rutgers.edu/most/help.html";
     
     // other
     public static final String[] REVERSIBLE_ARROWS =
@@ -376,6 +381,19 @@ public class GraphicalInterfaceConstants {
     //public static final Color FIND_ALL_COLOR = new Color(190,205,225);
     public static final Color SELECTED_AREA_COLOR = new Color(190,205,225);
     
+    // directories used for writing log files
+    public static final String SETTINGS_PATH_PREFIX_WINDOWS_7 = "C:\\Users\\";
+	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_7 = "\\AppData\\Local";
+	
+	public static final String SETTINGS_PATH_PREFIX_WINDOWS_XP = "C:\\Documents and Settings\\";
+	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_XP = "\\Local Settings\\Application Data\\";
+	
+	public static final String FOLDER_NAME = "\\MOST\\";
+    
+    public static final String EDIT_OPT_TABLE_ERROR = "Results Tables Are Not Editable";
+    public static final String EDIT_OPT_TABLE_ERROR_TITLE = "Read-Only Table";
+    
+    // Gurobi 
     public static final String GUROBI_JAR_PATH_INTERFACE_TITLE = "Gurobi Jar Path Locator";
     public static final String GUROBI_JAR_PATH_NOT_FOUND_LABEL = "Gurobi Jar Path Not Found. Click Load Gurobi Jar Path to Browse For Path";
     public static final String GUROBI_JAR_PATH_FOUND_LABEL = "Gurobi Jar Path Found. Click 'OK' if Correct or Click 'Load Gurobi Jar Path' if Not Correct.";
@@ -393,11 +411,13 @@ public class GraphicalInterfaceConstants {
     // spaces for alignment
     public static final String ROW_HEADER_TITLE = "   Row";
     
-    // this is used when exiting to choose what is default for saving opt files
-    // should be csv if user is building a model since it accepts anything, sbml
-    // is much more stringent and should only be used for models that are "mature"
+    // since csv accepts anything, and sbml is much more stringent, 
+    // the default if the save button is used when editing a blank
+    // or "Untitled" model is csv
+    public static final String SBML_FILE_TYPE = "sbml";
+    public static final String CSV_FILE_TYPE = "csv";
     public static final String DEFAULT_FILE_TYPE = "csv";
 
-	public static final String GDBB_PREFIX = "GDBB_";
+    public static final String GDBB_PREFIX = "GDBB_";
 }
 

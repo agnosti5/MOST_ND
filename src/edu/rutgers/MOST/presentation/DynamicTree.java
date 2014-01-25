@@ -87,10 +87,11 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		DynamicTree.row = row;
 	}
 
-	public JPopupMenu jPopupMenu = new JPopupMenu();         
-	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV Reactions");    
-	public JMenuItem saveAsSBMLItem = new JMenuItem("Save As SBML");
-	//public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");
+	public JPopupMenu jPopupMenu = new JPopupMenu();
+//	public JMenuItem saveItem = new JMenuItem("Save As SQLite");         
+//	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV Reactions");    
+//	public JMenuItem saveAsSBMLItem = new JMenuItem("Save As SBML");
+//	public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");
 	public JMenuItem deleteItem = new JMenuItem("Delete");
 	public JMenuItem clearItem = new JMenuItem("Delete All Optimizations");
 	
@@ -147,9 +148,6 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     		        	// http://www.javadocexamples.com/java_source/org/gui4j/core/listener/Gui4jMouseListenerTree.java.html
     		        	tree.setSelectionPath(selPath);
     		        	
-        				saveAsCSVItem.setEnabled(true);
-    					//saveAsSBMLItem.setEnabled(true); // will enable when SBML save works
-    					//saveAllItem.setEnabled(true);
     					deleteItem.setEnabled(true);
     					clearItem.setEnabled(true);
         				jPopupMenu.show((JTree) e.getSource(), e.getX(), e.getY()); //and show the menu
@@ -157,48 +155,16 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     			}
     		}
     	});
-        
-        jPopupMenu.add(saveAsCSVItem);
-		saveAsCSVItem.setEnabled(false);
-		saveAsCSVItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 
-				if (getRow() > 0) {
-					String item = GraphicalInterface.listModel.getElementAt(getRow());
-					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
-					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
-				}				
-			}
-		});
-		
-		jPopupMenu.add(saveAsSBMLItem);
-		saveAsSBMLItem.setEnabled(false);
-		saveAsSBMLItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 
-				if (getRow() > 0) {
-					String item = GraphicalInterface.listModel.getElementAt(getRow());
-					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
-					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
-				}				
-			}
-		});
-		
-		jPopupMenu.addSeparator();
 		
 		jPopupMenu.add(deleteItem);
 		deleteItem.setEnabled(false);
 		deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				if (getRow() > 0) {
-					// TODO: set table model to original loaded file
-					//LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
-					String item = GraphicalInterface.listModel.getElementAt(getRow());
-					LocalConfig.getInstance().getOptimizationFilesList().remove(item);
-					GraphicalInterface.listModel.remove(getRow());
-					removeCurrentNode();
-//					GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
-//					GraphicalInterface.fileList.setSelectedIndex(0);
-//					GraphicalInterface.fileListPane.repaint();
-					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+							tree.getLastSelectedPathComponent();
+					treeModel.removeNodeFromParent(node);
+					setNodeSelected(0);
 				}				
 			}
 		});
@@ -207,17 +173,12 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		clearItem.setEnabled(false);
 		clearItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				// TODO: set table model to original loaded file
-				//LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
 				GraphicalInterface.listModel.clear();
 				GraphicalInterface.listModel.addElement(LocalConfig.getInstance().getModelName());
-//				GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
-//				GraphicalInterface.fileListPane.repaint();
 				clearButFirst();
 				GraphicalInterface.outputTextArea.setText("");
 				LocalConfig.getInstance().getOptimizationFilesList().clear();
-				//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
-//				setSelectedIndex(0);
+				setNodeSelected(0);
 			}
 		});
 		
@@ -236,7 +197,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
         rootNode.removeAllChildren();
         treeModel.reload();
     }
-
+    
     /** Remove the currently selected node. */
     public void removeCurrentNode() {
         TreePath currentSelection = tree.getSelectionPath();
@@ -342,6 +303,26 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		javax.swing.tree.TreePath path = this.tree.getPathForRow(id);//pass the selected id here  
 		tree.setSelectionPath(path);  
 		tree.scrollPathToVisible(path);
+	}
+	
+	public void print(DefaultTreeModel treeModel) {
+		tree.setModel(treeModel);
+		StringBuffer rowElement = new StringBuffer();  
+		for (int i = 0; i < tree.getRowCount(); i++) {  
+			TreePath path = tree.getPathForRow(i);  
+			int level = path.getPathCount();  
+			//rowElement.delete(0, rowElement.length());  
+			for (int j = 0; j < level; j++) {  
+				rowElement.append("    ");  
+			}  
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) path  
+					.getLastPathComponent();  
+			if (!node.isLeaf()) {  
+				rowElement.append(tree.isCollapsed(i) ? "+ " : "- ");  
+			}  
+			rowElement.append(node.toString());  
+
+		} 
 	}
 	
 }

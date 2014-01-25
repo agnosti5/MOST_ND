@@ -1,7 +1,19 @@
 package edu.rutgers.MOST.optimization.solvers;
 
 import java.awt.HeadlessException;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -21,6 +33,7 @@ import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
@@ -30,19 +43,23 @@ import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.ResizableDialog;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class GurobiSolver extends Solver {
 	
 	//static Logger log = Logger.getLogger(GurobiSolver.class);
 	
-	private URLClassLoader classLoader;
-	private Class<?> grbClass;
-		
+	private static URLClassLoader classLoader = null;
+	private static String gurobiPath = "";
+	private Class<?> grbClass;		
 	private Class<?> envClass;
 	private Class<?> modelClass;
-	private Object env;
-	
-	private Object model;
+	private Object env = null;
+	private Object model = null;
+	private StringBuffer outputText = new StringBuffer();
+	private StringBuffer errorText = new StringBuffer();
+	ResizableDialog dialog = new ResizableDialog("Error", "Gurobi Solver Error", "Gurobi Solver Error");
 
 	private ArrayList<Object> vars = new ArrayList<Object>();
 
@@ -51,21 +68,42 @@ public class GurobiSolver extends Solver {
 	public static void main(String[] args) {
 		//GurobiSolver gurobiSolver = new GurobiSolver("test.log");
 	}
-	public static void setAbort(boolean isAbort) {
+	public void setAbort(boolean isAbort) {
 		GurobiSolver.isAbort = isAbort;
 	}
 
 	public GurobiSolver() {
 	//public GurobiSolver(String logName) {
+		final ArrayList<Image> icons = new ArrayList<Image>(); 
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+		    	
+		dialog.setIconImages(icons);
+		dialog.setLocationRelativeTo(null);
+		dialog.setVisible(false);
+		dialog.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE); 
+		dialog.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				dialog.setVisible(false);        	
+			}
+		});	
+		dialog.OKButton.addActionListener(OKButtonActionListener);
+    	
+		outputText.append("Gurobi Solver constructor \n");
 		try {
-			File gurobiJARFile = new File(GraphicalInterface.getGurobiPath());
 			//File gurobiJARFile = new File("C:\\gurobi500\\win64\\lib\\gurobi.jar");
-			classLoader = URLClassLoader.newInstance(new URL[]{ gurobiJARFile.toURI().toURL() });
+			if (classLoader == null || !gurobiPath.equals(GraphicalInterface.getGurobiPath())) {
+				gurobiPath = GraphicalInterface.getGurobiPath();
+				File gurobiJARFile = new File(gurobiPath);
+				classLoader = URLClassLoader.newInstance(new URL[]{ gurobiJARFile.toURI().toURL() });
+			}
 			grbClass = classLoader.loadClass("gurobi.GRB");
+			outputText.append("gurobi.GRB loaded \n");
 			
 			//log.debug("creating Gurobi environment");
 			
 			envClass = classLoader.loadClass("gurobi.GRBEnv");
+			outputText.append("gurobi.GRBEnv loaded \n");
 //			Constructor<?> envConstr = envClass.getConstructor(new Class[]{ String.class });
 //			env = envConstr.newInstance(new Object[]{ logName });
 			Constructor<?> envConstr = envClass.getConstructor(new Class[]{});
@@ -74,7 +112,9 @@ public class GurobiSolver extends Solver {
 			//log.debug("setting Gurobi parameters");
 			
 			Class<?> grbDoubleParam = classLoader.loadClass("gurobi.GRB$DoubleParam");
-			Class<?> grbIntParam = classLoader.loadClass("gurobi.GRB$IntParam");	
+			outputText.append("gurobi.GRB$DoubleParam loaded \n");
+			Class<?> grbIntParam = classLoader.loadClass("gurobi.GRB$IntParam");
+			outputText.append("gurobi.GRB$IntParam loaded \n");
 			Enum[] grbDoubleParamConstants = (Enum[]) grbDoubleParam.getEnumConstants();
 			Enum[] grbIntParamConstants = (Enum[]) grbIntParam.getEnumConstants();
 			Method envSetDoubleMethod = envClass.getMethod("set", new Class[]{ grbDoubleParam, double.class });
@@ -102,6 +142,7 @@ public class GurobiSolver extends Solver {
 			//log.debug("creating Gurobi Model");
 			
 			modelClass = classLoader.loadClass("gurobi.GRBModel");
+			outputText.append("gurobi.GRBModel loaded \n");
 			Constructor<?> modelConstr = modelClass.getConstructor(new Class[]{ envClass });
 		    model = modelConstr.newInstance(new Object[]{ env });
 			
@@ -109,44 +150,60 @@ public class GurobiSolver extends Solver {
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | ClassNotFoundException | MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			dialog.setErrorMessage(errorText.toString());
+			dialog.setVisible(true);
 		} catch (InvocationTargetException e) {
 			try {
 				Class<?> grbExceptionClass = classLoader.loadClass("gurobi.GRBException");
-				Method grbExceptionGetErrorCodeMethod = grbExceptionClass.getMethod("getErrorCode", null);
-				int errorCode = (int) grbExceptionGetErrorCodeMethod.invoke(e, null);
-				
-				if (errorCode == grbClass.getDeclaredField("ERROR_NO_LICENSE").getInt(null)) {
-//					GraphicalInterface.getTextInput().setVisible(false);
-					LocalConfig.getInstance().hasValidGurobiKey = false;
-					GraphicalInterface.outputTextArea.setText("ERROR: No validation file - run 'grbgetkey' to refresh it.");
-					Object[] options = {"    OK    "};
-					int choice = JOptionPane.showOptionDialog(null, 
-							"ERROR: No validation file - run 'grbgetkey' to refresh it.", 
-							GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE, 
-							JOptionPane.YES_NO_OPTION, 
-							JOptionPane.QUESTION_MESSAGE, 
-							null, options, options[0]);
-//					if (choice == JOptionPane.YES_OPTION) {
-//						try{
-//							//Process p;
-//							//p = Runtime.getRuntime().exec("cmd /c start cmd");
-//
-//						}catch(Exception e2){}
-//
-//					}
-					/*
-					if (choice == JOptionPane.NO_OPTION) {
+				if (grbExceptionClass.isInstance(e.getCause())) {
+					Method grbExceptionGetErrorCodeMethod = grbExceptionClass.getMethod("getErrorCode", null);
+					int errorCode = (int) grbExceptionGetErrorCodeMethod.invoke(e.getCause(), null);
 
+					if (errorCode == grbClass.getDeclaredField("ERROR_NO_LICENSE").getInt(null)) {
+						//					GraphicalInterface.getTextInput().setVisible(false);
+						LocalConfig.getInstance().hasValidGurobiKey = false;
+						GraphicalInterface.getTextInput().setVisible(false);
+						Object[] options = {"    OK    "};
+						int choice = JOptionPane.showOptionDialog(null, 
+								"Error: No validation file - run 'grbgetkey' to refresh it.", 
+								GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE, 
+								JOptionPane.YES_NO_OPTION, 
+								JOptionPane.QUESTION_MESSAGE, 
+								null, options, options[0]);
+						LocalConfig.getInstance().getOptimizationFilesList().clear();
+						if (GraphicalInterface.getTextInput().getTimer().isRunning()) {
+							GraphicalInterface.getTextInput().getTimer().stop();
+						}
 					}
-					 */
+					else {
+						handleGurobiException();
+					}
 				}
-				else {
-					handleGurobiException();
-				}
-
+				else
+				e.printStackTrace();
+				StringWriter errors = new StringWriter();
+				e.printStackTrace(new PrintWriter(errors));
+				outputText.append(errors.toString());
+				errorText.append(errors.toString());
+				if (LocalConfig.getInstance().hasValidGurobiKey) {
+					dialog.setErrorMessage(errorText.toString());
+					dialog.setVisible(true);
+				}				
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | HeadlessException | NoSuchFieldException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				StringWriter errors = new StringWriter();
+				e1.printStackTrace(new PrintWriter(errors));
+				outputText.append(errors.toString());
+				errorText.append(errors.toString());
+				if (LocalConfig.getInstance().hasValidGurobiKey) {
+					dialog.setErrorMessage(errorText.toString());
+					dialog.setVisible(true);
+				}
 			}
 		} 
 	}
@@ -158,6 +215,9 @@ public class GurobiSolver extends Solver {
 	@Override
 	public void addConstraint(Map<Integer, Double> map, ConType con,
 			double value) {
+		if (modelClass == null)
+			return;
+		
 		try {
 			Class<?> grbLinExprClass = classLoader.loadClass("gurobi.GRBLinExpr");
 			Class<?> grbVarClass = classLoader.loadClass("gurobi.GRBVar");
@@ -178,6 +238,14 @@ public class GurobiSolver extends Solver {
 		} catch (IllegalAccessException | ClassNotFoundException | InstantiationException | NoSuchMethodException | SecurityException | IllegalArgumentException | NoSuchFieldException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -191,14 +259,26 @@ public class GurobiSolver extends Solver {
 	public void finalize() {
 		// Not guaranteed to be invoked
 		try {
-			Method modelDisposeMethod = modelClass.getMethod("dispose", null);
-			modelDisposeMethod.invoke(model, null);
+			if (model != null) {
+				Method modelDisposeMethod = modelClass.getMethod("dispose", null);
+				modelDisposeMethod.invoke(model, null);
+			}
 
-			Method envDisposeMethod = envClass.getMethod("dispose", null);
-			envDisposeMethod.invoke(model, null);
+			if (env != null) {
+				Method envDisposeMethod = envClass.getMethod("dispose", null);
+				envDisposeMethod.invoke(model, null);
+			}
 		} catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -276,6 +356,14 @@ public class GurobiSolver extends Solver {
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -291,18 +379,36 @@ public class GurobiSolver extends Solver {
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		}
 	}
 
 	@Override
 	public double optimize() {
-		try {
+		outputText.append("optimize \n");
+		if (model == null) {
+			outputText.append("model is null \n");
+			writeLogFile(outputText);
+			return Double.NaN;
+		}
+					
+		try {			
+			outputText.append(LocalConfig.getInstance().getModelName() + "\n");
 //			Callback logic
 			Method modelGetVarsMethod = modelClass.getMethod("getVars", null);
 			final Object[] vars = (Object[]) modelGetVarsMethod.invoke(model, null);
 	
 			final Class<?> grbCallbackClass = classLoader.loadClass("gurobi.GRBCallback");
+			outputText.append("gurobi.GRBCallback loaded \n");
 			final Class<?> grbVarClass = classLoader.loadClass("gurobi.GRBVar");
+			outputText.append("gurobi.GRBVar loaded \n");
 			
 			ProxyFactory factory = new ProxyFactory();
 			factory.setSuperclass(grbCallbackClass);
@@ -327,6 +433,14 @@ public class GurobiSolver extends Solver {
 							} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
+								StringWriter errors = new StringWriter();
+								e.printStackTrace(new PrintWriter(errors));
+								outputText.append(errors.toString());
+								errorText.append(errors.toString());
+								if (LocalConfig.getInstance().hasValidGurobiKey) {
+									dialog.setErrorMessage(errorText.toString());
+									dialog.setVisible(true);
+								}
 							} catch (InvocationTargetException e) {
 								handleGurobiException();
 							}
@@ -336,6 +450,7 @@ public class GurobiSolver extends Solver {
 							ClassLoader classLoader = grbCallbackClass.getClassLoader();
 
 							Class grbClass = classLoader.loadClass("gurobi.GRB");
+							outputText.append("gurobi.GRB loaded \n");
 							Field[] asdf = grbClass.getDeclaredFields();
 							
 							Field whereField = grbCallbackClass.getDeclaredField("where");
@@ -355,6 +470,14 @@ public class GurobiSolver extends Solver {
 						} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | NoSuchMethodException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
+							StringWriter errors = new StringWriter();
+							e.printStackTrace(new PrintWriter(errors));
+							outputText.append(errors.toString());
+							errorText.append(errors.toString());
+							if (LocalConfig.getInstance().hasValidGurobiKey) {
+								dialog.setErrorMessage(errorText.toString());
+								dialog.setVisible(true);
+							}
 						} catch (InvocationTargetException e) {
 							handleGurobiException();
 						}
@@ -376,6 +499,7 @@ public class GurobiSolver extends Solver {
 //			modelWriteMethod.invoke(model, new Object[]{ "model.mps" });
 			
 			Class<?> grbDoubleAttr = classLoader.loadClass("gurobi.GRB$DoubleAttr");
+			outputText.append("gurobi.GRB$DoubleAttr loaded \n");
 				
 			Enum[] grbDoubleAttrConstants = (Enum[]) grbDoubleAttr.getEnumConstants();
 			Enum objValAttr = null;
@@ -386,18 +510,31 @@ public class GurobiSolver extends Solver {
 				}
 			
 			Method modelGetMethod = modelClass.getMethod("get", new Class[]{ grbDoubleAttr });
+			writeLogFile(outputText);
 			return (double) modelGetMethod.invoke(model, new Object[]{ objValAttr });
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | ClassNotFoundException | InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
+		outputText.append("return NaN \n");
 		
 		return Double.NaN;
 	}
 
 	public void setEnv(double timeLimit, int numThreads) {
+		if (env == null)
+			return;
+		
 		try {
 			//log.debug("setting Gurobi parameters");
 			
@@ -435,6 +572,14 @@ public class GurobiSolver extends Solver {
 		} catch (IllegalAccessException | ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -442,6 +587,9 @@ public class GurobiSolver extends Solver {
 	
 	@Override
 	public void setObj(Map<Integer, Double> map) {
+		if (model == null)
+			return;
+		
 		try {
 			Class<?> grbLinExprClass = classLoader.loadClass("gurobi.GRBLinExpr");
 			Class<?> grbVarClass = classLoader.loadClass("gurobi.GRBVar");
@@ -468,6 +616,14 @@ public class GurobiSolver extends Solver {
 				| SecurityException | NoSuchMethodException | InstantiationException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -480,7 +636,10 @@ public class GurobiSolver extends Solver {
 	}
 	
 	@Override
-	public void setVar(String varName, VarType types, double lb, double ub) {		
+	public void setVar(String varName, VarType types, double lb, double ub) {
+		if (model == null)
+			return;
+		
 		try {
 			if (varName != null && types != null) {
 				Method modelAddVarMethod = modelClass.getMethod("addVar", 
@@ -495,6 +654,14 @@ public class GurobiSolver extends Solver {
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
@@ -518,8 +685,47 @@ public class GurobiSolver extends Solver {
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			outputText.append(errors.toString());
+			errorText.append(errors.toString());
+			if (LocalConfig.getInstance().hasValidGurobiKey) {
+				dialog.setErrorMessage(errorText.toString());
+				dialog.setVisible(true);
+			}
 		} catch (InvocationTargetException e) {
 			handleGurobiException();
 		}
 	}
+	
+	public void writeLogFile(StringBuffer outputText) {
+		Writer writer = null;
+		try {
+			Utilities u = new Utilities();
+			File file = new File(u.createLogFileName("gurobiSolver.log"));
+			//File file = new File("gurobiSolver.log");
+			writer = new BufferedWriter(new FileWriter(file));
+			writer.write(outputText.toString());
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (writer != null) {
+					writer.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	ActionListener OKButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {	
+			dialog.setVisible(false);
+		}
+	}; 
+
 }
