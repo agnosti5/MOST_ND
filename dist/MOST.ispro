@@ -5,12 +5,12 @@ WindowTitle=MOST alpha-1 Setup
 ProductName=MOST alpha-1
 
 [Graphics]
-SplashScreen=C:\Users\Rutgers\Documents\Rutgers_MOST\most32.bmp
+SplashScreen=C:\Users\Rutgers\Documents\MOST_dist012514a\most32.bmp
 SplashScreenDelay=1
-Header=C:\Users\Rutgers\Documents\Rutgers_MOST\most32.bmp
+Header=C:\Users\Rutgers\Documents\MOST_dist012514a\most32.bmp
 HeaderJustify=Right
 HeaderFontColor=0
-WizardBitmap=C:\Users\Rutgers\Documents\Rutgers_MOST\most32.bmp
+WizardBitmap=C:\Users\Rutgers\Documents\MOST_dist012514a\most32.bmp
 WizardFontColor=0
 
 [FirstMessage]
@@ -258,12 +258,12 @@ The precise terms and conditions for copying, distribution and modification foll
 l.
 
 [SetupFiles]
-SourceFolder=C:\Users\Rutgers\Documents\Rutgers_MOST
-SpecialFolder=Program Files
-SetupPath=Rutgers_MOST
+SourceFolder=C:\Users\Rutgers\Documents\MOST_dist012514a
+SpecialFolder=System Drive
+SetupPath=Program Files\MOST
 
 [Shortcuts]
-ProgramGroup=Rutgers_MOST
+ProgramGroup=MOST
 MOST.exe=dmp
 
 [Registry]
