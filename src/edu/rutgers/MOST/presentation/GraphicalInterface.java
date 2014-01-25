@@ -821,6 +821,7 @@ public class GraphicalInterface extends JFrame {
 
 				Solution nodeInfo = (Solution)node.getUserObject();
 				String solutionName = nodeInfo.getSolutionName();
+				Utilities u = new Utilities();
 				if (node.isLeaf()) {
 					if (solutionName != null) {
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
@@ -840,19 +841,22 @@ public class GraphicalInterface extends JFrame {
 								//System.out.println("node " + node.getUserObject().toString());
 								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
-								loadOutputPane(solutionName + ".log");										
+								//loadOutputPane(solutionName + ".log");
+								loadOutputPane(u.createLogFileName(solutionName + ".log"));
 								isRoot = false;	
 								disableMenuItems();
 								if (nodeInfo.getIndex() > -1) {
 									setTitle(GraphicalInterfaceConstants.TITLE + " - " + nodeInfo.getDatabaseName() + "_[" + nodeInfo.getIndex() + "]");
 									if (getPopout() != null) {
-										getPopout().load(nodeInfo.getSolutionName() + ".log");
+										getPopout().load(u.createLogFileName(nodeInfo.getSolutionName() + ".log"));
+										//getPopout().load(nodeInfo.getSolutionName() + ".log");
 										getPopout().setTitle(GraphicalInterfaceConstants.TITLE + " - " + nodeInfo.getDatabaseName() + "_[" + nodeInfo.getIndex() + "]");
 									}
 								} else {
 									setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
 									if (getPopout() != null) {
-										getPopout().load(solutionName + ".log");
+										getPopout().load(u.createLogFileName(solutionName + ".log"));
+										//getPopout().load(solutionName + ".log");
 									}
 								}																				
 							}
@@ -865,9 +869,11 @@ public class GraphicalInterface extends JFrame {
 						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 						if (solutionName.endsWith(node.getUserObject().toString())) {
-							loadOutputPane(solutionName + ".log");
+							loadOutputPane(u.createLogFileName(solutionName + ".log"));
+							//loadOutputPane(solutionName + ".log");
 							if (getPopout() != null) {
-								getPopout().load(solutionName + ".log");
+								getPopout().load(u.createLogFileName(solutionName + ".log"));
+								//getPopout().load(solutionName + ".log");
 							}										
 						}
 						disableMenuItems();
@@ -9261,10 +9267,10 @@ public class GraphicalInterface extends JFrame {
 		if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
 			for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
 				// TODO: determine where and how to display these messages, and actually delete these files
-				System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log will be deleted.");
-				File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log");
+				System.out.println(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log") + " will be deleted.");
+				File f = new File(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log"));
 				if (f.exists()) {
-					u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log");
+					u.delete(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log"));
 				}						
 			}					
 		}				
@@ -9714,7 +9720,8 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(solutionName, metabolitesOptModel);
 			LocalConfig.getInstance().getReactionsTableModelMap().put(getOptimizeName(), reactionsOptModelCopy);
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(getOptimizeName(), metabolitesOptModelCopy);
-			copyLogFile(solutionName, getOptimizeName());  
+			Utilities u = new Utilities();
+			copyLogFile(u.createLogFileName(solutionName), u.createLogFileName(getOptimizeName()));  
 		}
 
 		public ReactionFactory getrFactory() {
@@ -9963,8 +9970,8 @@ public class GraphicalInterface extends JFrame {
 
 		GraphicalInterface frame = new GraphicalInterface();
 		frame.setIconImages(icons);
-		frame.setSize(1000, 600);
-		frame.setMinimumSize(new Dimension(800, 600));
+		frame.setSize(1000, 610);
+		frame.setMinimumSize(new Dimension(800, 610));
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		
