@@ -18,6 +18,10 @@ import java.io.*;
 //based on code from http://leepoint.net/notes-java/examples/components/editor/nutpad.html
 public class OutputPopout extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static JTextArea    textArea;
 	private JFileChooser fileChooser = new JFileChooser(new java.io.File("."));
 	private final JMenuItem outputCopyItem = new JMenuItem("Copy");
@@ -59,7 +63,7 @@ public class OutputPopout extends JFrame {
 		setJMenuBar(menuBar);
 
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());
+		//setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -118,8 +122,14 @@ public class OutputPopout extends JFrame {
 
 	class OpenAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			String lastPopout_path = GraphicalInterface.curSettings.get("LastPopoutOpen");
+			Utilities u = new Utilities();
+			// if path is null or does not exist, default used, else last path used
+			fileChooser.setCurrentDirectory(new File(u.lastPath(lastPopout_path, fileChooser)));	
 			int retval = fileChooser.showOpenDialog(OutputPopout.this);
 			if (retval == JFileChooser.APPROVE_OPTION) {
+				String path = fileChooser.getSelectedFile().getPath();
+				GraphicalInterface.curSettings.add("LastPopoutOpen", path);
 				File f = fileChooser.getSelectedFile();
 				String filename = fileChooser.getSelectedFile().getName();
 				setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);
@@ -137,19 +147,26 @@ public class OutputPopout extends JFrame {
 		public void actionPerformed(ActionEvent e) {			
 			boolean done = false;
 			while (!done) {
-				if (getPathName() != null) {
-					File file = new File(getPathName().substring(0, getPathName().length() - 4) + ".txt");
-					if (file.exists()) {
-						fileChooser.setSelectedFile(file);
-					}					
-				}
-				
+				String lastPopout_path = GraphicalInterface.curSettings.get("LastPopoutSave");
+				Utilities u = new Utilities();
+				// if path is null or does not exist, default used, else last path used
+				fileChooser.setCurrentDirectory(new File(u.lastPath(lastPopout_path, fileChooser)));
+				String titlePrefix = GraphicalInterfaceConstants.TITLE + " - ";
+				File file = new File(getTitle().substring(titlePrefix.length()));
+				fileChooser.setSelectedFile(file);
+//				if (getPathName() != null) {
+//					File file = new File(getPathName().substring(0, getPathName().length() - 4) + ".txt");
+//					//if (file.exists()) {
+//						fileChooser.setSelectedFile(file);
+//					//} 
+//				}				
 				int retval = fileChooser.showSaveDialog(OutputPopout.this);
 				if (retval == JFileChooser.CANCEL_OPTION) {
 					done = true;
 				}
 				if (retval == JFileChooser.APPROVE_OPTION) {					
 					String path = fileChooser.getSelectedFile().getPath();
+					GraphicalInterface.curSettings.add("LastPopoutSave", path.substring(0, path.lastIndexOf("\\")));
 					if (!path.endsWith(".txt")) {
 						path = path + ".txt";
 					}
@@ -163,6 +180,7 @@ public class OutputPopout extends JFrame {
 							if (confirmDialog == JOptionPane.YES_OPTION) {
 								done = true;
 								writeFile(f);
+								setTitle(GraphicalInterfaceConstants.TITLE + " - " + f.getName());
 							} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
 								done = false;
 							} else {
@@ -171,6 +189,7 @@ public class OutputPopout extends JFrame {
 						} else {
 							done = true;
 							writeFile(f);
+							setTitle(GraphicalInterfaceConstants.TITLE + " - " + f.getName());
 						}
 					}	
 				}
@@ -189,7 +208,7 @@ public class OutputPopout extends JFrame {
 	}
 	
 	//based on http://www.java2s.com/Code/Java/File-Input-Output/Textfileviewer.htm
-	public void load(String path) {
+	public void load(String path, String title) {
 		File file;
 		FileReader in = null;
 
@@ -205,7 +224,8 @@ public class OutputPopout extends JFrame {
 				textArea.append(s); 
 			}
 			textArea.setCaretPosition(0); 
-			setTitle(GraphicalInterfaceConstants.TITLE + " - " + path);
+			setTitle(title);
+			//setTitle(GraphicalInterfaceConstants.TITLE + " - " + path);
 		}
 
 		catch (IOException e) {

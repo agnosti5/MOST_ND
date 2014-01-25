@@ -827,13 +827,14 @@ public class GraphicalInterface extends JFrame {
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
 							isRoot = true;
 							saveOptFile = false;
-							clearOutputPane();
-							if (getPopout() != null) {
-								getPopout().clear();
-							}	
 							setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 							setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 							setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
+							clearOutputPane();
+							if (getPopout() != null) {
+								getPopout().clear();
+								getPopout().setTitle(gi.getTitle());
+							}	
 							enableMenuItems();
 						} else {
 							saveOptFile = true;
@@ -841,22 +842,20 @@ public class GraphicalInterface extends JFrame {
 								//System.out.println("node " + node.getUserObject().toString());
 								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
-								//loadOutputPane(solutionName + ".log");
 								loadOutputPane(u.createLogFileName(solutionName + ".log"));
 								isRoot = false;	
 								disableMenuItems();
 								if (nodeInfo.getIndex() > -1) {
 									setTitle(GraphicalInterfaceConstants.TITLE + " - " + nodeInfo.getDatabaseName() + "_[" + nodeInfo.getIndex() + "]");
 									if (getPopout() != null) {
-										getPopout().load(u.createLogFileName(nodeInfo.getSolutionName() + ".log"));
-										//getPopout().load(nodeInfo.getSolutionName() + ".log");
-										getPopout().setTitle(GraphicalInterfaceConstants.TITLE + " - " + nodeInfo.getDatabaseName() + "_[" + nodeInfo.getIndex() + "]");
+										System.out.println(gi.getTitle());
+										getPopout().load(u.createLogFileName(nodeInfo.getSolutionName() + ".log"), gi.getTitle());
 									}
 								} else {
 									setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
 									if (getPopout() != null) {
-										getPopout().load(u.createLogFileName(solutionName + ".log"));
-										//getPopout().load(solutionName + ".log");
+										System.out.println(gi.getTitle());
+										getPopout().load(u.createLogFileName(solutionName + ".log"), gi.getTitle());
 									}
 								}																				
 							}
@@ -868,16 +867,15 @@ public class GraphicalInterface extends JFrame {
 						//System.out.println("else " + node.getUserObject().toString());
 						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
+						setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
 						if (solutionName.endsWith(node.getUserObject().toString())) {
 							loadOutputPane(u.createLogFileName(solutionName + ".log"));
-							//loadOutputPane(solutionName + ".log");
 							if (getPopout() != null) {
-								getPopout().load(u.createLogFileName(solutionName + ".log"));
-								//getPopout().load(solutionName + ".log");
+								System.out.println(gi.getTitle());
+								getPopout().load(u.createLogFileName(solutionName + ".log"), gi.getTitle());
 							}										
 						}
-						disableMenuItems();
-						setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
+						disableMenuItems();						
 						isRoot = false;	
 					}					
 				}
@@ -1129,6 +1127,7 @@ public class GraphicalInterface extends JFrame {
 				OutputPopout popout = new OutputPopout();
 				popout.setIconImages(icons);
 				setPopout(popout);
+				popout.setTitle(gi.getTitle());
 				popout.setOutputText(outputTextArea.getText());
 			}
 		});
@@ -1301,9 +1300,9 @@ public class GraphicalInterface extends JFrame {
 							e.printStackTrace();
 						}
 					}
-					loadOutputPane(optimizeName + ".log");
+					loadOutputPane(u.createLogFileName(optimizeName + ".log"));
 					if (getPopout() != null) {
-						getPopout().load(optimizeName + ".log");
+						getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
 					}
 					setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);
 					listModel.addElement(optimizeName);				
