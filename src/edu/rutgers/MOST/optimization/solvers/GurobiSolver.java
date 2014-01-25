@@ -44,6 +44,7 @@ import edu.rutgers.MOST.optimization.GDBB.GDBB;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ResizableDialog;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class GurobiSolver extends Solver {
 	
@@ -700,7 +701,9 @@ public class GurobiSolver extends Solver {
 	public void writeLogFile(StringBuffer outputText) {
 		Writer writer = null;
 		try {
-			File file = new File("gurobiSolver.log");
+			Utilities u = new Utilities();
+			File file = new File(u.createLogFileName("gurobiSolver.log"));
+			//File file = new File("gurobiSolver.log");
 			writer = new BufferedWriter(new FileWriter(file));
 			writer.write(outputText.toString());
 
