@@ -848,13 +848,11 @@ public class GraphicalInterface extends JFrame {
 								if (nodeInfo.getIndex() > -1) {
 									setTitle(GraphicalInterfaceConstants.TITLE + " - " + nodeInfo.getDatabaseName() + "_[" + nodeInfo.getIndex() + "]");
 									if (getPopout() != null) {
-										System.out.println(gi.getTitle());
 										getPopout().load(u.createLogFileName(nodeInfo.getSolutionName() + ".log"), gi.getTitle());
 									}
 								} else {
 									setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
 									if (getPopout() != null) {
-										System.out.println(gi.getTitle());
 										getPopout().load(u.createLogFileName(solutionName + ".log"), gi.getTitle());
 									}
 								}																				
@@ -871,7 +869,6 @@ public class GraphicalInterface extends JFrame {
 						if (solutionName.endsWith(node.getUserObject().toString())) {
 							loadOutputPane(u.createLogFileName(solutionName + ".log"));
 							if (getPopout() != null) {
-								System.out.println(gi.getTitle());
 								getPopout().load(u.createLogFileName(solutionName + ".log"), gi.getTitle());
 							}										
 						}
@@ -9720,7 +9717,8 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getReactionsTableModelMap().put(getOptimizeName(), reactionsOptModelCopy);
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(getOptimizeName(), metabolitesOptModelCopy);
 			Utilities u = new Utilities();
-			copyLogFile(u.createLogFileName(solutionName), u.createLogFileName(getOptimizeName()));  
+			copyLogFile(u.createLogFileName(solutionName), u.createLogFileName(getOptimizeName())); 
+			disableMenuItems();
 		}
 
 		public ReactionFactory getrFactory() {
